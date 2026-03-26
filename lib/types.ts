@@ -27,6 +27,9 @@ export interface Stats {
   consistencia: number;
   enfoque: number;
   crecimiento: number;
+  dedicacion: number;
+  total_xp?: number;
+  totalHabits?: number;
 }
 
 export interface CreateHabitPayload {

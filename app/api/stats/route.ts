@@ -81,11 +81,16 @@ export async function GET(request: Request) {
         ? Math.round(((thisWeekCompleted - lastWeekCompleted) / lastWeekCompleted) * 100) + 80
         : 80;
 
+    // Dedicación: promedio de minutos dedicados por día
+    const totalMinutes = logs.reduce((sum, log) => sum + (log.minutes_completed || 0), 0);
+    const dedicacion = Math.round((totalMinutes / totalDays) * 2); // Asumiendo meta de 30 min/día, ajustar según necesidad
+
     return NextResponse.json({
       disciplina: Math.min(disciplina, 100),
       consistencia: Math.min(consistencia, 100),
       enfoque: Math.min(enfoque, 100),
       crecimiento: Math.min(crecimiento, 100),
+      dedicacion: Math.min(dedicacion, 100),
       totalHabits,
       completedThisMonth: completedLogs,
       avgQuality,

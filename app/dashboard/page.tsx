@@ -1,9 +1,19 @@
-'use client';
+"use client";
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { getHabits, createHabit, logActivity, getStats, getHabitLogs } from "@/app/habits/actions";
+import {
+  getHabits,
+  createHabit,
+  logActivity,
+  getStats,
+  getHabitLogs,
+} from "@/app/habits/actions";
 import { Habit, HabitLog, Stats } from "@/lib/types";
+import PlayerCard from "@/components/PlayerCard";
+import DailyStats from "./_components/DailyStats";
+import WeekStats from "./_components/WeekStats";
+import MonthStats from "./_components/MonthStats";
 
 interface User {
   id: string;
@@ -17,7 +27,18 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
   const [habits, setHabits] = useState<Habit[]>([]);
   const [todayLogs, setTodayLogs] = useState<HabitLog[]>([]);
+  const [weekLogs, setWeekLogs] = useState<HabitLog[]>([]);
   const [stats, setStats] = useState<Stats | null>(null);
+  const [weekStats, setWeekStats] = useState<Stats | null>(null);
+  const [todayStats, setTodayStats] = useState<Stats | null>(null);
+  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+  const [monthlyHabitCompletions, setMonthlyHabitCompletions] = useState<{
+    [habitId: string]: number;
+  }>({});
+  const [yearlyHabitCompletions, setYearlyHabitCompletions] = useState<{
+    [habitId: string]: number;
+  }>({});
   const [message, setMessage] = useState("");
 
   // Form states
@@ -29,6 +50,7 @@ export default function DashboardPage() {
   const [dailyFocus, setDailyFocus] = useState("");
   const [energyLevel, setEnergyLevel] = useState(5);
   const [mentalState, setMentalState] = useState("");
+  const [isCardOpen, setIsCardOpen] = useState(false);
 
   // Activity logging
   const [activityMinutes, setActivityMinutes] = useState(0);
@@ -38,11 +60,10 @@ export default function DashboardPage() {
   // New habit
   const [habitTitle, setHabitTitle] = useState("");
   const [habitCategory, setHabitCategory] = useState("other");
-  const [habitFrequency, setHabitFrequency] = useState(3);
-  const [habitMinutes, setHabitMinutes] = useState(30);
+  const [habitFrequency, setHabitFrequency] = useState("");
+  const [habitMinutes, setHabitMinutes] = useState("");
 
-
-    const loadDashboardData = async (authToken: string) => {
+  const loadDashboardData = async (authToken: string) => {
     try {
       const habitsData = await getHabits(authToken);
       setHabits(habitsData);
@@ -52,16 +73,149 @@ export default function DashboardPage() {
 
       // Load today's logs
       const today = new Date().toISOString().split("T")[0];
+
       const allLogs: HabitLog[] = [];
       for (const habit of habitsData) {
         const logs = await getHabitLogs(authToken, habit.id);
-        allLogs.push(...logs.filter((log) => log.log_date === today));
+
+        allLogs.push(...logs.filter((log) => log.log_date == today));
       }
       setTodayLogs(allLogs);
+
+      // Calculate today stats
+      const todayCompleted = allLogs.filter((log) => log.completed).length;
+      const todayTotalHabits = habitsData.length;
+      const todayDisciplina =
+        todayTotalHabits > 0
+          ? Math.round((todayCompleted / todayTotalHabits) * 100)
+          : 0;
+
+      const todayConsistencia = todayCompleted > 0 ? 100 : 0;
+
+      const todayAvgQuality =
+        allLogs.length > 0
+          ? Math.round(
+              allLogs.reduce((sum, log) => sum + log.quality_score, 0) /
+                allLogs.length,
+            )
+          : 0;
+      const todayEnfoque = Math.min(todayAvgQuality, 100);
+
+      const todayTotalMinutes = allLogs.reduce(
+        (sum, log) => sum + (log.minutes_completed || 0),
+        0,
+      );
+      const todayDedicacion = Math.round(todayTotalMinutes * 2); // Assuming 30 min target
+
+      const todayCrecimiento = 70; // Placeholder
+
+      setTodayStats({
+        disciplina: Math.min(todayDisciplina, 100),
+        consistencia: Math.min(todayConsistencia, 100),
+        enfoque: Math.min(todayEnfoque, 100),
+        dedicacion: Math.min(todayDedicacion, 100),
+        crecimiento: Math.min(todayCrecimiento, 100),
+      });
+
+      // Load week's logs
+      const weekAgo = new Date();
+      weekAgo.setDate(weekAgo.getDate() - 7);
+      const weekStart = weekAgo.toISOString().split("T")[0];
+      const weekLogsData: HabitLog[] = [];
+      for (const habit of habitsData) {
+        const logs = await getHabitLogs(authToken, habit.id);
+        weekLogsData.push(...logs.filter((log) => log.log_date >= weekStart));
+      }
+      setWeekLogs(weekLogsData);
+
+      // Calculate week stats
+      const weekCompleted = weekLogsData.filter((log) => log.completed).length;
+      const weekTotalHabits = habitsData.length * 7;
+      const weekDisciplina =
+        weekTotalHabits > 0
+          ? Math.round((weekCompleted / weekTotalHabits) * 100)
+          : 0;
+
+      const weekUniqueDays = new Set(
+        weekLogsData.filter((log) => log.completed).map((log) => log.log_date),
+      );
+      const weekConsistencia = Math.round((weekUniqueDays.size / 7) * 100);
+
+      const weekAvgQuality =
+        weekLogsData.length > 0
+          ? Math.round(
+              weekLogsData.reduce((sum, log) => sum + log.quality_score, 0) /
+                weekLogsData.length,
+            )
+          : 0;
+      const weekEnfoque = Math.min(weekAvgQuality, 100);
+
+      const weekTotalMinutes = weekLogsData.reduce(
+        (sum, log) => sum + (log.minutes_completed || 0),
+        0,
+      );
+      const weekDedicacion = Math.round((weekTotalMinutes / 7) * 2);
+
+      const weekCrecimiento = 75; // Placeholder
+
+      setWeekStats({
+        disciplina: Math.min(weekDisciplina, 100),
+        consistencia: Math.min(weekConsistencia, 100),
+        enfoque: Math.min(weekEnfoque, 100),
+        dedicacion: Math.min(weekDedicacion, 100),
+        crecimiento: Math.min(weekCrecimiento, 100),
+      });
     } catch (error) {
       console.error("Error loading data:", error);
     }
   };
+
+  const loadHabitCompletions = async (month: number, year: number) => {
+    try {
+      const startDate = new Date(year, month - 1, 1)
+        .toISOString()
+        .split("T")[0];
+      const endDate = new Date(year, month, 0).toISOString().split("T")[0];
+      const completions: { [habitId: string]: number } = {};
+
+      for (const habit of habits) {
+        const logs = await getHabitLogs(token, habit.id);
+        const monthLogs = logs.filter(
+          (log) =>
+            log.log_date >= startDate &&
+            log.log_date <= endDate &&
+            log.completed,
+        );
+        completions[habit.id] = monthLogs.length;
+      }
+      setMonthlyHabitCompletions(completions);
+
+      // For yearly
+      const yearStart = new Date(year, 0, 1).toISOString().split("T")[0];
+      const yearEnd = new Date(year, 11, 31).toISOString().split("T")[0];
+      const yearCompletions: { [habitId: string]: number } = {};
+
+      for (const habit of habits) {
+        const logs = await getHabitLogs(token, habit.id);
+        const yearLogs = logs.filter(
+          (log) =>
+            log.log_date >= yearStart &&
+            log.log_date <= yearEnd &&
+            log.completed,
+        );
+        yearCompletions[habit.id] = yearLogs.length;
+      }
+      setYearlyHabitCompletions(yearCompletions);
+    } catch (error) {
+      console.error("Error loading habit completions:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (habits.length > 0 && token) {
+      loadHabitCompletions(selectedMonth, selectedYear);
+    }
+  }, [habits, token, selectedMonth, selectedYear]);
 
   useEffect(() => {
     const validateSession = async () => {
@@ -92,8 +246,6 @@ export default function DashboardPage() {
     validateSession();
   }, []);
 
-
-
   const handleCreateHabit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!habitTitle || !token) return;
@@ -108,8 +260,7 @@ export default function DashboardPage() {
 
       setHabitTitle("");
       setHabitCategory("other");
-      setHabitFrequency(3);
-      setHabitMinutes(30);
+
       setShowNewHabitForm(false);
       await loadDashboardData(token);
       setMessage("Hábito creado exitosamente ✅");
@@ -121,19 +272,10 @@ export default function DashboardPage() {
   const handleLogActivity = async (e: React.FormEvent) => {
     e.preventDefault();
 
-
-	console.log("Entero al metodo handleLogActivity");
-	
     if (!selectedHabit || !token) return;
 
-	console.log("paso la validacion de select y token");
-
-	console.log(selectedHabit);
-	
-	
-
     try {
-	 await logActivity(token, selectedHabit.id, {
+      await logActivity(token, selectedHabit.id, {
         minutes_completed: activityMinutes,
         quality_score: activityQuality,
         completed: activityMinutes > 0,
@@ -142,11 +284,6 @@ export default function DashboardPage() {
         energy_level: energyLevel,
         mental_state: mentalState,
       });
-
-	  console.log("lo que se guarda");
-
-	  
-	  
 
       setActivityMinutes(0);
       setActivityQuality(3);
@@ -178,17 +315,15 @@ export default function DashboardPage() {
     return (
       <div className="min-h-screen bg-white flex flex-col items-center justify-center">
         <p className="text-black/70 mb-4">No hay usuario autenticado.</p>
-        <Link href="/login" className="font-bold text-black hover:text-black/70">
+        <Link
+          href="/login"
+          className="font-bold text-black hover:text-black/70"
+        >
           ← Volver a login
         </Link>
       </div>
     );
   }
-
-  const today = new Date().toISOString().split("T")[0];
-  const completedToday = todayLogs.filter((log) => log.completed).length;
-  const totalTimeToday = todayLogs.reduce((sum, log) => sum + (log.minutes_completed || 0), 0);
-  const avgQualityToday = todayLogs.length > 0 ? Math.round(todayLogs.reduce((sum, log) => sum + log.quality_score, 0) / todayLogs.length) : 0;
 
   return (
     <div className="min-h-screen bg-white text-black font-sans">
@@ -199,6 +334,12 @@ export default function DashboardPage() {
           <div className="flex items-center gap-4">
             <span className="text-sm text-black/70">{user.email}</span>
             <button
+              onClick={() => setIsCardOpen(true)}
+              className="bg-white border-2 border-black px-4 py-2 font-black text-xs uppercase hover:bg-black hover:text-white transition shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-1 active:translate-y-1"
+            >
+              Ver Perfil [XP]
+            </button>
+            <button
               onClick={handleLogout}
               className="text-sm font-bold uppercase tracking-widest text-black/70 hover:text-black transition"
             >
@@ -208,121 +349,9 @@ export default function DashboardPage() {
         </div>
       </nav>
 
+      {/* PLAYER CARD */}
+
       <main className="max-w-7xl mx-auto px-6 py-8 space-y-8">
-        {/* DAILY HEADER */}
-        <section className="rounded-3xl border-2 border-black p-8 bg-black/2">
-          <h2 className="text-2xl font-black mb-6">📅 Registro del día</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="border-2 border-black/30 rounded-lg p-4">
-              <label className="text-xs font-bold uppercase tracking-widest text-black/70">
-                📅 Fecha
-              </label>
-              <p className="mt-1 text-lg font-black">{new Date(today).toLocaleDateString("es-ES", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}</p>
-            </div>
-            <div className="border-2 border-black/30 rounded-lg p-4">
-              <label className="text-xs font-bold uppercase tracking-widest text-black/70">
-                🎯 Enfoque del día
-              </label>
-              <input
-                type="text"
-                value={dailyFocus}
-                onChange={(e) => setDailyFocus(e.target.value)}
-                placeholder="1 sola cosa clave..."
-                className="mt-1 w-full text-sm rounded border border-black/20 px-2 py-1 outline-none focus:border-black"
-              />
-            </div>
-            <div className="border-2 border-black/30 rounded-lg p-4">
-              <label className="text-xs font-bold uppercase tracking-widest text-black/70">
-                🔥 Energía (1-10)
-              </label>
-              <input
-                type="number"
-                min="1"
-                max="10"
-                value={energyLevel}
-                onChange={(e) => setEnergyLevel(parseInt(e.target.value))}
-                className="mt-1 w-full text-sm rounded border border-black/20 px-2 py-1 outline-none focus:border-black"
-              />
-            </div>
-            <div className="border-2 border-black/30 rounded-lg p-4">
-              <label className="text-xs font-bold uppercase tracking-widest text-black/70">
-                🧠 Estado mental
-              </label>
-              <input
-                type="text"
-                value={mentalState}
-                onChange={(e) => setMentalState(e.target.value)}
-                placeholder="Enfocado, relajado..."
-                className="mt-1 w-full text-sm rounded border border-black/20 px-2 py-1 outline-none focus:border-black"
-              />
-            </div>
-          </div>
-        </section>
-
-        {/* KPI SECTION */}
-        <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <article className="rounded-2xl border-2 border-black p-6 bg-black/5">
-            <p className="text-xs font-bold uppercase tracking-widest text-black/70">Completadas hoy</p>
-            <p className="mt-2 text-4xl font-black">{completedToday}/{habits.length}</p>
-            <p className="mt-1 text-sm text-black/70">Hábitos activos</p>
-          </article>
-
-          <article className="rounded-2xl border-2 border-black p-6 bg-black/5">
-            <p className="text-xs font-bold uppercase tracking-widest text-black/70">Tiempo total hoy</p>
-            <p className="mt-2 text-4xl font-black">{totalTimeToday}m</p>
-            <p className="mt-1 text-sm text-black/70">Dedicado a hábitos</p>
-          </article>
-
-          <article className="rounded-2xl border-2 border-black p-6 bg-black/5">
-            <p className="text-xs font-bold uppercase tracking-widest text-black/70">Calidad promedio</p>
-            <p className="mt-2 text-4xl font-black">{avgQualityToday}/5</p>
-            <p className="mt-1 text-sm text-black/70">Calidad de ejecución</p>
-          </article>
-
-          <article className="rounded-2xl border-2 border-black p-6 bg-black/5">
-            <p className="text-xs font-bold uppercase tracking-widest text-black/70">Progreso general</p>
-            <p className="mt-2 text-4xl font-black">{stats?.disciplina || 0}%</p>
-            <p className="mt-1 text-sm text-black/70">Disciplina del mes</p>
-          </article>
-        </section>
-
-        {/* MONTHLY STATS */}
-        {stats && (
-          <section className="rounded-3xl border-2 border-black p-8 bg-black/5">
-            <h2 className="text-2xl font-black mb-6">📊 Estadísticas del mes</h2>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <div className="border border-black/20 rounded-lg p-4">
-                <p className="text-xs font-bold uppercase tracking-widest text-black/70">Disciplina</p>
-                <div className="mt-2 relative h-3 bg-black/10 rounded-full overflow-hidden">
-                  <div className="h-full bg-black" style={{ width: `${stats.disciplina}%` }}></div>
-                </div>
-                <p className="mt-1 text-lg font-black">{stats.disciplina}%</p>
-              </div>
-              <div className="border border-black/20 rounded-lg p-4">
-                <p className="text-xs font-bold uppercase tracking-widest text-black/70">Consistencia</p>
-                <div className="mt-2 relative h-3 bg-black/10 rounded-full overflow-hidden">
-                  <div className="h-full bg-black" style={{ width: `${stats.consistencia}%` }}></div>
-                </div>
-                <p className="mt-1 text-lg font-black">{stats.consistencia}%</p>
-              </div>
-              <div className="border border-black/20 rounded-lg p-4">
-                <p className="text-xs font-bold uppercase tracking-widest text-black/70">Enfoque</p>
-                <div className="mt-2 relative h-3 bg-black/10 rounded-full overflow-hidden">
-                  <div className="h-full bg-black" style={{ width: `${stats.enfoque}%` }}></div>
-                </div>
-                <p className="mt-1 text-lg font-black">{stats.enfoque}%</p>
-              </div>
-              <div className="border border-black/20 rounded-lg p-4">
-                <p className="text-xs font-bold uppercase tracking-widest text-black/70">Crecimiento</p>
-                <div className="mt-2 relative h-3 bg-black/10 rounded-full overflow-hidden">
-                  <div className="h-full bg-black" style={{ width: `${stats.crecimiento}%` }}></div>
-                </div>
-                <p className="mt-1 text-lg font-black">{stats.crecimiento}%</p>
-              </div>
-            </div>
-          </section>
-        )}
-
         {/* HABITS TABLE & ACTIONS */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* LEFT: Hábitos creados */}
@@ -336,7 +365,10 @@ export default function DashboardPage() {
             </button>
 
             {showNewHabitForm && (
-              <form onSubmit={handleCreateHabit} className="mb-4 p-4 border-2 border-black rounded-lg space-y-3">
+              <form
+                onSubmit={handleCreateHabit}
+                className="mb-4 p-4 border-2 border-black rounded-lg space-y-3"
+              >
                 <input
                   type="text"
                   value={habitTitle}
@@ -357,11 +389,13 @@ export default function DashboardPage() {
                   <option value="health">❤️ Health</option>
                   <option value="other">📌 Other</option>
                 </select>
+                <label htmlFor="habitFrequency">Veces por semana</label>
                 <input
                   type="number"
                   value={habitFrequency}
                   onChange={(e) => setHabitFrequency(parseInt(e.target.value))}
                   placeholder="Veces por semana"
+                  id="habitFrequency"
                   className="w-full text-sm rounded border border-black/20 px-2 py-1 outline-none focus:border-black"
                   min="1"
                 />
@@ -384,19 +418,33 @@ export default function DashboardPage() {
 
             <div className="space-y-2">
               {habits.length === 0 ? (
-                <p className="text-sm text-black/70">No hay hábitos. Crea uno para empezar.</p>
+                <p className="text-sm text-black/70">
+                  No hay hábitos. Crea uno para empezar.
+                </p>
               ) : (
                 habits.map((habit) => {
-                  const habitLogs = todayLogs.filter((log) => log.habit_id === habit.id);
-                  const timesCompleted = habitLogs.filter((log) => log.completed).length;
-                  const totalMinutes = habitLogs.reduce((sum, log) => sum + (log.minutes_completed || 0), 0);
+                  const habitLogs = todayLogs.filter(
+                    (log) => log.habit_id === habit.id,
+                  );
+                  const timesCompleted = habitLogs.filter(
+                    (log) => log.completed,
+                  ).length;
+                  const totalMinutes = habitLogs.reduce(
+                    (sum, log) => sum + (log.minutes_completed || 0),
+                    0,
+                  );
 
                   return (
-                    <div key={habit.id} className="border-2 border-black/20 rounded-lg p-3">
+                    <div
+                      key={habit.id}
+                      className="border-2 border-black/20 rounded-lg p-3"
+                    >
                       <div className="flex items-center justify-between">
                         <div className="flex-1">
                           <p className="font-bold text-sm">{habit.title}</p>
-                          <p className="text-xs text-black/70">{habit.category}</p>
+                          <p className="text-xs text-black/70">
+                            {habit.category}
+                          </p>
                         </div>
                         <button
                           onClick={() => {
@@ -409,8 +457,12 @@ export default function DashboardPage() {
                         </button>
                       </div>
                       <div className="mt-2 flex gap-2 text-xs font-bold">
-                        <span className="bg-black/10 px-2 py-1 rounded">✓ {timesCompleted}</span>
-                        <span className="bg-black/10 px-2 py-1 rounded">⏱ {totalMinutes}m</span>
+                        <span className="bg-black/10 px-2 py-1 rounded">
+                          ✓ {timesCompleted}
+                        </span>
+                        <span className="bg-black/10 px-2 py-1 rounded">
+                          ⏱ {totalMinutes}m
+                        </span>
                       </div>
                     </div>
                   );
@@ -427,15 +479,21 @@ export default function DashboardPage() {
               <form onSubmit={handleLogActivity} className="space-y-4">
                 <div className="bg-black/5 rounded-lg p-4 border-2 border-black">
                   <p className="text-sm font-bold">{selectedHabit.title}</p>
-                  <p className="text-xs text-black/70">Meta: {selectedHabit.target_minutes} min</p>
+                  <p className="text-xs text-black/70">
+                    Meta: {selectedHabit.target_minutes} min
+                  </p>
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-xs font-bold uppercase">Minutos dedicados</label>
+                  <label className="text-xs font-bold uppercase">
+                    Minutos dedicados
+                  </label>
                   <input
                     type="number"
                     value={activityMinutes}
-                    onChange={(e) => setActivityMinutes(parseInt(e.target.value) || 0)}
+                    onChange={(e) =>
+                      setActivityMinutes(parseInt(e.target.value) || 0)
+                    }
                     placeholder="0"
                     className="w-full text-sm rounded border-2 border-black px-3 py-2 outline-none focus:bg-black/5"
                     min="0"
@@ -444,7 +502,9 @@ export default function DashboardPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-xs font-bold uppercase">Calidad (1-5)</label>
+                  <label className="text-xs font-bold uppercase">
+                    Calidad (1-5)
+                  </label>
                   <div className="flex gap-2">
                     {[1, 2, 3, 4, 5].map((q) => (
                       <button
@@ -486,7 +546,7 @@ export default function DashboardPage() {
                       setShowActivityForm(false);
                       setSelectedHabit(null);
                       setActivityMinutes(0);
-                      setActivityQuality(3);
+                      setActivityQuality(399999);
                       setActivityNotes("");
                     }}
                     className="flex-1 rounded-full border-2 border-black/30 px-4 py-2 text-xs font-bold uppercase tracking-widest hover:border-black transition"
@@ -523,11 +583,21 @@ export default function DashboardPage() {
                         const habit = habits.find((h) => h.id === log.habit_id);
                         return (
                           <tr key={idx} className="border-b border-black/10">
-                            <td className="py-2 font-bold">{habit?.title || "Unknown"}</td>
-                            <td className="text-center py-2">{log.completed ? "✓" : "—"}</td>
-                            <td className="text-center py-2">{log.minutes_completed}m</td>
-                            <td className="text-center py-2">{log.quality_score}/5</td>
-                            <td className="py-2 text-black/70">{log.notes || "—"}</td>
+                            <td className="py-2 font-bold">
+                              {habit?.title || "Unknown"}
+                            </td>
+                            <td className="text-center py-2">
+                              {log.completed ? "✓" : "—"}
+                            </td>
+                            <td className="text-center py-2">
+                              {log.minutes_completed}m
+                            </td>
+                            <td className="text-center py-2">
+                              {log.quality_score}/5
+                            </td>
+                            <td className="py-2 text-black/70">
+                              {log.notes || "—"}
+                            </td>
                           </tr>
                         );
                       })}
@@ -538,15 +608,136 @@ export default function DashboardPage() {
             )}
           </section>
         </div>
+        {/* DAILY STATS */}
+        <DailyStats
+          todayStats={todayStats}
+          habits={habits}
+          todayLogs={todayLogs}
+        />
+        {/* WEEK STATS */}
+        <WeekStats weekStats={weekStats} weekLogs={weekLogs} />
+        {/* MONTHLY STATS */}
 
+        <MonthStats stats={stats} />
+        {/* HABIT COMPLETIONS */}
+        <section className="rounded-3xl border-2 border-black p-8 bg-black/5">
+          <h2 className="text-2xl font-black mb-6">
+            📈 Completaciones de Hábitos
+          </h2>
+
+          <div className="flex gap-4 mb-6">
+            <div>
+              <label className="text-sm font-bold">Mes:</label>
+              <select
+                value={selectedMonth}
+                onChange={(e) => setSelectedMonth(parseInt(e.target.value))}
+                className="ml-2 px-2 py-1 border border-black rounded"
+              >
+                {Array.from({ length: 12 }, (_, i) => (
+                  <option key={i + 1} value={i + 1}>
+                    {new Date(0, i).toLocaleDateString("es-ES", {
+                      month: "long",
+                    })}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="text-sm font-bold">Año:</label>
+              <select
+                value={selectedYear}
+                onChange={(e) => setSelectedYear(parseInt(e.target.value))}
+                className="ml-2 px-2 py-1 border border-black rounded"
+              >
+                {Array.from({ length: 5 }, (_, i) => (
+                  <option
+                    key={new Date().getFullYear() - i}
+                    value={new Date().getFullYear() - i}
+                  >
+                    {new Date().getFullYear() - i}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {/* MONTHLY COMPLETIONS */}
+            <div>
+              <h3 className="text-lg font-black mb-4">
+                Completaciones del Mes (
+                {new Date(selectedYear, selectedMonth - 1).toLocaleDateString(
+                  "es-ES",
+                  { month: "long", year: "numeric" },
+                )}
+                )
+              </h3>
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead className="border-b-2 border-black">
+                    <tr>
+                      <th className="text-left py-2 font-black">Hábito</th>
+                      <th className="text-center py-2 font-black">
+                        Completado
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {habits.map((habit) => (
+                      <tr key={habit.id} className="border-b border-black/10">
+                        <td className="py-2 font-bold">{habit.title}</td>
+                        <td className="text-center py-2">
+                          {monthlyHabitCompletions[habit.id] || 0}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            {/* YEARLY COMPLETIONS */}
+            <div>
+              <h3 className="text-lg font-black mb-4">
+                Completaciones del Año ({selectedYear})
+              </h3>
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead className="border-b-2 border-black">
+                    <tr>
+                      <th className="text-left py-2 font-black">Hábito</th>
+                      <th className="text-center py-2 font-black">
+                        Completado
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {habits.map((habit) => (
+                      <tr key={habit.id} className="border-b border-black/10">
+                        <td className="py-2 font-bold">{habit.title}</td>
+                        <td className="text-center py-2">
+                          {yearlyHabitCompletions[habit.id] || 0}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </section>
         {/* STATUS MESSAGE */}
         {message && (
           <div className="fixed bottom-6 right-6 bg-black text-white px-6 py-3 rounded-full text-sm font-bold">
             {message}
           </div>
         )}
+        <PlayerCard
+          stats={stats}
+          isOpen={isCardOpen}
+          onClose={() => setIsCardOpen(false)}
+        />
       </main>
     </div>
   );
 }
-
