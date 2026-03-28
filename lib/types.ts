@@ -8,6 +8,13 @@ export interface Habit {
   created_at: string;
 }
 
+
+export interface User {
+  id: string;
+  email: string;
+  created_at: string;
+}
+
 export interface HabitLog {
   id: string;
   habit_id: string;

@@ -1,5 +1,3 @@
-"use client";
-
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import {
@@ -14,6 +12,9 @@ import PlayerCard from "@/components/PlayerCard";
 import DailyStats from "./_components/DailyStats";
 import WeekStats from "./_components/WeekStats";
 import MonthStats from "./_components/MonthStats";
+import CalendarHead from "./_components/CalendarHead";
+import { get } from "http";
+import { getCurrentUser } from "@/services/authService";
 
 interface User {
   id: string;
@@ -60,8 +61,8 @@ export default function DashboardPage() {
   // New habit
   const [habitTitle, setHabitTitle] = useState("");
   const [habitCategory, setHabitCategory] = useState("other");
-  const [habitFrequency, setHabitFrequency] = useState("");
-  const [habitMinutes, setHabitMinutes] = useState("");
+  const [habitFrequency, setHabitFrequency] = useState(Number || null);
+  const [habitMinutes, setHabitMinutes] = useState(Number || null);
 
   const loadDashboardData = async (authToken: string) => {
     try {
@@ -244,6 +245,15 @@ export default function DashboardPage() {
     };
 
     validateSession();
+
+    async function getCurrentUserAuth() {
+      const currentUser = await getCurrentUser();
+      console.log("demmmm");
+
+      console.log(currentUser);
+    }
+
+    getCurrentUserAuth();
   }, []);
 
   const handleCreateHabit = async (e: React.FormEvent) => {
@@ -333,12 +343,12 @@ export default function DashboardPage() {
           <h1 className="text-2xl font-black">hatrack</h1>
           <div className="flex items-center gap-4">
             <span className="text-sm text-black/70">{user.email}</span>
-            <button
-              onClick={() => setIsCardOpen(true)}
-              className="bg-white border-2 border-black px-4 py-2 font-black text-xs uppercase hover:bg-black hover:text-white transition shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-1 active:translate-y-1"
+            <Link
+              href="/profile"
+              className="text-sm font-bold uppercase tracking-widest text-black/70 hover:text-black transition"
             >
-              Ver Perfil [XP]
-            </button>
+              Ver perfil
+            </Link>
             <button
               onClick={handleLogout}
               className="text-sm font-bold uppercase tracking-widest text-black/70 hover:text-black transition"
@@ -732,11 +742,9 @@ export default function DashboardPage() {
             {message}
           </div>
         )}
-        <PlayerCard
-          stats={stats}
-          isOpen={isCardOpen}
-          onClose={() => setIsCardOpen(false)}
-        />
+
+        <CalendarHead />
+        <PlayerCard />
       </main>
     </div>
   );

@@ -1,4 +1,4 @@
-import { supabase } from "@/lib/supabaseClient";
+import { supabase } from "@/lib/supabase/config/supabaseClient";
 import { NextResponse } from "next/server";
 
 
@@ -16,7 +16,6 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: "Usuario no válido" }, { status: 401 });
     }
 
-    // supabase.auth.setAuth no existe en esta versión; usamos filtros por user_id
 
     const { data, error } = await supabase
       .from("habits")

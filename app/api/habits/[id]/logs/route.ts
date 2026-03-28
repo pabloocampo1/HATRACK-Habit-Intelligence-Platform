@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { supabase } from "../../../../../lib/supabaseClient";
+import { supabase } from "../../../../../lib/supabase/config/supabaseClient";
 import { log } from "node:console";
 
 export async function POST(
@@ -91,7 +91,7 @@ export async function GET(
 ) {
 
   const habitId = (await params).id;
-  console.log("ID que llega al endpoint GET (YA RESUELTO):", habitId);
+ 
 
   try {
     const authHeader = request.headers.get("authorization");

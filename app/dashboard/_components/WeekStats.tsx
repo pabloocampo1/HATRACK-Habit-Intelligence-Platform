@@ -1,4 +1,8 @@
+"use client";
+
+import { fetchUserStats } from "@/app/actions/habitActions";
 import { HabitLog, Stats } from "@/lib/types";
+import { useEffect } from "react";
 
 export default function WeekStats({
   weekStats,
@@ -35,7 +39,7 @@ export default function WeekStats({
           {/* Calificación Global */}
           <div className="bg-emerald-900/30 border border-emerald-500/30 px-6 py-3 rounded-2xl text-right">
             <p className="text-[10px] font-bold text-emerald-400 uppercase tracking-widest mb-1">
-              Puntaje Global
+              Puntaje Global Semanal.
             </p>
             <p className="text-3xl font-black text-white">
               {weekStats.disciplina}%
@@ -47,12 +51,12 @@ export default function WeekStats({
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
           {[
             {
-              label: "Completadas",
-              value: weekLogs.filter((l) => l.completed).length,
-              sub: "Registros totales",
+              label: "Completadas esta semana",
+              value: `${weekLogs.filter((l) => l.completed).length} / 7`,
+              sub: "Registros de habitos totales a la semana",
             },
             {
-              label: "Tiempo Invertido",
+              label: "Tiempo Invertido esta semana",
               value: `${weekLogs.reduce((s, l) => s + (l.minutes_completed || 0), 0)}m`,
               sub: "Trabajo enfocado",
             },
