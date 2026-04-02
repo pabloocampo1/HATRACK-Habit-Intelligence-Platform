@@ -1,12 +1,10 @@
-// app/perfil/page.tsx
 "use client";
 
-import { useEffect, useState } from "react";
 import PlayerCard from "@/components/PlayerCard";
 import "react-calendar-heatmap/dist/styles.css";
 import { Zap, Target, Flame, Bot, BookOpen, BrainCircuit } from "lucide-react";
 import { motion } from "framer-motion";
-import CalendarHeatMap from "react-calendar-heatmap";
+import CalendarHeatmap from "react-calendar-heatmap";
 
 // --- DATOS FICTICIOS ---
 const mockCounters = [
@@ -78,12 +76,6 @@ const generateHeatmapData = () => {
 const heatmapValues = generateHeatmapData();
 
 export default function ProfilePage() {
-  const [selectedHabitId, setSelectedHabitId] = useState<number | null>(null);
-
-  useEffect(() => {
-    alert("in process");
-  }, []);
-
   return (
     <main className="min-h-screen bg-slate-50 p-6 md:p-10 font-sans selection:bg-emerald-100 selection:text-emerald-900">
       {/* Header Sección - Ahora con textos oscuros */}
@@ -146,71 +138,53 @@ export default function ProfilePage() {
 
             {/* Contenedor con padding a la izquierda para que los labels de los días no se corten */}
             <div className="text-slate-400 text-[9px] heatmap-white font-medium pl-4">
-              <CalendarHeatMap
+              <CalendarHeatmap
                 startDate={
-                  new Date(new Date().setDate(new Date().getDate() - 365))
+                  new Date(new Date().setFullYear(new Date().getFullYear() - 1))
                 }
                 endDate={new Date()}
                 values={heatmapValues}
                 showWeekdayLabels={true}
-                showMonthLabels={true}
-                gutterSize={2} // <--- ESTO hace los cuadros más pequeños al aumentar el espacio entre ellos
+                gutterSize={2}
                 weekdayLabels={["D", "L", "M", "M", "J", "V", "S"]}
                 classForValue={(value) => {
                   if (!value || value.count === 0) return "fill-slate-100";
                   if (value.count === 1) return "fill-emerald-200";
                   return "fill-emerald-500";
-                }}
-                tooltipDataAttrs={(value: any) => {
-                  return {
-                    "data-tip": `${value.date}: ${value.count} hábitos`,
-                  };
                 }}
               />
             </div>
             <div className="text-slate-400 text-[9px] heatmap-white font-medium pl-4">
-              <CalendarHeatMap
+              <CalendarHeatmap
                 startDate={
-                  new Date(new Date().setDate(new Date().getDate() - 365))
+                  new Date(new Date().setFullYear(new Date().getFullYear() - 1))
                 }
                 endDate={new Date()}
                 values={heatmapValues}
                 showWeekdayLabels={true}
-                showMonthLabels={true}
-                gutterSize={2} // <--- ESTO hace los cuadros más pequeños al aumentar el espacio entre ellos
+                gutterSize={2}
                 weekdayLabels={["D", "L", "M", "M", "J", "V", "S"]}
                 classForValue={(value) => {
                   if (!value || value.count === 0) return "fill-slate-100";
                   if (value.count === 1) return "fill-emerald-200";
                   return "fill-emerald-500";
-                }}
-                tooltipDataAttrs={(value: any) => {
-                  return {
-                    "data-tip": `${value.date}: ${value.count} hábitos`,
-                  };
                 }}
               />
             </div>
             <div className="text-slate-400 text-[9px] heatmap-white font-medium pl-4">
-              <CalendarHeatMap
+              <CalendarHeatmap
                 startDate={
-                  new Date(new Date().setDate(new Date().getDate() - 365))
+                  new Date(new Date().setFullYear(new Date().getFullYear() - 1))
                 }
                 endDate={new Date()}
                 values={heatmapValues}
                 showWeekdayLabels={true}
-                showMonthLabels={true}
-                gutterSize={2} // <--- ESTO hace los cuadros más pequeños al aumentar el espacio entre ellos
+                gutterSize={2}
                 weekdayLabels={["D", "L", "M", "M", "J", "V", "S"]}
                 classForValue={(value) => {
                   if (!value || value.count === 0) return "fill-slate-100";
                   if (value.count === 1) return "fill-emerald-200";
                   return "fill-emerald-500";
-                }}
-                tooltipDataAttrs={(value: any) => {
-                  return {
-                    "data-tip": `${value.date}: ${value.count} hábitos`,
-                  };
                 }}
               />
             </div>
@@ -236,46 +210,6 @@ export default function ProfilePage() {
             <button className="text-[10px] font-black uppercase text-slate-400 hover:text-emerald-600 transition-colors">
               Ver Todo
             </button>
-          </div>
-
-          <div className="space-y-4">
-            {mockRecentLogs.map((log, index) => (
-              <motion.div
-                key={log.id}
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: index * 0.1 + 0.5 }}
-                className={`p-5 rounded-2xl border transition-all flex items-center gap-4 cursor-pointer 
-                  ${
-                    selectedHabitId === log.id
-                      ? "bg-emerald-50 border-emerald-200 shadow-inner"
-                      : "bg-slate-50 border-slate-100 hover:border-emerald-200"
-                  }`}
-                onClick={() => setSelectedHabitId(log.id)}
-              >
-                <div
-                  className={`p-3 rounded-full ${selectedHabitId === log.id ? "bg-emerald-600 text-white" : "bg-white text-slate-400 border border-slate-200"}`}
-                >
-                  <log.icon className="w-5 h-5" />
-                </div>
-                <div className="flex-1">
-                  <p
-                    className={`text-sm font-bold ${selectedHabitId === log.id ? "text-emerald-900" : "text-slate-800"}`}
-                  >
-                    {log.habit}
-                  </p>
-                  <p className="text-xs text-slate-400 font-mono">{log.time}</p>
-                </div>
-                <div className="text-right">
-                  <p className="text-lg font-black text-emerald-600 tabular-nums">
-                    +{log.points}
-                  </p>
-                  <p className="text-[9px] font-black uppercase text-emerald-400 tracking-widest">
-                    XP
-                  </p>
-                </div>
-              </motion.div>
-            ))}
           </div>
         </aside>
       </div>

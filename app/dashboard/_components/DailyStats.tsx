@@ -1,5 +1,4 @@
 import { Habit, HabitLog, Stats } from "@/lib/types";
-import { useState } from "react";
 
 export default function DailyStats({
   todayStats,
@@ -10,20 +9,6 @@ export default function DailyStats({
   habits: Habit[];
   todayLogs: HabitLog[];
 }) {
-  const today = new Date().toISOString().split("T")[0];
-  const completedToday = todayLogs.filter((log) => log.completed).length;
-  const totalTimeToday = todayLogs.reduce(
-    (sum, log) => sum + (log.minutes_completed || 0),
-    0,
-  );
-  const avgQualityToday =
-    todayLogs.length > 0
-      ? Math.round(
-          todayLogs.reduce((sum, log) => sum + log.quality_score, 0) /
-            todayLogs.length,
-        )
-      : 0;
-
   return (
     <div className="my-8">
       <section className="rounded-[2rem] p-10 bg-[#fafafa] border border-black/30">
@@ -41,31 +26,30 @@ export default function DailyStats({
         </header>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {/* Cards: Usamos border-black/5 y un shadow muy sutil para calidez */}
           {[
             {
-              label: "Completadas",
+              label: "Habitos Completados hoy",
               subLabel: "Hábitos activos",
-              value: `${completedToday}/${habits.length}`,
-              sub: "Hábitos activos",
+              value: `${todayLogs.filter((l) => l.completed).length}/${habits.length}`,
+              sub: "Cantidad de hábitos que lograste completar hoy frente al total de hábitos activos que tenías definidos.",
             },
             {
-              label: "Tiempo Total",
+              label: "Tiempo Total dedicado hoy",
               subLabel: "Dedicación hoy",
-              value: `${totalTimeToday}m`,
-              sub: "Dedicación hoy",
+              value: `${todayStats?.total_time || 0}m`,
+              sub: "Tiempo total que invertiste hoy en tus hábitos. Refleja el esfuerzo acumulado sin importar si completaste todos o no.",
             },
             {
-              label: "Calidad",
+              label: "Dedicación de hoy",
               subLabel: "Nivel de enfoque",
-              value: `${avgQualityToday}/5`,
-              sub: "Nivel de enfoque",
+              value: `${todayStats?.dedicacion || 0}%`,
+              sub: "Qué tanto tiempo cumpliste respecto al que planeaste invertir hoy. Mide tu nivel real de compromiso con tus hábitos.",
             },
             {
-              label: "Disciplina",
+              label: "Disciplina de hoy",
               subLabel: "Progreso diario",
               value: `${todayStats?.disciplina || 0}%`,
-              sub: "Progreso diario",
+              sub: "Porcentaje de hábitos que completaste hoy. Indica qué tan bien ejecutaste lo que te propusiste.",
             },
           ].map((kpi, i) => (
             <article
@@ -91,8 +75,11 @@ export default function DailyStats({
                 />
               </div>
 
-              <p className="text-[12px] font-bold mt-2  tracking-[0.1em] text-black/40">
+              <p className="text-[14px] font-bold mt-2  tracking-[0.1em] text-black/60">
                 {kpi.subLabel}
+              </p>
+              <p className="text-[12px] font-bold mt-2   text-black/40">
+                {kpi.sub}
               </p>
             </article>
           ))}

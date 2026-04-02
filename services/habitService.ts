@@ -1,23 +1,42 @@
+import { habitRepository } from "@/lib/supabase/repository/habitRepository";
+import { Habit } from "@/lib/types";
 
-import { getHabitWithLogs } from "@/lib/supabase/repository/habitRepository";
+export async function getAllHabitsByUser(userId: string): Promise<Habit[]> {
+  return await habitRepository.getAllHabitsUser(userId);
+}
 
-export const getHabitPerformance = async (userId: string) => {
-  const habits = await getHabitWithLogs(userId);
+export async function saveHabit(habit: Habit, userId: string) {
+  try {
+    // agregar logica del limite de ranking de habitos.
 
-  
-  return habits.map(habit => {
-    const accomplished = habit.habit_logs.length;
-    const goal = habit.weekly_frequency * 4; 
-    
-  
-    const performancePercent = goal > 0 ? (accomplished / goal) * 100 : 0;
+    const userHabits: Habit[] = await getAllHabitsByUser(userId);
 
-    return {
-      name: habit.name,
-      accomplished,
-      goal,
-      status: performancePercent >= 100 ? 'LEGEND' : 'IN_PROGRESS',
-      percent: Math.round(performancePercent)
-    };
-  });
-};
+    if (userHabits.length >= 5) {
+      return { success: false, error: "Limite de hábitos alcanzado" };
+    }
+
+    // validar campos
+
+    const newHabit = { ...habit, user_id: userId };
+
+    return await habitRepository.save(newHabit);
+  } catch (error: any) {
+    console.error(error);
+
+    return { success: false, error: error.message };
+  }
+}
+
+export async function deleteHabit(habitId: string) {
+  try {
+    const isExistHabit = await habitRepository.findById(habitId);
+
+    if (!isExistHabit) return { success: false, error: "Hábito no encontrado" };
+
+    const res = await habitRepository.delete(habitId);
+
+    return res;
+  } catch (error: any) {
+    return { success: false, error: error.message };
+  }
+}

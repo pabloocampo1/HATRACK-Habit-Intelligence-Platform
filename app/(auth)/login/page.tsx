@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -28,9 +28,12 @@ export default function LoginPage() {
     }
 
     // Guardar token en localStorage
-    if (data.session?.access_token) {
-      localStorage.setItem("supabase_token", data.session.access_token);
-    }
+    await fetch("/api/auth/setCookie", {
+      method: "POST",
+      body: JSON.stringify({
+        token: data.session.access_token,
+      }),
+    });
 
     setMessage("¡Bienvenido! Redirigiendo...");
     setTimeout(() => router.push("/dashboard"), 1500);
@@ -41,7 +44,9 @@ export default function LoginPage() {
       <main className="mx-auto flex w-full max-w-md flex-col gap-8 px-6 py-16">
         <section className="rounded-2xl border-2 border-black p-8">
           <h1 className="text-3xl font-black">Iniciar sesión</h1>
-          <p className="mt-2 text-sm text-black/70">Accede para ver tus estadísticas y seguir tu progreso.</p>
+          <p className="mt-2 text-sm text-black/70">
+            Accede para ver tus estadísticas y seguir tu progreso.
+          </p>
 
           <form onSubmit={handleSubmit} className="mt-6 flex flex-col gap-4">
             <input
@@ -69,10 +74,16 @@ export default function LoginPage() {
           {message && <p className="mt-3 text-sm text-black/70">{message}</p>}
 
           <p className="mt-4 text-xs text-black/70">
-            ¿No tienes cuenta? <Link href="/signup" className="font-bold underline">Regístrate</Link>
+            ¿No tienes cuenta?{" "}
+            <Link href="/signup" className="font-bold underline">
+              Regístrate
+            </Link>
           </p>
 
-          <Link href="/" className="mt-4 inline-block text-sm font-bold text-black/80 hover:text-black">
+          <Link
+            href="/"
+            className="mt-4 inline-block text-sm font-bold text-black/80 hover:text-black"
+          >
             ← Volver a hatrack
           </Link>
         </section>

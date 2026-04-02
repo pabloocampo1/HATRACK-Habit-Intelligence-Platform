@@ -1,15 +1,17 @@
 "use client";
 
 import { fetchUserStats } from "@/app/actions/habitActions";
-import { HabitLog, Stats } from "@/lib/types";
+import { Habit, HabitLog, Stats } from "@/lib/types";
 import { useEffect } from "react";
 
 export default function WeekStats({
   weekStats,
   weekLogs,
+  habits,
 }: {
   weekStats: Stats | null;
   weekLogs: HabitLog[];
+  habits: Habit[];
 }) {
   const weekNumber = Math.ceil(
     (new Date().getDate() - new Date().getDay() + 1) / 7,
@@ -20,7 +22,6 @@ export default function WeekStats({
 
   return (
     <div className="my-12 font-sans">
-      {/* Contenedor Principal: Negro Mate con bordes sutiles */}
       <section className="rounded-[2.5rem] p-10 bg-[#0a0a0a] border border-white/5 shadow-2xl">
         <header className="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div>
@@ -36,7 +37,6 @@ export default function WeekStats({
             </p>
           </div>
 
-          {/* Calificación Global */}
           <div className="bg-emerald-900/30 border border-emerald-500/30 px-6 py-3 rounded-2xl text-right">
             <p className="text-[10px] font-bold text-emerald-400 uppercase tracking-widest mb-1">
               Puntaje Global Semanal.
@@ -47,28 +47,34 @@ export default function WeekStats({
           </div>
         </header>
 
-        {/* Grid de KPIs Principales */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
           {[
             {
               label: "Completadas esta semana",
-              value: `${weekLogs.filter((l) => l.completed).length} / 7`,
-              sub: "Registros de habitos totales a la semana",
+              value: `${weekLogs.filter((l) => l.completed).length} / ${habits.reduce((s, h) => s + (h.frequency || 0), 0)}`,
+              sub: "Hábitos completados vs esperados",
+              reason: `${Math.round((weekLogs.filter((l) => l.completed).length / 7) * 100)}% de cumplimiento basado en la frecuencia semanal definida`,
             },
             {
               label: "Tiempo Invertido esta semana",
               value: `${weekLogs.reduce((s, l) => s + (l.minutes_completed || 0), 0)}m`,
-              sub: "Trabajo enfocado",
+              sub: "Trabajo enfocado total",
+              reason: `Basado en la suma de minutos registrados en cada hábito durante la semana`,
             },
             {
               label: "Calidad Media",
-              value: `${(weekLogs.reduce((s, l) => s + l.quality_score, 0) / (weekLogs.length || 1)).toFixed(1)}`,
+              value: `${(
+                weekLogs.reduce((s, l) => s + (l.quality_score || 0), 0) /
+                (weekLogs.length || 1)
+              ).toFixed(1)}`,
               sub: "Nivel / 5.0",
+              reason: `Promedio de calidad percibida en cada ejecución del hábito`,
             },
             {
               label: "Meta Lograda",
               value: `${weekStats.disciplina}%`,
               sub: "Objetivo semanal",
+              reason: `Basado en hábitos completados vs los esperados según frecuencia`,
             },
           ].map((kpi, i) => (
             <article
@@ -84,6 +90,9 @@ export default function WeekStats({
               <p className="mt-2 text-[11px] font-medium text-white/20 group-hover:text-emerald-300 transition-colors">
                 {kpi.sub}
               </p>
+              <p className="mt-3 text-[10px] text-white/30 leading-relaxed">
+                {kpi.reason}
+              </p>
             </article>
           ))}
         </div>
@@ -91,11 +100,45 @@ export default function WeekStats({
         <div className="bg-white/[0.02] rounded-[2rem] p-8">
           <div className="grid grid-cols-1 md:grid-cols-5 gap-10">
             {[
-              { label: "Disciplina", val: weekStats.disciplina },
-              { label: "Consistencia", val: weekStats.consistencia },
-              { label: "Enfoque", val: weekStats.enfoque },
-              { label: "Dedicación", val: weekStats.dedicacion },
-              { label: "Crecimiento", val: weekStats.crecimiento },
+              {
+                label: "Disciplina",
+                val: weekStats.disciplina,
+                desc: "Cumplimiento de hábitos planificados",
+                reason: `${weekLogs.filter((l) => l.completed).length} hábitos completados de ${habits.reduce(
+                  (t, h) => t + (h.frequency || 0),
+                  0,
+                )} esperados`,
+              },
+              {
+                label: "Consistencia",
+                val: weekStats.consistencia,
+                desc: "Frecuencia con la que apareces",
+                reason: `${new Set(weekLogs.map((l) => l.log_date)).size} días activos de 7`,
+              },
+              {
+                label: "Enfoque",
+                val: weekStats.enfoque,
+                desc: "Calidad y presencia en tus sesiones",
+                reason: `Promedio de ${(
+                  weekLogs.reduce((s, l) => s + (l.quality_score || 0), 0) /
+                  (weekLogs.length || 1)
+                ).toFixed(1)} / 5`,
+              },
+              {
+                label: "Dedicación",
+                val: weekStats.dedicacion,
+                desc: "Tiempo invertido vs esperado",
+                reason: `${weekLogs.reduce((s, l) => s + (l.minutes_completed || 0), 0)} min de ${habits.reduce(
+                  (t, h) => t + (h.frequency || 0) * (h.target_minutes || 0),
+                  0,
+                )} min esperados`,
+              },
+              {
+                label: "Crecimiento",
+                val: weekStats.crecimiento,
+                desc: "Evolución respecto al rendimiento",
+                reason: "Comparación con semanas anteriores (próximamente)",
+              },
             ].map((attr, i) => (
               <div key={i} className="space-y-4">
                 <div className="flex justify-between items-end border-b border-white/50 pb-2">
@@ -106,13 +149,19 @@ export default function WeekStats({
                     {attr.val}%
                   </span>
                 </div>
-                {/* Barra de progreso con brillo */}
+
                 <div className="relative h-2 bg-white/5 rounded-full overflow-hidden">
                   <div
                     className="h-full bg-emerald-500 shadow-[0_0_12px_rgba(16,185,129,0.4)] transition-all duration-1000 ease-out"
                     style={{ width: `${attr.val}%` }}
                   ></div>
                 </div>
+
+                <p className="text-[11px] text-white/30">{attr.desc}</p>
+
+                <p className="text-[10px] text-emerald-300/70 italic">
+                  {attr.reason}
+                </p>
               </div>
             ))}
           </div>

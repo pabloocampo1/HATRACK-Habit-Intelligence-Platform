@@ -1,13 +1,12 @@
 export interface Habit {
-  id: string;
+  id?: string;
   user_id: string;
   title: string;
   category: string;
   frequency: number;
   target_minutes: number;
-  created_at: string;
+  created_at?: string;
 }
-
 
 export interface User {
   id: string;
@@ -16,10 +15,10 @@ export interface User {
 }
 
 export interface HabitLog {
-  id: string;
-  habit_id: string;
-  user_id: string;
-  log_date: string;
+  id?: string;
+  habit_id?: string;
+  user_id?: string;
+  log_date?: string;
   minutes_completed: number;
   quality_score: number;
   completed: boolean;
@@ -35,6 +34,7 @@ export interface Stats {
   enfoque: number;
   crecimiento: number;
   dedicacion: number;
+  total_time: number;
   total_xp?: number;
   totalHabits?: number;
 }

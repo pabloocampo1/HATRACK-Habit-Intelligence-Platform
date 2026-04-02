@@ -1,29 +1,60 @@
-
-
-
-
 // lib/supabase/repository/habitRepository.t
 
+import { Habit } from "@/lib/types";
 import { supabase } from "../config/supabaseClient";
 
-export const getHabitWithLogs = async (userId: string) => {
-  // Traemos el hábito y sus logs del mes actual en una sola petición (Join)
-  const firstDay = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString();
-  
-  const { data, error } = await supabase
-    .from('habits')
-    .select(`
-      id, 
-      name, 
-      weekly_frequency, 
-      habit_logs (id, created_at)
-    `)
-    .eq('user_id', userId)
-    .gte('habit_logs.created_at', firstDay);
+export const habitRepository = {
+  async getAllHabitsUser(userId: string) {
+    const { data, error } = await supabase
+      .from("habits")
+      .select("*")
+      .eq("user_id", userId)
+      .order("created_at", { ascending: false });
 
-	console.log(data);
-	
+    if (error) throw error;
+    return data;
+  },
+  async save(habit: Omit<Habit, "id">) {
+    try {
+      const { data, error } = await supabase
+        .from("habits")
+        .insert([habit])
+        .select()
+        .single();
 
-  if (error) throw new Error(error.message);
-  return data;
+      if (error) throw new Error(error.message);
+      return { success: true, data: data as Habit };
+    } catch (err: any) {
+      console.error(err);
+
+      return { success: false, error: err.message || "Error de conexión" };
+    }
+  },
+
+  async delete(id: string) {
+    try {
+      const { error } = await supabase.from("habits").delete().eq("id", id);
+      if (error) throw error;
+      return { success: true, data: null };
+    } catch (error: any) {
+      console.error(error);
+      return { success: false, error: error.message };
+    }
+  },
+
+  async findById(id: string) {
+    try {
+      const { data, error } = await supabase
+        .from("habits")
+        .select("*")
+        .eq("id", id)
+        .single();
+
+      if (error) throw error;
+      return data as Habit;
+    } catch (error: any) {
+      console.error(error);
+      return null;
+    }
+  },
 };

@@ -24,25 +24,22 @@
   --color-brand-offwhite: var(--offwhite);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-    /* En modo oscuro podemos apagar un poco el verde si quieres */
-    --brand-forest: #065f46; 
-  }
+.react-calendar-heatmap .color-empty {
+  fill: rgba(255, 255, 255, 0.03);
 }
-
-body {
-  background: var(--background);
-  color: var(--foreground);
-  /* Te sugiero dejar que Geist Sans haga lo suyo o usar la de sistema */
-  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+.react-calendar-heatmap .color-scale-1 {
+  fill: #10b98120;
 }
-
-.react-calendar-heatmap .color-empty { fill: rgba(255, 255, 255, 0.03); }
-.react-calendar-heatmap .color-scale-1 { fill: #10b98120; } 
-.react-calendar-heatmap .color-scale-2 { fill: #10b98160; } 
-.react-calendar-heatmap .color-scale-3 { fill: #10b981; }   
-.react-calendar-heatmap .color-scale-4 { fill: #059669; }  
-.react-calendar-heatmap rect { rx: 2px; ry: 2px; } 
+.react-calendar-heatmap .color-scale-2 {
+  fill: #10b98160;
+}
+.react-calendar-heatmap .color-scale-3 {
+  fill: #10b981;
+}
+.react-calendar-heatmap .color-scale-4 {
+  fill: #059669;
+}
+.react-calendar-heatmap rect {
+  rx: 2px;
+  ry: 2px;
+}
