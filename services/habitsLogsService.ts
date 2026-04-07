@@ -24,6 +24,30 @@ export async function getLastWeekHabitsLogsByUser(
 
 export async function getAllHabitsLogsByUser(userId: string) {}
 
+export async function getAllHabitsLogsByMonth(
+  userId: string,
+): Promise<HabitLog[]> {
+  try {
+    const now = new Date();
+
+    const startDate = new Date(now.getFullYear(), now.getMonth(), 1)
+      .toISOString()
+      .split("T")[0];
+
+    const endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0)
+      .toISOString()
+      .split("T")[0];
+
+    return await habitLogRepository.findAllHabitLogsByMonth(
+      userId,
+      startDate,
+      endDate,
+    );
+  } catch (error) {
+    return [];
+  }
+}
+
 export async function save(
   habitId: string,
   HabitLog: HabitLog,

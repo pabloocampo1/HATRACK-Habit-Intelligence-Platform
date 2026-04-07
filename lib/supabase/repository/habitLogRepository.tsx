@@ -28,6 +28,32 @@ export const habitLogRepository = {
     return data;
   },
 
+  async findAllHabitLogsByMonth(
+    userId: string,
+    startDate: string,
+    endDate: string,
+  ): Promise<HabitLog[]> {
+    try {
+      const { data, error } = await supabase
+        .from("habit_logs")
+        .select(
+          `
+      *,
+      habits!inner(id, title, user_id)
+    `,
+        )
+        .eq("habits.user_id", userId)
+        .gte("log_date", startDate)
+        .lte("log_date", endDate)
+        .order("log_date", { ascending: true });
+
+      if (error) throw error;
+      return data;
+    } catch (error) {
+      return [];
+    }
+  },
+
   async save(habitId: string, habitLog: HabitLog, userId: string) {
     const habitLogPayload = {
       ...habitLog,

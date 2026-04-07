@@ -15,7 +15,7 @@ import DailyStats from "./DailyStats";
 import WeekStats from "./WeekStats";
 import MonthStats from "./MonthStats";
 import CalendarHead from "./CalendarHead";
-import { fetchTodayStats } from "../../actions/habitActions";
+import { fetchTodayStats } from "../../../actions/habitActions";
 
 interface User {
   id: string;

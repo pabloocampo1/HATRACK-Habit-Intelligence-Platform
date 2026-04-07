@@ -2,6 +2,7 @@
 
 import { HabitLog } from "@/lib/types";
 import {
+  getAllHabitsLogsByMonth,
   getLastWeekHabitsLogsByUser,
   getTodayHabitsLogsByUser,
   save,
@@ -18,6 +19,15 @@ export async function fecthTodayHabitLogs(userId: string) {
 export async function getHabitLogsLastWeek(userId: string) {
   try {
     const data: HabitLog[] = await getLastWeekHabitsLogsByUser(userId);
+    return data;
+  } catch (error) {
+    throw [];
+  }
+}
+
+export async function fetchHabitLogsThisMonth(userId: string) {
+  try {
+    const data: HabitLog[] = await getAllHabitsLogsByMonth(userId);
     return data;
   } catch (error) {
     throw [];

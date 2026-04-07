@@ -137,10 +137,10 @@ export default function HabitRegister({
   return (
     <div
       className=" 
-     p-6 md:p-10 font-sans selection:bg-emerald-100 selection:text-emerald-900"
+     p-6 md:p-10 font-sans bg-white selection:text-emerald-900 "
     >
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <section className="rounded-3xl border-2 border-black p-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 ">
+        <section className="rounded-3xl  p-8">
           <h2 className="text-xl font-black mb-4">📋 Mis hábitos</h2>
           <button
             disabled={loading}
@@ -279,8 +279,7 @@ export default function HabitRegister({
           </div>
         </section>
 
-        {/* RIGHT: Registrar actividad */}
-        <section className="lg:col-span-2 rounded-3xl border-2 border-black p-8">
+        <section className="lg:col-span-2 rounded-3xl p-8">
           <h2 className="text-xl font-black mb-4">🎯 Registrar actividad</h2>
 
           {showActivityForm && selectedHabit ? (
@@ -485,7 +484,7 @@ export default function HabitRegister({
       )}
 
       <DeleteHabitModal
-        isOpen={!!habitToDelete} // Si hay un hábito seteado, se abre
+        isOpen={!!habitToDelete}
         onClose={() => setHabitToDelete(null)}
         onConfirm={handleDeleteHabit}
         habitTitle={habitToDelete?.title || ""}

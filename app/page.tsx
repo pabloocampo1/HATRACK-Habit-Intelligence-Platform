@@ -1,4 +1,6 @@
+import Image from "next/image";
 import Link from "next/link";
+import logo from "../public/images/hatrack_logo.png";
 
 // Componente reutilizable para las secciones de características
 const FeatureCard = ({
@@ -30,6 +32,13 @@ export default function HomePage() {
               PERFORMANCE
               <span className="font-light text-black/60">TRACKER</span>
             </span>
+
+            <Image
+              src={logo}
+              alt="Descripción de la imagen"
+              width={100}
+              height={100}
+            />
           </div>
           <div className="flex items-center gap-3">
             <Link
@@ -54,7 +63,14 @@ export default function HomePage() {
           <span className="inline-block rounded-full border border-black/20 px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-black/70 mb-6">
             Mide tu Crecimiento Personal como un Pro
           </span>
-          <h2 className="text-2xl  mb-4">HATRACK WEB APP</h2>
+          <div className="flex justify-center items-center">
+            <Image
+              src={logo}
+              alt="Descripción de la imagen"
+              width={300}
+              height={300}
+            />
+          </div>
           <h1 className="text-5xl md:text-7xl font-black leading-none uppercase tracking-tighter mb-6">
             TRANSFORMA TUS ACCIONES EN{" "}
             <span className="bg-black text-white px-2">MÉTRICAS</span>{" "}

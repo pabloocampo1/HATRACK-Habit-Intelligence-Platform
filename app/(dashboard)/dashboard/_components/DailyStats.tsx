@@ -11,7 +11,7 @@ export default function DailyStats({
 }) {
   return (
     <div className="my-8">
-      <section className="rounded-[2rem] p-10 bg-[#fafafa] border border-black/30">
+      <section className="rounded-[2rem] p-10 bg-[#fafafa] ">
         <header className="mb-10">
           <h2 className="text-sm font-bold uppercase tracking-[0.3em] text-black/40 mb-2">
             Métricas de Rendimiento

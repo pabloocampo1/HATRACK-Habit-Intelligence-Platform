@@ -1,7 +1,10 @@
 import { Habit, HabitLog, Stats } from "@/lib/types";
-import { fecthTodayHabitLogs, getHabitLogsLastWeek } from "./habitLogsActions";
+import {
+  fecthTodayHabitLogs,
+  fetchHabitLogsThisMonth,
+  getHabitLogsLastWeek,
+} from "./habitLogsActions";
 import { fetchHabits } from "./habitActions";
-import { get } from "http";
 
 export async function fetchTodayStats(userId: string): Promise<Stats> {
   const totalHabits: Habit[] = await fetchHabits(userId);
@@ -12,14 +15,6 @@ export async function fetchTodayStats(userId: string): Promise<Stats> {
     totalHabits.length > 0
       ? Math.round((habitsCompleted / totalHabits.length) * 100)
       : 0;
-
-  const consistencia = 0;
-
-  const crecimiento = 0;
-  const total_time = todayHabitsLogs.reduce(
-    (total, log) => total + log.minutes_completed,
-    0,
-  );
 
   const todayAvgQuality =
     todayHabitsLogs.length > 0
@@ -111,7 +106,13 @@ export async function fetchWeekStats(userId: string): Promise<Stats> {
 
     weekHabitLogs.forEach((log) => {
       const date = log.log_date;
-      if (!logsByDay[date]) logsByDay[date] = [];
+
+      // Si no hay fecha, saltamos este log (Protección total)
+      if (!date) return;
+
+      if (!logsByDay[date]) {
+        logsByDay[date] = [];
+      }
       logsByDay[date].push(log);
     });
 
@@ -148,7 +149,8 @@ export async function fetchWeekStats(userId: string): Promise<Stats> {
         : 0;
 
     const sortedLogs = [...weekHabitLogs].sort(
-      (a, b) => new Date(a.log_date).getTime() - new Date(b.log_date).getTime(),
+      (a, b) =>
+        new Date(a.log_date!).getTime() - new Date(b.log_date!).getTime(),
     );
 
     const mid = Math.floor(sortedLogs.length / 2);
@@ -180,6 +182,139 @@ export async function fetchWeekStats(userId: string): Promise<Stats> {
       dedicacion,
       crecimiento,
       total_time,
+    };
+  } catch (error) {
+    return {
+      disciplina: 0,
+      consistencia: 0,
+      enfoque: 0,
+      dedicacion: 0,
+      crecimiento: 0,
+      total_time: 0,
+    };
+  }
+}
+
+export async function fetchMonthStats(userId: string): Promise<Stats> {
+  try {
+    const monthHabitLogs: HabitLog[] = await fetchHabitLogsThisMonth(userId);
+    const totalHabits: Habit[] = await fetchHabits(userId);
+
+    const habitsCompleted = monthHabitLogs.filter(
+      (log) => log.completed,
+    ).length;
+
+    // 🔵 DISCIPLINA
+    const totalExpected = totalHabits.reduce(
+      (total, habit) => total + (habit.frequency || 0),
+      0,
+    );
+
+    const disciplina =
+      totalExpected > 0
+        ? Math.min(Math.round((habitsCompleted / totalExpected) * 100), 100)
+        : 0;
+
+    // 🟢 DEDICACIÓN
+    const commitmentTime = monthHabitLogs.reduce(
+      (total, log) => total + (log.minutes_completed || 0),
+      0,
+    );
+
+    const commitmentTimeExpect = totalHabits.reduce(
+      (total, habit) =>
+        total + (habit.frequency || 0) * (habit.target_minutes || 0),
+      0,
+    );
+
+    const dedicacion =
+      commitmentTimeExpect > 0
+        ? Math.min(
+            Math.round((commitmentTime / commitmentTimeExpect) * 100),
+            100,
+          )
+        : 0;
+
+    // 🟡 CONSISTENCIA (estabilidad por día)
+    const logsByDay: Record<string, HabitLog[]> = {};
+
+    monthHabitLogs.forEach((log) => {
+      const date = log.log_date;
+
+      // Si no hay fecha, saltamos este log (Protección total)
+      if (!date) return;
+
+      if (!logsByDay[date]) {
+        logsByDay[date] = [];
+      }
+      logsByDay[date].push(log);
+    });
+
+    const dailyRatios = Object.values(logsByDay).map((logs) => {
+      const completed = logs.filter((l) => l.completed).length;
+      return totalHabits.length > 0 ? completed / totalHabits.length : 0;
+    });
+
+    const consistencia =
+      dailyRatios.length > 0
+        ? Math.min(
+            Math.round(
+              (dailyRatios.reduce((a, b) => a + b, 0) / dailyRatios.length) *
+                100,
+            ),
+            100,
+          )
+        : 0;
+
+    const qualityLogs = monthHabitLogs.filter(
+      (log) => log.completed && log.quality_score != null,
+    );
+
+    const enfoque =
+      qualityLogs.length > 0
+        ? Math.min(
+            Math.round(
+              qualityLogs.reduce((total, log) => total + log.quality_score, 0) /
+                qualityLogs.length,
+            ),
+            100,
+          )
+        : 0;
+
+    const sortedLogs = [...monthHabitLogs].sort(
+      (a, b) =>
+        new Date(a.log_date!).getTime() - new Date(b.log_date!).getTime(),
+    );
+
+    const mid = Math.floor(sortedLogs.length / 2);
+
+    const firstHalf = sortedLogs.slice(0, mid);
+    const secondHalf = sortedLogs.slice(mid);
+
+    const avgFirst =
+      firstHalf.length > 0
+        ? firstHalf.reduce((t, l) => t + (l.quality_score || 0), 0) /
+          firstHalf.length
+        : 0;
+
+    const avgSecond =
+      secondHalf.length > 0
+        ? secondHalf.reduce((t, l) => t + (l.quality_score || 0), 0) /
+          secondHalf.length
+        : 0;
+
+    const crecimiento = Math.round(avgSecond - avgFirst);
+
+    // ⚪ TOTAL TIME
+    const total_time = commitmentTime;
+
+    return {
+      disciplina: Math.min(disciplina, 100),
+      consistencia: Math.min(consistencia, 100),
+      enfoque: Math.min(enfoque, 100),
+      dedicacion: Math.min(dedicacion, 100),
+      crecimiento: Math.min(crecimiento, 100),
+      total_time: total_time,
     };
   } catch (error) {
     return {
