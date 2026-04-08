@@ -1,3 +1,8 @@
+// THIS PAGE ARE JUST EXAMPLES AND THE FIRST VERSION OF THE DASHBOARD. IGNORE.
+
+/*
+
+
 "use client";
 
 import { useEffect, useState } from "react";
@@ -15,7 +20,8 @@ import DailyStats from "./DailyStats";
 import WeekStats from "./WeekStats";
 import MonthStats from "./MonthStats";
 import CalendarHead from "./CalendarHead";
-import { fetchTodayStats } from "../../../actions/habitActions";
+
+// THIS PAGE ARE JUST EXAMPLES AND THE FIRST VERSION OF THE DASHBOARD. IGNORE.
 
 interface User {
   id: string;
@@ -331,7 +337,7 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-white text-black font-sans">
-      {/* NAVBAR */}
+     
       <nav className="border-b-2 border-black bg-black/5">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           <h1 className="text-2xl font-black">hatrack</h1>
@@ -353,12 +359,12 @@ export default function DashboardPage() {
         </div>
       </nav>
 
-      {/* PLAYER CARD */}
+     
 
       <main className="max-w-7xl mx-auto px-6 py-8 space-y-8">
-        {/* HABITS TABLE & ACTIONS */}
+       
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* LEFT: Hábitos creados */}
+         
           <section className="rounded-3xl border-2 border-black p-8">
             <h2 className="text-xl font-black mb-4">📋 Mis hábitos</h2>
             <button
@@ -475,7 +481,7 @@ export default function DashboardPage() {
             </div>
           </section>
 
-          {/* RIGHT: Registrar actividad */}
+          
           <section className="lg:col-span-2 rounded-3xl border-2 border-black p-8">
             <h2 className="text-xl font-black mb-4">🎯 Registrar actividad</h2>
 
@@ -567,7 +573,7 @@ export default function DashboardPage() {
               </div>
             )}
 
-            {/* TODAY'S SUMMARY TABLE */}
+            
             {todayLogs.length > 0 && (
               <div className="mt-6 border-t-2 border-black pt-6">
                 <h3 className="text-sm font-black mb-4">Resumen de hoy</h3>
@@ -612,18 +618,18 @@ export default function DashboardPage() {
             )}
           </section>
         </div>
-        {/* DAILY STATS */}
+       
         <DailyStats
           todayStats={todayStats}
           habits={habits}
           todayLogs={todayLogs}
         />
-        {/* WEEK STATS */}
+       
         <WeekStats weekStats={weekStats} weekLogs={weekLogs} />
-        {/* MONTHLY STATS */}
+       
 
         <MonthStats stats={stats} />
-        {/* HABIT COMPLETIONS */}
+       
         <section className="rounded-3xl border-2 border-black p-8 bg-black/5">
           <h2 className="text-2xl font-black mb-6">
             📈 Completaciones de Hábitos
@@ -666,7 +672,7 @@ export default function DashboardPage() {
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {/* MONTHLY COMPLETIONS */}
+           
             <div>
               <h3 className="text-lg font-black mb-4">
                 Completaciones del Mes (
@@ -700,7 +706,7 @@ export default function DashboardPage() {
               </div>
             </div>
 
-            {/* YEARLY COMPLETIONS */}
+          
             <div>
               <h3 className="text-lg font-black mb-4">
                 Completaciones del Año ({selectedYear})
@@ -730,7 +736,7 @@ export default function DashboardPage() {
             </div>
           </div>
         </section>
-        {/* STATUS MESSAGE */}
+       
         {message && (
           <div className="fixed bottom-6 right-6 bg-black text-white px-6 py-3 rounded-full text-sm font-bold">
             {message}
@@ -743,3 +749,6 @@ export default function DashboardPage() {
     </div>
   );
 }
+
+
+*/

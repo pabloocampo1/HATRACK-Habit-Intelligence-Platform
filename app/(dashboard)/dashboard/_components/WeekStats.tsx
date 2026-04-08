@@ -1,8 +1,6 @@
 "use client";
 
-import { fetchUserStats } from "@/app/actions/habitActions";
 import { Habit, HabitLog, Stats } from "@/lib/types";
-import { useEffect } from "react";
 
 export default function WeekStats({
   weekStats,

@@ -15,6 +15,15 @@ const generateHeatmapData = () => {
 };
 
 const heatmapValues = generateHeatmapData();
+
+const getTooltipData = (value: any): any => {
+  if (!value || !value.date) {
+    return { "data-tip": "Sin actividad" };
+  }
+  return {
+    "data-tip": `${value.date}: ${value.count} hábitos`,
+  };
+};
 export default function CalendarHead() {
   return (
     <div className="">
@@ -44,11 +53,7 @@ export default function CalendarHead() {
               if (value.count === 1) return "fill-emerald-200";
               return "fill-emerald-500";
             }}
-            tooltipDataAttrs={(value: any) => {
-              return {
-                "data-tip": `${value.date}: ${value.count} hábitos`,
-              };
-            }}
+            tooltipDataAttrs={getTooltipData as any}
           />
         </div>
         <div className="text-slate-400 text-[9px] heatmap-white font-medium pl-4">
@@ -65,11 +70,7 @@ export default function CalendarHead() {
               if (value.count === 1) return "fill-emerald-200";
               return "fill-emerald-500";
             }}
-            tooltipDataAttrs={(value: any) => {
-              return {
-                "data-tip": `${value.date}: ${value.count} hábitos`,
-              };
-            }}
+            tooltipDataAttrs={getTooltipData as any}
           />
         </div>
         <div className="text-slate-400 text-[9px] heatmap-white font-medium pl-4">
@@ -86,11 +87,7 @@ export default function CalendarHead() {
               if (value.count === 1) return "fill-emerald-200";
               return "fill-emerald-500";
             }}
-            tooltipDataAttrs={(value: any) => {
-              return {
-                "data-tip": `${value.date}: ${value.count} hábitos`,
-              };
-            }}
+            tooltipDataAttrs={getTooltipData as any}
           />
         </div>
 
