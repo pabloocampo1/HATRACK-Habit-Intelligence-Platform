@@ -20,7 +20,6 @@ import WeekStats from "./_components/WeekStats";
 import HabitRegister from "./_components/HabitRegister";
 import { redirect } from "next/navigation";
 import MonthStats from "./_components/MonthStats";
-import { logout } from "@/app/actions/AuthAction";
 
 export default async function Dashboard() {
   const cookieStore = await cookies();
@@ -29,12 +28,10 @@ export default async function Dashboard() {
   const user = await getUserFromToken(token || "");
 
   if (user == null) {
-    await logout();
     redirect("/noAuthenticated");
   }
 
   if (!token) {
-    await logout();
     redirect("/noAuthenticated");
   }
 
