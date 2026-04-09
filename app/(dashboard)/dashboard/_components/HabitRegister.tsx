@@ -172,7 +172,7 @@ export default function HabitRegister({
                 <option value="programming">💻 Programming & Tech</option>
                 <option value="reading">📚 Reading</option>
                 <option value="learning">🧠 Learning & Studies</option>
-                <option value="languages">🗣️ Languages (English)</option>
+                <option value="languages">🗣️ Languages study</option>
                 <option value="health">❤️ Health & Diet</option>
                 <option value="productivity">🚀 Productivity</option>
                 <option value="meditation">🧘 Mental Health & Focus</option>
