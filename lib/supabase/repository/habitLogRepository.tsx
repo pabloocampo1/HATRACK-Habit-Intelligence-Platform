@@ -7,9 +7,9 @@ export const habitLogRepository = {
   async findTodayLogs(userId: string, todayStart: string) {
     const { data, error } = await supabase
       .from("habit_logs")
-      .select("*, habits!inner(*)") // Join con la tabla de hábitos
+      .select("*, habits!inner(*)")
       .eq("habits.user_id", userId)
-      .gte("created_at", todayStart)
+      .eq("log_date", todayStart)
       .order("created_at", { ascending: false });
 
     if (error) throw error;
@@ -21,8 +21,8 @@ export const habitLogRepository = {
       .from("habit_logs")
       .select("*, habits!inner(*)")
       .eq("habits.user_id", userId)
-      .gte("created_at", weekStart)
-      .order("created_at", { ascending: true });
+      .gte("log_date", weekStart)
+      .order("log_date", { ascending: true });
 
     if (error) throw error;
     return data;

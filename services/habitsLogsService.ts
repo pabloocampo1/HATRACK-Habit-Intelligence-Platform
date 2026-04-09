@@ -5,8 +5,16 @@ export async function getTodayHabitsLogsByUser(
   userId: string,
 ): Promise<HabitLog[]> {
   const now = new Date();
-  const todayStart = new Date(now.setHours(0, 0, 0, 0)).toISOString();
-  return await habitLogRepository.findTodayLogs(userId, todayStart);
+
+  // Obtenemos año, mes y día por separado en local (Colombia)
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, "0"); // Los meses van de 0 a 11
+  const day = String(now.getDate()).padStart(2, "0");
+
+  // Formato: "2026-04-09"
+  const todayDateString = `${year}-${month}-${day}`;
+
+  return await habitLogRepository.findTodayLogs(userId, todayDateString);
 }
 
 export async function getLastWeekHabitsLogsByUser(
@@ -14,12 +22,17 @@ export async function getLastWeekHabitsLogsByUser(
 ): Promise<HabitLog[]> {
   const now = new Date();
 
-  const firstDayOfWeek = new Date(
-    now.setDate(now.getDate() - now.getDay() + (now.getDay() === 0 ? -6 : 1)),
-  );
-  firstDayOfWeek.setHours(0, 0, 0, 0);
-  const weekStart = firstDayOfWeek.toISOString();
-  return await habitLogRepository.findWeeklyLogs(userId, weekStart);
+  const dayOfWeek = now.getDay(); // 0 (domingo) a 6 (sábado)
+  const diff = now.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1);
+  const monday = new Date(now.setDate(diff));
+
+  const year = monday.getFullYear();
+  const month = String(monday.getMonth() + 1).padStart(2, "0");
+  const day = String(monday.getDate()).padStart(2, "0");
+
+  const weekStartString = `${year}-${month}-${day}`;
+
+  return await habitLogRepository.findWeeklyLogs(userId, weekStartString);
 }
 
 export async function getAllHabitsLogsByUser(userId: string) {}
@@ -29,14 +42,13 @@ export async function getAllHabitsLogsByMonth(
 ): Promise<HabitLog[]> {
   try {
     const now = new Date();
+    const year = now.getFullYear();
+    const month = now.getMonth();
 
-    const startDate = new Date(now.getFullYear(), now.getMonth(), 1)
-      .toISOString()
-      .split("T")[0];
+    const startDate = `${year}-${String(month + 1).padStart(2, "0")}-01`;
 
-    const endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0)
-      .toISOString()
-      .split("T")[0];
+    const lastDay = new Date(year, month + 1, 0).getDate();
+    const endDate = `${year}-${String(month + 1).padStart(2, "0")}-${String(lastDay).padStart(2, "0")}`;
 
     return await habitLogRepository.findAllHabitLogsByMonth(
       userId,
