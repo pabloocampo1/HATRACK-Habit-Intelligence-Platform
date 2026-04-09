@@ -168,11 +168,16 @@ export default function HabitRegister({
                 onChange={(e) => setHabitCategory(e.target.value)}
                 className="w-full text-sm rounded border border-black/20 px-2 py-1 outline-none focus:border-black"
               >
-                <option value="fitness">🏋️ Fitness</option>
-                <option value="programming">💻 Programming</option>
+                <option value="fitness">🏋️ Fitness & Sport</option>
+                <option value="programming">💻 Programming & Tech</option>
                 <option value="reading">📚 Reading</option>
-                <option value="learning">🧠 Learning</option>
-                <option value="health">❤️ Health</option>
+                <option value="learning">🧠 Learning & Studies</option>
+                <option value="languages">🗣️ Languages (English)</option>
+                <option value="health">❤️ Health & Diet</option>
+                <option value="productivity">🚀 Productivity</option>
+                <option value="meditation">🧘 Mental Health & Focus</option>
+                <option value="finance">💰 Finance</option>
+                <option value="social">🤝 Social & Family</option>
                 <option value="other">📌 Other</option>
               </select>
               <label htmlFor="habitFrequency">Veces por semana</label>

@@ -11,7 +11,8 @@ export async function saveHabit(habit: Habit, userId: string) {
 
     const userHabits: Habit[] = await getAllHabitsByUser(userId);
 
-    if (userHabits.length >= 5) {
+    // inicialmente la version 1 de este proyecto permite 10 habitos // adapater according the role of the user - future issue
+    if (userHabits.length >= 10) {
       return { success: false, error: "Limite de hábitos alcanzado" };
     }
 
