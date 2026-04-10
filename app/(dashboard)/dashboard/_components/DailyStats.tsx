@@ -1,3 +1,4 @@
+import CurrentDate from "@/components/CurrentDate";
 import { Habit, HabitLog, Stats } from "@/lib/types";
 
 export default function DailyStats({
@@ -17,11 +18,7 @@ export default function DailyStats({
             Métricas de Rendimiento
           </h2>
           <p className="text-3xl font-black tracking-tighter text-black capitalize">
-            {new Date().toLocaleDateString("es-ES", {
-              weekday: "long",
-              day: "numeric",
-              month: "long",
-            })}
+            <CurrentDate />
           </p>
         </header>
 
