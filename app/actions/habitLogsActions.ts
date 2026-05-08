@@ -40,8 +40,18 @@ export async function saveHabitLog(
   userId: string,
 ) {
   try {
-    return await save(habitId, habitLog, userId);
-  } catch (error) {
-    return { success: false, error: "Error al registrar actividad" };
+    const result = await save(habitId, habitLog, userId);
+    if (!result.success) {
+      return {
+        success: false as const,
+        error:
+          typeof result.error === "string"
+            ? result.error
+            : "No se pudo registrar la sesión.",
+      };
+    }
+    return result;
+  } catch {
+    return { success: false as const, error: "Error al registrar actividad" };
   }
 }
