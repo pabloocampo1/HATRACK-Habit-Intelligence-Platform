@@ -2,10 +2,12 @@ export interface Habit {
   id?: string;
   user_id: string;
   title: string;
+  description?: string | null;
   category: string;
   frequency: number;
   target_minutes: number;
   created_at?: string;
+  updated_at?: string;
 }
 
 export interface User {
