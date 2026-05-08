@@ -4,7 +4,12 @@ export default function HabitsPage() {
       <div className="mx-auto">
         <h1 className="text-3xl font-bold text-center">
           Hábitos - en construcción
+
+
+
+          
         </h1>
+        <h2>Se va a empezar este nuevo modulo </h2>
       </div>
     </div>
   );
