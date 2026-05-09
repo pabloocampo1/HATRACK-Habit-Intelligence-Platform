@@ -20,8 +20,9 @@ export async function save(habit: CreateHabitPayload, userId: string) {
   try {
     const newHabit: Habit = {
       user_id: userId,
-      title: habit.title,
-      category: habit.category,
+      title: habit.title.trim(),
+      description: habit.description?.trim() || null,
+      category: habit.category || "other",
       frequency: habit.frequency,
       target_minutes: habit.target_minutes,
     };
@@ -29,12 +30,18 @@ export async function save(habit: CreateHabitPayload, userId: string) {
     const result = await saveHabit(newHabit, userId);
 
     if (!result.success) {
-      throw new Error(result.error);
+      return {
+        success: false as const,
+        error:
+          typeof result.error === "string"
+            ? result.error
+            : "No se pudo crear el hábito.",
+      };
     }
 
     return result;
-  } catch (e) {
-    return { success: false, error: "Error creando hábito" };
+  } catch {
+    return { success: false as const, error: "Error creando hábito" };
   }
 }
 

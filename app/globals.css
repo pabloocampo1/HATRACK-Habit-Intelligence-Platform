@@ -44,6 +44,45 @@
   fill: #059669;
 }
 .react-calendar-heatmap rect {
-  rx: 2px;
-  ry: 2px;
+  rx: 1.5px;
+  ry: 1.5px;
+}
+
+/* Etiquetas y hover del heatmap sobre fondo oscuro (CalendarHead, HabitHeatmap) */
+.habit-heatmap-panel .react-calendar-heatmap text,
+.calendar-head-dark .react-calendar-heatmap text {
+  fill: rgba(255, 255, 255, 0.42);
+  font-size: 7px;
+}
+
+.habit-heatmap-panel .react-calendar-heatmap .react-calendar-heatmap-small-text,
+.calendar-head-dark .react-calendar-heatmap .react-calendar-heatmap-small-text {
+  font-size: 6px;
+  fill: rgba(255, 255, 255, 0.28);
+}
+
+.habit-heatmap-panel .react-calendar-heatmap rect:hover,
+.calendar-head-dark .react-calendar-heatmap rect:hover {
+  stroke: rgba(16, 185, 129, 0.55);
+  stroke-width: 1px;
+}
+
+/*
+ * Heatmap estilo GitHub: capa el ancho del SVG para que las celdas no se inflen
+ * en cards anchas (el gráfico queda compacto y centrado).
+ */
+.heatmap-github-wrap {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.heatmap-github-wrap svg.react-calendar-heatmap {
+  display: block;
+  width: 100%;
+  max-width: min(100%, 400px);
+  height: auto;
+  margin-inline: auto;
 }
