@@ -24,7 +24,7 @@ export default function CuentasHeader({
             <h1 className="text-3xl font-semibold tracking-tight text-brand-slate md:text-4xl">
               Cuentas y liquidez
             </h1>
-            <p className="max-w-xl text-base leading-relaxed text-neutral-600">
+            <p className="max-w-xl text-base leading-relaxed text-text-secondary">
               Panel principal de cuentas: totales por moneda, validación de
               saldos y acceso rápido a transferencias y altas.
             </p>

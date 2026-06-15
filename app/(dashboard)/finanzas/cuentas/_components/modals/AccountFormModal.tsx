@@ -1,12 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import type {
-  AccountCurrency,
-  AccountRow,
-  AccountStatus,
-  AccountType,
-} from "../../accounts.constants";
+import type { Account, AccountCurrency, AccountType } from "@/lib/types";
 import { ACCOUNT_TYPE_LABELS } from "../../accounts.constants";
 import { btnGhost, btnPrimary, inputSurface } from "../../cuentas-ui";
 import { parseMoneyInput } from "../../utils/formatMoney";
@@ -16,15 +11,17 @@ import ModalShell from "./ModalShell";
 export default function AccountFormModal({
   mode,
   initial,
+  userId,
   onClose,
   onSave,
 }: {
   mode: "create" | "edit";
-  initial: AccountRow | null;
+  initial: Account | null;
+  userId: string;
   onClose: () => void;
-  onSave: (row: AccountRow) => void;
+  onSave: (row: Account) => void;
 }) {
-  const [name, setName] = useState(initial?.name ?? "");
+  const [accountName, setAccountName] = useState(initial?.account_name ?? "");
   const [institution, setInstitution] = useState(initial?.institution ?? "");
   const [type, setType] = useState<AccountType>(
     initial?.type ?? "DIGITAL_WALLET",
@@ -32,50 +29,25 @@ export default function AccountFormModal({
   const [currency, setCurrency] = useState<AccountCurrency>(
     initial?.currency ?? "COP",
   );
-  const [balanceStored, setBalanceStored] = useState(
-    initial ? String(initial.balanceStored) : "0",
+  const [balance, setBalance] = useState(
+    initial ? String(initial.balance) : "0",
   );
-  const [balanceCalculated, setBalanceCalculated] = useState(
-    initial ? String(initial.balanceCalculated) : "0",
-  );
-  const [isDefault, setIsDefault] = useState(initial?.isDefault ?? false);
-  const [allowNegative, setAllowNegative] = useState(
-    initial?.allowNegative ?? false,
-  );
-  const [threshold, setThreshold] = useState(
-    initial?.lowBalanceThreshold != null
-      ? String(initial.lowBalanceThreshold)
-      : "",
-  );
-  const [savingsPocket, setSavingsPocket] = useState(
-    initial?.isSavingsPocket ?? false,
-  );
-  const [status, setStatus] = useState<AccountStatus>(
-    initial?.status ?? "ACTIVE",
-  );
+  const [isActive, setIsActive] = useState(initial?.is_active ?? true);
 
   const submit = () => {
-    const id = initial?.id ?? `acc-local-${Date.now().toString(36)}`;
-    const stored = parseMoneyInput(balanceStored, currency);
-    const calculated = parseMoneyInput(balanceCalculated, currency);
-    const thr =
-      threshold.trim() === ""
-        ? null
-        : parseMoneyInput(threshold, currency);
+    const now = new Date().toISOString();
     onSave({
-      id,
-      name: name.trim() || "Sin nombre",
-      institution: institution.trim() || null,
+      account_id:
+        initial?.account_id ?? `local-${Date.now().toString(36)}`,
+      account_name: accountName.trim() || "Sin nombre",
+      user_id: initial?.user_id ?? userId,
       type,
+      institution: institution.trim() || null,
+      balance: parseMoneyInput(balance, currency),
       currency,
-      balanceStored: stored,
-      balanceCalculated: calculated,
-      isDefault,
-      allowNegative,
-      lowBalanceThreshold: thr,
-      isSavingsPocket: savingsPocket,
-      status,
-      lastMovementAt: new Date().toISOString(),
+      is_active: mode === "create" ? true : isActive,
+      created_at: initial?.created_at ?? now,
+      updated_at: now,
     });
   };
 
@@ -84,25 +56,25 @@ export default function AccountFormModal({
       title={mode === "create" ? "Nueva cuenta" : "Editar cuenta"}
       subtitle={
         mode === "create"
-          ? "Registra una fuente de dinero. Los saldos finos los ajustará tu backend con cada transacción; aquí defines la forma inicial y las reglas."
-          : "Actualiza metadatos y reglas. Los cambios de saldo masivos deberían venir del módulo de transacciones, no a mano, salvo migraciones."
+          ? "Registra una fuente de dinero. El saldo inicial se guarda en balance; luego lo ajustan las transacciones."
+          : "Actualiza los datos de la cuenta. Cambios grandes de saldo deberían venir del módulo de transacciones."
       }
       onClose={onClose}
     >
       <div className="grid gap-7 sm:grid-cols-2">
         <FormField
-          label="Nombre visible"
-          hint="Ej. Nequi principal, Efectivo billetera."
+          label="Nombre de cuenta"
+          hint="Corresponde a account_name en la base de datos."
         >
           <input
-            value={name}
-            onChange={(e) => setName(e.target.value)}
+            value={accountName}
+            onChange={(e) => setAccountName(e.target.value)}
             className={inputSurface}
           />
         </FormField>
         <FormField
           label="Institución (opcional)"
-          hint="Banco, fintech o vacío si es efectivo suelto."
+          hint="Banco, fintech o vacío si es efectivo."
         >
           <input
             value={institution}
@@ -110,10 +82,7 @@ export default function AccountFormModal({
             className={inputSurface}
           />
         </FormField>
-        <FormField
-          label="Tipo de cuenta"
-          hint="Sirve para reportes y UX: banco, efectivo, wallet o ahorros."
-        >
+        <FormField label="Tipo" hint="Valores permitidos por la tabla accounts.">
           <select
             value={type}
             onChange={(e) => setType(e.target.value as AccountType)}
@@ -126,7 +95,7 @@ export default function AccountFormModal({
             ))}
           </select>
         </FormField>
-        <FormField label="Moneda" hint="No mezclar COP y USD en una misma cuenta.">
+        <FormField label="Moneda" hint="Default COP en la base de datos.">
           <select
             value={currency}
             onChange={(e) => setCurrency(e.target.value as AccountCurrency)}
@@ -137,102 +106,30 @@ export default function AccountFormModal({
           </select>
         </FormField>
         <FormField
-          label="Balance almacenado"
-          hint="Valor persistido para listados rápidos. Debe alinearse con el libro de movimientos."
+          label="Saldo inicial"
+          hint="Campo balance. En edición, úsalo solo para migraciones o correcciones."
         >
           <input
-            value={balanceStored}
-            onChange={(e) => setBalanceStored(e.target.value)}
-            className={`${inputSurface} tabular-nums`}
-          />
-        </FormField>
-        <FormField
-          label="Balance calculado (validación)"
-          hint="Suma derivada de transacciones. Si difiere del almacenado, muestra alerta en la tarjeta."
-        >
-          <input
-            value={balanceCalculated}
-            onChange={(e) => setBalanceCalculated(e.target.value)}
+            value={balance}
+            onChange={(e) => setBalance(e.target.value)}
             className={`${inputSurface} tabular-nums`}
           />
         </FormField>
         {mode === "edit" ? (
           <FormField
-            label="Estado operativo"
-            hint="INACTIVE oculta la cuenta en flujos sin borrar historial."
+            label="Estado"
+            hint="is_active: false archiva la cuenta sin borrarla."
           >
             <select
-              value={status}
-              onChange={(e) => setStatus(e.target.value as AccountStatus)}
+              value={isActive ? "true" : "false"}
+              onChange={(e) => setIsActive(e.target.value === "true")}
               className={inputSurface}
             >
-              <option value="ACTIVE">ACTIVE — visible</option>
-              <option value="INACTIVE">INACTIVE — archivada</option>
+              <option value="true">Activa</option>
+              <option value="false">Inactiva</option>
             </select>
           </FormField>
         ) : null}
-      </div>
-
-      <div className="mt-8 space-y-4 rounded-xl border border-brand-forest/10 bg-brand-offwhite p-6 shadow-sm">
-        <p className="text-xs font-semibold uppercase tracking-wider text-brand-forest">
-          Reglas y comportamiento
-        </p>
-        <label className="flex cursor-pointer items-start gap-4 rounded-xl px-2 py-2 text-base leading-snug text-brand-slate transition hover:bg-white/90">
-          <input
-            type="checkbox"
-            checked={isDefault}
-            onChange={(e) => setIsDefault(e.target.checked)}
-            className="mt-1 size-4 rounded border-brand-forest/30 accent-brand-forest"
-          />
-          <span>
-            <span className="font-semibold">Cuenta por defecto</span>
-            <span className="mt-1 block text-sm text-neutral-600">
-              Se preselecciona en formularios de gasto o ingreso para reducir
-              fricción. Solo una por usuario.
-            </span>
-          </span>
-        </label>
-        <label className="flex cursor-pointer items-start gap-4 rounded-xl px-2 py-2 text-base leading-snug text-brand-slate transition hover:bg-white/90">
-          <input
-            type="checkbox"
-            checked={allowNegative}
-            onChange={(e) => setAllowNegative(e.target.checked)}
-            className="mt-1 size-4 rounded border-brand-forest/30 accent-brand-forest"
-          />
-          <span>
-            <span className="font-semibold">Permitir saldo negativo</span>
-            <span className="mt-1 block text-sm text-neutral-600">
-              Útil para líneas de crédito o cuentas técnicas. Desactiva si quieres
-              bloquear gastos que dejen la cuenta bajo cero.
-            </span>
-          </span>
-        </label>
-        <label className="flex cursor-pointer items-start gap-4 rounded-xl px-2 py-2 text-base leading-snug text-brand-slate transition hover:bg-white/90">
-          <input
-            type="checkbox"
-            checked={savingsPocket}
-            onChange={(e) => setSavingsPocket(e.target.checked)}
-            className="mt-1 size-4 rounded border-brand-forest/30 accent-brand-forest"
-          />
-          <span>
-            <span className="font-semibold">Bolsa de ahorro / intocable</span>
-            <span className="mt-1 block text-sm text-neutral-600">
-              Marca dinero apartado para metas; en reportes puedes excluirlo de
-              “disponible para gastar”.
-            </span>
-          </span>
-        </label>
-        <FormField
-          label="Alerta de saldo bajo (opcional)"
-          hint="Si el saldo cae por debajo de este monto, la UI puede avisar (push, banner o email desde backend)."
-        >
-          <input
-            value={threshold}
-            onChange={(e) => setThreshold(e.target.value)}
-            placeholder="Ej. 500000"
-            className={`${inputSurface} tabular-nums`}
-          />
-        </FormField>
       </div>
 
       <div className="mt-10 flex flex-wrap justify-end gap-4">
@@ -240,7 +137,7 @@ export default function AccountFormModal({
           Cancelar
         </button>
         <button type="button" onClick={submit} className={btnPrimary}>
-          Guardar cambios
+          Guardar
         </button>
       </div>
     </ModalShell>

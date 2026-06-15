@@ -11,7 +11,7 @@ export default function TransaccionesSectionIntro({
 }) {
   return (
     <header
-      className={`rounded-2xl border border-brand-forest/10 bg-white p-6 shadow-md md:p-8 ${className}`.trim()}
+      className={`rounded-2xl border border-brand-forest/10 bg-surface-card p-6 shadow-md md:p-8 ${className}`.trim()}
     >
       <div className="space-y-3">
         <p className="text-xs font-semibold uppercase tracking-wider text-brand-forest">
@@ -20,7 +20,7 @@ export default function TransaccionesSectionIntro({
         <h2 className="text-2xl font-semibold tracking-tight text-brand-slate md:text-3xl">
           {title}
         </h2>
-        <p className="max-w-2xl text-base leading-relaxed text-neutral-600">
+        <p className="max-w-2xl text-base leading-relaxed text-text-secondary">
           {description}
         </p>
       </div>

@@ -19,7 +19,7 @@ export default async function HabitsPage() {
   const habits = await fetchHabits(user.id);
 
   return (
-    <div className="mx-auto max-w-7xl space-y-12 px-6 py-10">
+    <div className="dark mx-auto max-w-7xl space-y-12 px-6 py-10">
       <HabitsPageHeader userId={user.id} habits={habits} />
       <HabitsGlobalInsightsPanel insights={MOCK_GLOBAL_INSIGHTS} />
       <HabitsListSection habits={MOCK_HABIT_OVERVIEWS} />

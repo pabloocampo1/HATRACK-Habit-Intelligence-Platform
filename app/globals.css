@@ -1,17 +1,54 @@
 /* app/globals.css */
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
+  color-scheme: light;
   --background: #ffffff;
   --foreground: #171717;
   --brand-forest: #064e3b;
   --brand-slate: #1e293b;
   --brand-warm: #78350f;
   --offwhite: #fafafa;
-  /* Superficie detrás de cards; acorde al layout dashboard */
   --surface-page: #f4f6f5;
-  /* Velo de modales: slate de marca con buena opacidad */
+  --surface-card: #ffffff;
+  --surface-muted: #f4f4f5;
+  --surface-subtle: #fafafa;
+  --border-subtle: #f3f4f6;
+  --border-default: #e5e7eb;
+  --border-strong: #d1d5db;
+  --text-primary: #111827;
+  --text-secondary: #4b5563;
+  --text-muted: #9ca3af;
+  --accent-subtle: #ecfdf5;
+  --accent-text: #064e3b;
+  --brand-forest-fg: #ffffff;
   --brand-scrim: color-mix(in srgb, var(--brand-slate) 90%, transparent);
+}
+
+.dark {
+  color-scheme: dark;
+  --background: #09090b;
+  --foreground: #fafafa;
+  --brand-forest: #34d399;
+  --brand-slate: #e4e4e7;
+  --brand-warm: #fbbf24;
+  --offwhite: #0c0c0e;
+  --surface-page: #09090b;
+  --surface-card: #121214;
+  --surface-muted: #18181b;
+  --surface-subtle: #1c1c1f;
+  --border-subtle: rgba(255, 255, 255, 0.06);
+  --border-default: rgba(255, 255, 255, 0.1);
+  --border-strong: rgba(255, 255, 255, 0.16);
+  --text-primary: #f4f4f5;
+  --text-secondary: #a1a1aa;
+  --text-muted: #71717a;
+  --accent-subtle: rgba(16, 185, 129, 0.12);
+  --accent-text: #6ee7b7;
+  --brand-forest-fg: #022c22;
+  --brand-scrim: color-mix(in srgb, #000000 82%, transparent);
 }
 
 @theme inline {
@@ -26,6 +63,24 @@
   --color-brand-offwhite: var(--offwhite);
   --color-brand-surface: var(--surface-page);
   --color-brand-scrim: var(--brand-scrim);
+
+  --color-surface-card: var(--surface-card);
+  --color-surface-muted: var(--surface-muted);
+  --color-surface-subtle: var(--surface-subtle);
+  --color-border-subtle: var(--border-subtle);
+  --color-border-default: var(--border-default);
+  --color-border-strong: var(--border-strong);
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-muted: var(--text-muted);
+  --color-accent-subtle: var(--accent-subtle);
+  --color-accent-text: var(--accent-text);
+  --color-brand-forest-fg: var(--brand-forest-fg);
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
 }
 
 .react-calendar-heatmap .color-empty {
@@ -48,7 +103,6 @@
   ry: 1.5px;
 }
 
-/* Etiquetas y hover del heatmap sobre fondo oscuro (CalendarHead, HabitHeatmap) */
 .habit-heatmap-panel .react-calendar-heatmap text,
 .calendar-head-dark .react-calendar-heatmap text {
   fill: rgba(255, 255, 255, 0.42);
@@ -67,10 +121,6 @@
   stroke-width: 1px;
 }
 
-/*
- * Heatmap estilo GitHub: capa el ancho del SVG para que las celdas no se inflen
- * en cards anchas (el gráfico queda compacto y centrado).
- */
 .heatmap-github-wrap {
   display: flex;
   justify-content: center;

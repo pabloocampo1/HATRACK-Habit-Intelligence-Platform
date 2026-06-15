@@ -51,7 +51,7 @@ export default function FinanceModuleNav() {
 
   return (
     <nav
-      className="flex gap-1 overflow-x-auto border-b border-gray-100 bg-white px-6 py-3"
+      className="flex gap-1 overflow-x-auto border-b border-border-subtle bg-surface-card px-6 py-3"
       aria-label="Módulos de vida financiera"
     >
       {tabs.map(({ href, label, match }) => {
@@ -62,8 +62,8 @@ export default function FinanceModuleNav() {
             href={href}
             className={`shrink-0 rounded-lg px-3 py-2 text-[12.5px] font-medium transition-colors sm:text-[13px] ${
               active
-                ? "bg-emerald-50 text-brand-forest shadow-sm"
-                : "text-gray-500 hover:bg-gray-50 hover:text-gray-900"
+                ? "bg-accent-subtle text-brand-forest shadow-sm"
+                : "text-text-secondary hover:bg-surface-muted hover:text-text-primary"
             }`}
           >
             {label}

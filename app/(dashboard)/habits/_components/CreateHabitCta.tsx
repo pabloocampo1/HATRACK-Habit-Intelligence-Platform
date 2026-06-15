@@ -11,11 +11,11 @@ export default function CreateHabitCta({ userId }: { userId: string }) {
     <>
       <button
         type="button"
-        className="group inline-flex items-center gap-2 rounded-2xl border border-emerald-500/35 bg-emerald-900/20 px-5 py-3 text-[11px] font-black uppercase tracking-[0.2em] text-black-400 transition hover:border-emerald-400/60 hover:bg-emerald-900/35 hover:text-white"
+        className="group inline-flex items-center gap-2 rounded-2xl border border-brand-forest/30 bg-accent-subtle px-5 py-3 text-[11px] font-black uppercase tracking-[0.2em] text-brand-forest transition hover:border-brand-forest/50 hover:bg-brand-forest/15"
         onClick={() => setOpen(true)}
       >
         <Plus
-          className="h-4 w-4 transition group-hover:scale-110 text-emerald-400 group-hover:text-white"
+          className="h-4 w-4 text-brand-forest transition group-hover:scale-110"
           strokeWidth={2.5}
         />
         Nuevo hábito

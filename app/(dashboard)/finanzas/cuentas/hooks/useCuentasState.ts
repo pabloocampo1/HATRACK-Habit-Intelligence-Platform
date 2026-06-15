@@ -1,24 +1,17 @@
 "use client";
 
 import { useCallback, useMemo, useState } from "react";
-import type { AccountRow, AccountStatus, MovementRow } from "../accounts.constants";
-import {
-  INITIAL_MOCK_ACCOUNTS,
-  INITIAL_MOCK_MOVEMENTS,
-} from "../accounts.constants";
+import type { Account } from "@/lib/types";
+import { INITIAL_MOCK_ACCOUNTS } from "../accounts.constants";
 import type { CuentasFilterKey, CuentasModal } from "../cuentas.types";
 
 type AccountFormMode = "create" | "edit";
 
+const MOCK_USER_ID = "00000000-0000-0000-0000-000000000001";
+
 export function useCuentasState() {
-  const [accounts, setAccounts] = useState<AccountRow[]>(INITIAL_MOCK_ACCOUNTS);
-  const [movements, setMovements] = useState<MovementRow[]>(
-    INITIAL_MOCK_MOVEMENTS,
-  );
+  const [accounts, setAccounts] = useState<Account[]>(INITIAL_MOCK_ACCOUNTS);
   const [filter, setFilter] = useState<CuentasFilterKey>("all");
-  const [historyAccountId, setHistoryAccountId] = useState<string | null>(
-    "acc-1",
-  );
   const [modal, setModal] = useState<CuentasModal>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [deactivateTargetId, setDeactivateTargetId] = useState<string | null>(
@@ -27,39 +20,28 @@ export function useCuentasState() {
 
   const filteredAccounts = useMemo(() => {
     return accounts.filter((a) => {
-      if (filter === "active") return a.status === "ACTIVE";
-      if (filter === "inactive") return a.status === "INACTIVE";
-      if (filter === "savings") return a.isSavingsPocket;
+      if (filter === "active") return a.is_active;
+      if (filter === "inactive") return !a.is_active;
+      if (filter === "savings") return a.type === "SAVINGS";
       return true;
     });
   }, [accounts, filter]);
 
   const totals = useMemo(() => {
-    const cop = accounts
-      .filter((a) => a.currency === "COP" && a.status === "ACTIVE")
-      .reduce((s, a) => s + a.balanceStored, 0);
-    const usd = accounts
-      .filter((a) => a.currency === "USD" && a.status === "ACTIVE")
-      .reduce((s, a) => s + a.balanceStored, 0);
-    const drift = accounts.filter(
-      (a) =>
-        a.status === "ACTIVE" &&
-        Math.round(a.balanceStored) !== Math.round(a.balanceCalculated),
-    ).length;
-    return { cop, usd, drift };
+    const active = accounts.filter((a) => a.is_active);
+    const cop = active
+      .filter((a) => a.currency === "COP")
+      .reduce((s, a) => s + a.balance, 0);
+    const usd = active
+      .filter((a) => a.currency === "USD")
+      .reduce((s, a) => s + a.balance, 0);
+    return {
+      cop,
+      usd,
+      activeCount: active.length,
+      totalCount: accounts.length,
+    };
   }, [accounts]);
-
-  const defaultAccount = useMemo(
-    () => accounts.find((a) => a.isDefault && a.status === "ACTIVE"),
-    [accounts],
-  );
-
-  const historyMovements = useMemo(() => {
-    if (!historyAccountId) return [];
-    return movements
-      .filter((m) => m.accountId === historyAccountId)
-      .sort((a, b) => (a.at < b.at ? 1 : -1));
-  }, [movements, historyAccountId]);
 
   const openCreate = useCallback(() => {
     setEditingId(null);
@@ -85,27 +67,18 @@ export function useCuentasState() {
   }, []);
 
   const saveAccount = useCallback(
-    (row: AccountRow, mode: AccountFormMode) => {
+    (row: Account, mode: AccountFormMode) => {
+      const now = new Date().toISOString();
       if (mode === "create") {
-        setAccounts((prev) => {
-          let next = [...prev, row];
-          if (row.isDefault) {
-            next = next.map((a) =>
-              a.id === row.id ? a : { ...a, isDefault: false },
-            );
-          }
-          return next;
-        });
+        setAccounts((prev) => [...prev, { ...row, created_at: now, updated_at: now }]);
       } else if (editingId) {
-        setAccounts((prev) => {
-          let next = prev.map((a) => (a.id === editingId ? row : a));
-          if (row.isDefault) {
-            next = next.map((a) =>
-              a.id === row.id ? a : { ...a, isDefault: false },
-            );
-          }
-          return next;
-        });
+        setAccounts((prev) =>
+          prev.map((a) =>
+            a.account_id === editingId
+              ? { ...row, updated_at: now }
+              : a,
+          ),
+        );
       }
       closeModal();
     },
@@ -117,61 +90,36 @@ export function useCuentasState() {
       fromId,
       toId,
       amount,
-      note,
     }: {
       fromId: string;
       toId: string;
       amount: number;
       note: string;
     }) => {
-      const from = accounts.find((a) => a.id === fromId)!;
-      const to = accounts.find((a) => a.id === toId)!;
-      if (from.currency !== to.currency) return;
-      const ts = new Date().toISOString();
+      const from = accounts.find((a) => a.account_id === fromId);
+      const to = accounts.find((a) => a.account_id === toId);
+      if (!from || !to || from.currency !== to.currency) return;
+
+      const now = new Date().toISOString();
       setAccounts((prev) =>
         prev.map((a) => {
-          if (a.id === fromId) {
+          if (a.account_id === fromId) {
             return {
               ...a,
-              balanceStored: a.balanceStored - amount,
-              balanceCalculated: a.balanceCalculated - amount,
-              lastMovementAt: ts,
+              balance: a.balance - amount,
+              updated_at: now,
             };
           }
-          if (a.id === toId) {
+          if (a.account_id === toId) {
             return {
               ...a,
-              balanceStored: a.balanceStored + amount,
-              balanceCalculated: a.balanceCalculated + amount,
-              lastMovementAt: ts,
+              balance: a.balance + amount,
+              updated_at: now,
             };
           }
           return a;
         }),
       );
-      setMovements((prev) => [
-        {
-          id: `mov-local-${Date.now()}-a`,
-          accountId: fromId,
-          at: ts,
-          description: note
-            ? `Transferencia → ${to.name} · ${note}`
-            : `Transferencia → ${to.name}`,
-          amount: -amount,
-          kind: "TRANSFER_OUT",
-        },
-        {
-          id: `mov-local-${Date.now()}-b`,
-          accountId: toId,
-          at: ts,
-          description: note
-            ? `Transferencia desde ${from.name} · ${note}`
-            : `Transferencia desde ${from.name}`,
-          amount,
-          kind: "TRANSFER_IN",
-        },
-        ...prev,
-      ]);
       closeModal();
     },
     [accounts, closeModal],
@@ -179,10 +127,11 @@ export function useCuentasState() {
 
   const confirmDeactivate = useCallback(() => {
     if (!deactivateTargetId) return;
+    const now = new Date().toISOString();
     setAccounts((prev) =>
       prev.map((a) =>
-        a.id === deactivateTargetId
-          ? { ...a, status: "INACTIVE" as AccountStatus }
+        a.account_id === deactivateTargetId
+          ? { ...a, is_active: false, updated_at: now }
           : a,
       ),
     );
@@ -190,27 +139,23 @@ export function useCuentasState() {
   }, [closeModal, deactivateTargetId]);
 
   const reactivateAccount = useCallback((id: string) => {
+    const now = new Date().toISOString();
     setAccounts((prev) =>
-      prev.map((x) =>
-        x.id === id ? { ...x, status: "ACTIVE" as AccountStatus } : x,
+      prev.map((a) =>
+        a.account_id === id ? { ...a, is_active: true, updated_at: now } : a,
       ),
     );
   }, []);
 
   return {
     accounts,
-    movements,
     filter,
     setFilter,
-    historyAccountId,
-    setHistoryAccountId,
     modal,
     editingId,
     deactivateTargetId,
     filteredAccounts,
     totals,
-    defaultAccount,
-    historyMovements,
     openCreate,
     openEdit,
     openTransfer,
@@ -220,5 +165,6 @@ export function useCuentasState() {
     applyTransfer,
     confirmDeactivate,
     reactivateAccount,
+    mockUserId: MOCK_USER_ID,
   };
 }

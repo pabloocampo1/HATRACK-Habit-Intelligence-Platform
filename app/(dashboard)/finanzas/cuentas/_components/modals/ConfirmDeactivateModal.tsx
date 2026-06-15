@@ -14,7 +14,7 @@ export default function ConfirmDeactivateModal({
       subtitle="No se borra nada: solo cambia el estado operativo para que deje de aparecer en flujos de gasto o ingreso por defecto."
       onClose={onClose}
     >
-      <p className="text-base leading-relaxed text-neutral-600">
+      <p className="text-base leading-relaxed text-text-secondary">
         Las transacciones históricas siguen asociadas al mismo{" "}
         <code className="rounded-md border border-brand-forest/15 bg-brand-offwhite px-2 py-0.5 text-sm font-medium text-brand-slate">
           accountId

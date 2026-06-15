@@ -10,10 +10,10 @@ export default function HabitsListSection({
     <section className="space-y-6">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <h2 className="text-xl font-black tracking-tight text-neutral-950">
+          <h2 className="text-xl font-black tracking-tight text-text-primary">
             Tus rutinas
           </h2>
-          <p className="text-sm font-medium text-neutral-500">
+          <p className="text-sm font-medium text-text-muted">
             {habits.length} hábito{habits.length === 1 ? "" : "s"} — detalle y
             consistencia
           </p>

@@ -5,8 +5,8 @@ const tones: Record<
   { pill: string; dot: string }
 > = {
   emerald: {
-    pill: "border-emerald-200/80 bg-emerald-50 text-emerald-900",
-    dot: "bg-emerald-500",
+    pill: "border-emerald-200/80 bg-accent-subtle text-emerald-900",
+    dot: "bg-accent-subtle0",
   },
   amber: {
     pill: "border-amber-200/80 bg-amber-50 text-amber-900",
@@ -25,7 +25,7 @@ const tones: Record<
     dot: "bg-rose-500",
   },
   slate: {
-    pill: "border-neutral-200 bg-neutral-100 text-brand-slate",
+    pill: "border-border-default bg-neutral-100 text-brand-slate",
     dot: "bg-neutral-500",
   },
 };

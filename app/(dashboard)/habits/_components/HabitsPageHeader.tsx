@@ -13,15 +13,15 @@ export default function HabitsPageHeader({
     <header className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
       <div>
         <div className="mb-3 flex items-center gap-2">
-          <div className="h-[2px] w-8 bg-emerald-500" />
-          <p className="text-[10px] font-black uppercase tracking-[0.4em] text-emerald-500/90">
+          <div className="h-[2px] w-8 bg-brand-forest" />
+          <p className="text-[10px] font-black uppercase tracking-[0.4em] text-brand-forest/80">
             Centro de hábitos
           </p>
         </div>
-        <h1 className="text-4xl font-black tracking-tighter text-neutral-950">
+        <h1 className="text-4xl font-black tracking-tighter text-text-primary">
           Mis hábitos
         </h1>
-        <p className="mt-3 max-w-xl text-sm font-medium leading-relaxed text-neutral-500">
+        <p className="mt-3 max-w-xl text-sm font-medium leading-relaxed text-text-muted">
           Vista consolidada de cada rutina, consistencia tipo contribuciones y ranking
           de cumplimiento. Los datos mostrados aquí son mock hasta conectar tu API.
         </p>

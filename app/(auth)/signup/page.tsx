@@ -38,51 +38,51 @@ export default function SignupPage() {
 	}
 
   return (
-    <div className="min-h-screen bg-white text-black font-sans">
+    <div className="min-h-screen bg-background text-foreground font-sans">
       <main className="mx-auto flex w-full max-w-md flex-col gap-8 px-6 py-16">
-        <section className="rounded-2xl border-2 border-black p-8">
+        <section className="rounded-2xl border-2 border-border-strong p-8">
           <h1 className="text-3xl font-black">Crear cuenta</h1>
-          <p className="mt-2 text-sm text-black/70">
+          <p className="mt-2 text-sm text-text-secondary">
             Regístrate para empezar a trackear tus hábitos y ver tus estadísticas.
           </p>
 
           <form className="mt-6 flex flex-col gap-4" onSubmit={handleSubmit}>
 
-			<input type="text" name="fullName"   onChange={(e) => handleChange(e)} placeholder="Nombre completo"  className="rounded-md border border-black/30 px-4 py-3 outline-none focus:border-black" />
+			<input type="text" name="fullName"   onChange={(e) => handleChange(e)} placeholder="Nombre completo"  className="rounded-md border border-border-default bg-surface-card px-4 py-3 text-foreground outline-none focus:border-brand-forest" />
             <input
               type="email"
 			  onChange={(e) => handleChange(e)}
               placeholder="Correo electrónico"
 			  name="email"
-			  className="rounded-md border border-black/30 px-4 py-3 outline-none focus:border-black"
+			  className="rounded-md border border-border-default bg-surface-card px-4 py-3 text-foreground outline-none focus:border-brand-forest"
             />
             <input
               type="password"
 			    onChange={(e) => handleChange(e)}
               placeholder="Contraseña"
 			  name="password"
-              className="rounded-md border border-black/30 px-4 py-3 outline-none focus:border-black"
+              className="rounded-md border border-border-default bg-surface-card px-4 py-3 text-foreground outline-none focus:border-brand-forest"
             />
             <input
               type="password"
 			    onChange={(e) => handleChange(e)}
 			  name="confirmPassword"
               placeholder="Confirmar contraseña"
-              className="rounded-md border border-black/30 px-4 py-3 outline-none focus:border-black"
+              className="rounded-md border border-border-default bg-surface-card px-4 py-3 text-foreground outline-none focus:border-brand-forest"
             />
             <button
               type="submit"
-              className="rounded-full border-2 border-black bg-black px-5 py-3 text-sm font-bold uppercase tracking-widest text-white transition hover:bg-white hover:text-black"
+              className="rounded-full border-2 border-brand-forest bg-brand-forest px-5 py-3 text-sm font-bold uppercase tracking-widest text-brand-forest-fg transition hover:brightness-110"
             >
               Crear cuenta
             </button>
           </form>
 
-          {message && <p className="mt-3 text-sm text-black/70">{message}</p>}
+          {message && <p className="mt-3 text-sm text-text-secondary">{message}</p>}
 
        
 
-          <Link href="/login" className="mt-4 inline-block text-sm font-bold text-black/80 hover:text-black">
+          <Link href="/login" className="mt-4 inline-block text-sm font-bold text-text-secondary hover:text-foreground">
             ¿Ya tienes cuenta? Inicia sesión
           </Link>
         </section>

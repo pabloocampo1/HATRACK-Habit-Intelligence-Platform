@@ -74,16 +74,16 @@ function NavSection({
           e.stopPropagation();
           setOpen((v) => !v);
         }}
-        className="flex w-full min-h-11 cursor-pointer items-center justify-between gap-2 rounded-lg px-5 py-2.5 text-left transition-colors hover:bg-gray-50 active:bg-gray-100 mx-1"
+        className="flex w-full min-h-11 cursor-pointer items-center justify-between gap-2 rounded-lg px-5 py-2.5 text-left transition-colors hover:bg-surface-muted active:bg-surface-subtle mx-1"
         aria-expanded={open}
         aria-controls={`nav-section-${sectionId}`}
       >
-        <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-gray-500">
+        <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-text-secondary">
           {title}
         </span>
         <ChevronDown
           size={16}
-          className={`shrink-0 text-gray-400 transition-transform duration-200 ${
+          className={`shrink-0 text-text-muted transition-transform duration-200 ${
             open ? "rotate-180" : "rotate-0"
           }`}
           aria-hidden
@@ -105,8 +105,8 @@ function NavSection({
               className={`group relative flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13.5px] transition-all duration-200
                 ${
                   active
-                    ? "bg-emerald-50 text-brand-forest font-semibold"
-                    : "text-gray-500 hover:bg-gray-50 hover:text-gray-900"
+                    ? "bg-accent-subtle text-accent-text font-semibold"
+                    : "text-text-secondary hover:bg-surface-muted hover:text-text-primary"
                 }`}
             >
               {active && (
@@ -119,7 +119,7 @@ function NavSection({
                 className={`transition-colors ${
                   active
                     ? "text-brand-forest"
-                    : "text-gray-400 group-hover:text-gray-600"
+                    : "text-text-muted group-hover:text-text-secondary"
                 }`}
               />
               {label}
@@ -157,21 +157,21 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
       />
 
       <div className="mt-auto px-4 pt-6">
-        <div className="p-3 bg-gray-50/50 border border-gray-100 rounded-2xl">
+        <div className="p-3 bg-surface-muted border border-border-subtle rounded-2xl">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-brand-forest flex items-center justify-center text-[12px] font-bold text-white shadow-sm flex-shrink-0">
+            <div className="w-9 h-9 rounded-xl bg-brand-forest flex items-center justify-center text-[12px] font-bold text-brand-forest-fg shadow-sm flex-shrink-0">
               JD
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-[13px] text-gray-900 font-bold truncate">
+              <p className="text-[13px] text-text-primary font-bold truncate">
                 Juan Díaz
               </p>
-              <p className="text-[11px] text-gray-500">Free Plan</p>
+              <p className="text-[11px] text-text-secondary">Free Plan</p>
             </div>
           </div>
           <button
             onClick={() => {}}
-            className="mt-3 w-full flex items-center justify-center gap-2 py-2 text-[12px] font-medium text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
+            className="mt-3 w-full flex items-center justify-center gap-2 py-2 text-[12px] font-medium text-text-muted hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-all"
           >
             <LogOut size={14} />
             Cerrar Sesión

@@ -23,7 +23,7 @@ function KpiCard({
           : "from-neutral-400 to-neutral-500/50";
 
   return (
-    <article className="relative overflow-hidden rounded-xl border border-brand-forest/10 bg-white p-6 shadow-sm transition hover:shadow-md">
+    <article className="relative overflow-hidden rounded-xl border border-brand-forest/10 bg-surface-card p-6 shadow-sm transition hover:shadow-md">
       <div
         className={`pointer-events-none absolute left-0 top-0 h-1 w-full bg-gradient-to-r ${bar}`}
         aria-hidden
@@ -34,7 +34,7 @@ function KpiCard({
       <p className="mt-3 text-xl font-bold tabular-nums tracking-tight text-brand-slate md:text-2xl">
         {value}
       </p>
-      <p className="mt-2 text-sm text-neutral-600">{hint}</p>
+      <p className="mt-2 text-sm text-text-secondary">{hint}</p>
     </article>
   );
 }

@@ -1,15 +1,19 @@
-import type { AccountCurrency } from "../accounts.constants";
+import type { AccountCurrency } from "@/lib/types";
 
-export function formatMoney(value: number, currency: AccountCurrency) {
-  return new Intl.NumberFormat(currency === "COP" ? "es-CO" : "en-US", {
+export function formatMoney(value: number, currency: AccountCurrency | string) {
+  const cur = currency === "USD" ? "USD" : "COP";
+  return new Intl.NumberFormat(cur === "COP" ? "es-CO" : "en-US", {
     style: "currency",
-    currency,
-    maximumFractionDigits: currency === "COP" ? 0 : 2,
+    currency: cur,
+    maximumFractionDigits: cur === "COP" ? 0 : 2,
   }).format(value);
 }
 
-/** Parseo simple para formularios mock; el backend puede normalizar formato local. */
-export function parseMoneyInput(raw: string, currency: AccountCurrency): number {
+/** Parseo simple para formularios; el backend normaliza formato local. */
+export function parseMoneyInput(
+  raw: string,
+  currency: AccountCurrency | string,
+): number {
   const t = raw.trim();
   if (currency === "USD") {
     const n = Number(t.replace(/[^\d.-]/g, ""));

@@ -1,41 +1,29 @@
 "use client";
 
 import { motion } from "framer-motion";
-import type { AccountRow } from "../accounts.constants";
+import type { Account } from "@/lib/types";
 import AccountCard from "./AccountCard";
-import CuentasSectionIntro from "./CuentasSectionIntro";
 
 export default function CuentasAccountsGrid({
   accounts,
-  historyAccountId,
-  onSelectHistory,
   onEdit,
   onDeactivate,
   onReactivate,
 }: {
-  accounts: AccountRow[];
-  historyAccountId: string | null;
-  onSelectHistory: (id: string) => void;
+  accounts: Account[];
   onEdit: (id: string) => void;
   onDeactivate: (id: string) => void;
   onReactivate: (id: string) => void;
 }) {
   return (
     <div className="space-y-6 md:space-y-8">
-      <CuentasSectionIntro
-        eyebrow="Cartera"
-        title={`${accounts.length} cuenta(s) en esta vista`}
-        description="Tarjetas alineadas al modelo de dominio: nombre, tipo, moneda, saldos y reglas. La selección de historial se resalta para enlazar con el panel derecho."
-      />
-
       {accounts.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-brand-forest/20 bg-white p-8 text-center shadow-md md:p-10">
+        <div className="rounded-2xl border border-dashed border-brand-forest/20 bg-surface-card p-8 text-center shadow-md md:p-10">
           <p className="text-base font-semibold text-brand-slate">
             No hay cuentas con este filtro.
           </p>
-          <p className="mx-auto mt-4 max-w-md text-base leading-relaxed text-neutral-600">
-            Cambia el filtro superior o crea una cuenta. Este estado vacío es
-            válido en onboarding hasta que existan fuentes registradas.
+          <p className="mx-auto mt-4 max-w-md text-base leading-relaxed text-text-secondary">
+            Cambia el filtro superior o crea una cuenta.
           </p>
         </div>
       ) : (
@@ -50,7 +38,7 @@ export default function CuentasAccountsGrid({
         >
           {accounts.map((acc) => (
             <motion.li
-              key={acc.id}
+              key={acc.account_id}
               variants={{
                 hidden: { opacity: 0, y: 12 },
                 show: { opacity: 1, y: 0 },
@@ -59,11 +47,9 @@ export default function CuentasAccountsGrid({
             >
               <AccountCard
                 account={acc}
-                selected={historyAccountId === acc.id}
-                onSelectHistory={() => onSelectHistory(acc.id)}
-                onEdit={() => onEdit(acc.id)}
-                onDeactivate={() => onDeactivate(acc.id)}
-                onReactivate={() => onReactivate(acc.id)}
+                onEdit={() => onEdit(acc.account_id)}
+                onDeactivate={() => onDeactivate(acc.account_id)}
+                onReactivate={() => onReactivate(acc.account_id)}
               />
             </motion.li>
           ))}

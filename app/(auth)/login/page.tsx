@@ -40,11 +40,11 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white text-black font-sans">
+    <div className="min-h-screen bg-background text-foreground font-sans">
       <main className="mx-auto flex w-full max-w-md flex-col gap-8 px-6 py-16">
-        <section className="rounded-2xl border-2 border-black p-8">
+        <section className="rounded-2xl border-2 border-border-strong p-8">
           <h1 className="text-3xl font-black">Iniciar sesión</h1>
-          <p className="mt-2 text-sm text-black/70">
+          <p className="mt-2 text-sm text-text-secondary">
             Accede para ver tus estadísticas y seguir tu progreso.
           </p>
 
@@ -54,26 +54,26 @@ export default function LoginPage() {
               onChange={(e) => setEmail(e.target.value)}
               type="email"
               placeholder="Correo electrónico"
-              className="rounded-md border border-black/30 px-4 py-3 outline-none focus:border-black"
+              className="rounded-md border border-border-default bg-surface-card px-4 py-3 text-foreground outline-none focus:border-brand-forest"
             />
             <input
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               type="password"
               placeholder="Contraseña"
-              className="rounded-md border border-black/30 px-4 py-3 outline-none focus:border-black"
+              className="rounded-md border border-border-default bg-surface-card px-4 py-3 text-foreground outline-none focus:border-brand-forest"
             />
             <button
               type="submit"
-              className="rounded-full border-2 border-black bg-black px-5 py-3 text-sm font-bold uppercase tracking-widest text-white transition hover:bg-white hover:text-black"
+              className="rounded-full border-2 border-brand-forest bg-brand-forest px-5 py-3 text-sm font-bold uppercase tracking-widest text-brand-forest-fg transition hover:brightness-110"
             >
               Entrar
             </button>
           </form>
 
-          {message && <p className="mt-3 text-sm text-black/70">{message}</p>}
+          {message && <p className="mt-3 text-sm text-text-secondary">{message}</p>}
 
-          <p className="mt-4 text-xs text-black/70">
+          <p className="mt-4 text-xs text-text-secondary">
             ¿No tienes cuenta?{" "}
             <Link href="/signup" className="font-bold underline">
               Regístrate
@@ -82,7 +82,7 @@ export default function LoginPage() {
 
           <Link
             href="/"
-            className="mt-4 inline-block text-sm font-bold text-black/80 hover:text-black"
+            className="mt-4 inline-block text-sm font-bold text-text-secondary hover:text-foreground"
           >
             ← Volver a hatrack
           </Link>

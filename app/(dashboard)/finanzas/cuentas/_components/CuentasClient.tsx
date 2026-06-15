@@ -4,10 +4,8 @@ import { useCuentasState } from "../hooks/useCuentasState";
 import CuentasAccountsGrid from "./CuentasAccountsGrid";
 import CuentasFilterBar from "./CuentasFilterBar";
 import CuentasHeader from "./CuentasHeader";
-import CuentasHistoryColumn from "./CuentasHistoryColumn";
 import CuentasKpiSection from "./CuentasKpiSection";
 import CuentasPageBackground from "./CuentasPageBackground";
-import CuentasSectionIntro from "./CuentasSectionIntro";
 import AccountFormModal from "./modals/AccountFormModal";
 import ConfirmDeactivateModal from "./modals/ConfirmDeactivateModal";
 import TransferModal from "./modals/TransferModal";
@@ -25,37 +23,19 @@ export default function CuentasClient() {
         <CuentasKpiSection
           cop={c.totals.cop}
           usd={c.totals.usd}
-          drift={c.totals.drift}
-          defaultAccountName={c.defaultAccount?.name ?? null}
+          activeCount={c.totals.activeCount}
+          totalCount={c.totals.totalCount}
         />
 
         <CuentasFilterBar filter={c.filter} onChange={c.setFilter} />
 
         <section className="space-y-6 border-t border-brand-forest/10 pt-8 md:space-y-8 md:pt-10">
-          <CuentasSectionIntro
-            eyebrow="Layout de trabajo"
-            title="Cartera e historial"
-            description="A la izquierda, el inventario de cuentas filtradas. A la derecha, el historial de la cuenta seleccionada. En pantallas grandes el panel lateral permanece visible al hacer scroll, para comparar saldo y movimientos sin perder contexto."
+          <CuentasAccountsGrid
+            accounts={c.filteredAccounts}
+            onEdit={c.openEdit}
+            onDeactivate={c.openDeactivate}
+            onReactivate={c.reactivateAccount}
           />
-
-          <div className="grid gap-6 xl:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] xl:gap-8">
-            <CuentasAccountsGrid
-              accounts={c.filteredAccounts}
-              historyAccountId={c.historyAccountId}
-              onSelectHistory={c.setHistoryAccountId}
-              onEdit={c.openEdit}
-              onDeactivate={c.openDeactivate}
-              onReactivate={c.reactivateAccount}
-            />
-
-            <CuentasHistoryColumn
-              account={
-                c.accounts.find((a) => a.id === c.historyAccountId) ?? null
-              }
-              movements={c.historyMovements}
-              onClear={() => c.setHistoryAccountId(null)}
-            />
-          </div>
         </section>
       </div>
 
@@ -63,9 +43,10 @@ export default function CuentasClient() {
         <AccountFormModal
           key={c.editingId ?? "create"}
           mode={c.modal}
+          userId={c.mockUserId}
           initial={
             c.modal === "edit" && c.editingId
-              ? (c.accounts.find((a) => a.id === c.editingId) ?? null)
+              ? (c.accounts.find((a) => a.account_id === c.editingId) ?? null)
               : null
           }
           onClose={c.closeModal}
@@ -79,7 +60,7 @@ export default function CuentasClient() {
 
       {c.modal === "transfer" ? (
         <TransferModal
-          accounts={c.accounts.filter((a) => a.status === "ACTIVE")}
+          accounts={c.accounts.filter((a) => a.is_active)}
           onClose={c.closeModal}
           onApply={c.applyTransfer}
         />

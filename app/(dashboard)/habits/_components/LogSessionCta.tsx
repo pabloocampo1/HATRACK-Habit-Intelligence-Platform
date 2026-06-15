@@ -19,11 +19,11 @@ export default function LogSessionCta({
     <>
       <button
         type="button"
-        className="group inline-flex items-center gap-2 rounded-2xl border border-white/15 bg-neutral-950 px-5 py-3 text-[11px] font-black uppercase tracking-[0.2em] text-white/90 transition hover:border-emerald-500/35 hover:bg-emerald-950/20 hover:text-emerald-200"
+        className="group inline-flex items-center gap-2 rounded-2xl border border-border-default bg-surface-muted px-5 py-3 text-[11px] font-black uppercase tracking-[0.2em] text-text-primary transition hover:border-brand-forest/30 hover:bg-accent-subtle hover:text-brand-forest"
         onClick={() => setOpen(true)}
       >
         <ClipboardCheck
-          className="h-4 w-4 text-emerald-400 transition group-hover:scale-110 group-hover:text-emerald-300"
+          className="h-4 w-4 text-brand-forest transition group-hover:scale-110"
           strokeWidth={2.5}
         />
         Registrar sesión

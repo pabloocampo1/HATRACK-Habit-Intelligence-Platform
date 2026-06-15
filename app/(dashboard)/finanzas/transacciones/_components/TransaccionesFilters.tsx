@@ -58,8 +58,8 @@ export default function TransaccionesFilters({
                 onClick={() => onPeriod(key)}
                 className={`min-h-11 rounded-xl px-4 text-sm font-semibold transition ${
                   period === key
-                    ? "border border-brand-forest bg-brand-forest text-white shadow-md"
-                    : "border border-transparent text-brand-slate hover:bg-white/90"
+                    ? "border border-brand-forest bg-brand-forest text-brand-forest-fg shadow-md"
+                    : "border border-transparent text-brand-slate hover:bg-surface-card/90"
                 }`}
               >
                 {label}
@@ -80,8 +80,8 @@ export default function TransaccionesFilters({
                 onClick={() => onType(key)}
                 className={`min-h-11 rounded-xl px-4 text-sm font-semibold transition ${
                   typeFilter === key
-                    ? "border border-brand-forest bg-brand-forest text-white shadow-md"
-                    : "border border-transparent text-brand-slate hover:bg-white/90"
+                    ? "border border-brand-forest bg-brand-forest text-brand-forest-fg shadow-md"
+                    : "border border-transparent text-brand-slate hover:bg-surface-card/90"
                 }`}
               >
                 {label}
@@ -118,7 +118,7 @@ export default function TransaccionesFilters({
               Buscar
             </span>
             <div className="relative">
-              <Search className="pointer-events-none absolute left-4 top-1/2 size-5 -translate-y-1/2 text-neutral-400" />
+              <Search className="pointer-events-none absolute left-4 top-1/2 size-5 -translate-y-1/2 text-text-muted" />
               <input
                 value={search}
                 onChange={(e) => onSearch(e.target.value)}

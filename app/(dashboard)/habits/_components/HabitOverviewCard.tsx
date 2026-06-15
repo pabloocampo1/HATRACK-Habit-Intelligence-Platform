@@ -12,15 +12,15 @@ function StatPill({
   hint?: string;
 }) {
   return (
-    <div className="rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3">
-      <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-white/40">
+    <div className="rounded-2xl border border-border-subtle bg-surface-muted px-4 py-3">
+      <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-text-muted">
         {label}
       </p>
-      <p className="mt-1 text-2xl font-black tabular-nums tracking-tight text-white">
+      <p className="mt-1 text-2xl font-black tabular-nums tracking-tight text-text-primary">
         {value}
       </p>
       {hint ? (
-        <p className="mt-1 text-[10px] font-medium text-emerald-300/60">{hint}</p>
+        <p className="mt-1 text-[10px] font-medium text-brand-forest/70">{hint}</p>
       ) : null}
     </div>
   );
@@ -30,36 +30,36 @@ export default function HabitOverviewCard({ habit }: { habit: HabitOverview }) {
   const end = new Date(habit.heatmapEnd + "T12:00:00");
 
   return (
-    <article className="overflow-hidden rounded-[2.5rem] border border-white/10 bg-[#0a0a0a] shadow-2xl">
-      <div className="border-b border-white/5 p-8 md:p-10">
+    <article className="overflow-hidden rounded-[2.5rem] border border-border-subtle bg-surface-card shadow-2xl">
+      <div className="border-b border-border-subtle p-8 md:p-10">
         <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
           <div className="min-w-0 flex-1">
             <div className="flex flex-wrap items-center gap-3">
-              <span className="rounded-full border border-emerald-500/30 bg-emerald-900/25 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-emerald-400">
+              <span className="rounded-full border border-brand-forest/30 bg-accent-subtle px-3 py-1 text-[10px] font-black uppercase tracking-widest text-brand-forest">
                 {habit.category}
               </span>
-              <span className="flex items-center gap-1.5 text-[10px] font-mono uppercase tracking-widest text-white/25">
+              <span className="flex items-center gap-1.5 text-[10px] font-mono uppercase tracking-widest text-text-muted">
                 <Activity className="h-3.5 w-3.5" strokeWidth={2} />
                 {habit.id}
               </span>
             </div>
-            <h2 className="mt-4 text-3xl font-black tracking-tighter text-white">
+            <h2 className="mt-4 text-3xl font-black tracking-tighter text-text-primary">
               {habit.title}
             </h2>
-            <p className="mt-2 flex items-center gap-2 text-xs font-medium text-white/35">
-              <CalendarDays className="h-4 w-4 text-emerald-500/80" strokeWidth={2} />
+            <p className="mt-2 flex items-center gap-2 text-xs font-medium text-text-muted">
+              <CalendarDays className="h-4 w-4 text-brand-forest" strokeWidth={2} />
               Últimos 90 días · un cuadrado por día
             </p>
           </div>
-          <div className="flex items-center gap-2 rounded-2xl border border-emerald-500/25 bg-emerald-900/20 px-5 py-4">
-            <Zap className="h-6 w-6 text-emerald-400" strokeWidth={2} />
+          <div className="flex items-center gap-2 rounded-2xl border border-brand-forest/25 bg-accent-subtle px-5 py-4">
+            <Zap className="h-6 w-6 text-brand-forest" strokeWidth={2} />
             <div>
-              <p className="text-[9px] font-black uppercase tracking-[0.2em] text-emerald-400/80">
+              <p className="text-[9px] font-black uppercase tracking-[0.2em] text-brand-forest/80">
                 Racha actual
               </p>
-              <p className="text-2xl font-black tabular-nums text-white">
+              <p className="text-2xl font-black tabular-nums text-text-primary">
                 {habit.currentStreakDays}{" "}
-                <span className="text-sm font-bold text-white/40">días</span>
+                <span className="text-sm font-bold text-text-muted">días</span>
               </p>
             </div>
           </div>
@@ -86,7 +86,7 @@ export default function HabitOverviewCard({ habit }: { habit: HabitOverview }) {
         </div>
       </div>
 
-      <div className="bg-black/40 p-6 md:p-10 md:pt-8">
+      <div className="bg-surface-muted p-6 md:p-10 md:pt-8">
         <HabitHeatmap endDate={end} values={habit.heatmapDays} />
       </div>
     </article>

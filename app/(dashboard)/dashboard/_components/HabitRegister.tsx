@@ -137,7 +137,7 @@ export default function HabitRegister({
   return (
     <div
       className=" 
-     p-6 md:p-10 font-sans bg-white selection:text-emerald-900 "
+     p-6 md:p-10 font-sans bg-surface-card selection:text-emerald-900 "
     >
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 ">
         <section className="rounded-3xl  p-8">
@@ -145,7 +145,7 @@ export default function HabitRegister({
           <button
             disabled={loading}
             onClick={() => setShowNewHabitForm(!showNewHabitForm)}
-            className="w-full rounded-full border-2 border-black bg-black px-4 py-2 text-xs font-bold uppercase tracking-widest text-white transition hover:bg-white hover:text-black mb-4"
+            className="w-full rounded-full border-2 border-border-strong bg-brand-forest px-4 py-2 text-xs font-bold uppercase tracking-widest text-white transition hover:bg-surface-card hover:text-foreground mb-4"
           >
             {loading ? "Cargando..." : " + Nuevo hábito"}
           </button>
@@ -153,20 +153,20 @@ export default function HabitRegister({
           {showNewHabitForm && (
             <form
               onSubmit={handleCreateHabit}
-              className="mb-4 p-4 border-2 border-black rounded-lg space-y-3"
+              className="mb-4 p-4 border-2 border-border-strong rounded-lg space-y-3"
             >
               <input
                 type="text"
                 value={habitTitle}
                 onChange={(e) => setHabitTitle(e.target.value)}
                 placeholder="Nombre del hábito"
-                className="w-full text-sm rounded border border-black/20 px-2 py-1 outline-none focus:border-black"
+                className="w-full text-sm rounded border border-border-default px-2 py-1 outline-none focus:border-border-strong"
                 required
               />
               <select
                 value={habitCategory}
                 onChange={(e) => setHabitCategory(e.target.value)}
-                className="w-full text-sm rounded border border-black/20 px-2 py-1 outline-none focus:border-black"
+                className="w-full text-sm rounded border border-border-default px-2 py-1 outline-none focus:border-border-strong"
               >
                 <option value="fitness">🏋️ Fitness & Sport</option>
                 <option value="programming">💻 Programming & Tech</option>
@@ -187,7 +187,7 @@ export default function HabitRegister({
                 onChange={(e) => setHabitFrequency(parseInt(e.target.value))}
                 placeholder="Veces por semana"
                 id="habitFrequency"
-                className="w-full text-sm rounded border border-black/20 px-2 py-1 outline-none focus:border-black"
+                className="w-full text-sm rounded border border-border-default px-2 py-1 outline-none focus:border-border-strong"
                 min="1"
               />
               <input
@@ -195,13 +195,13 @@ export default function HabitRegister({
                 value={habitMinutes}
                 onChange={(e) => setHabitMinutes(parseInt(e.target.value))}
                 placeholder="Minutos por sesión"
-                className="w-full text-sm rounded border border-black/20 px-2 py-1 outline-none focus:border-black"
+                className="w-full text-sm rounded border border-border-default px-2 py-1 outline-none focus:border-border-strong"
                 min="1"
               />
               <button
                 disabled={loading}
                 type="submit"
-                className="w-full rounded border-2 border-black bg-black text-white text-xs font-bold px-2 py-1 hover:bg-white hover:text-black transition"
+                className="w-full rounded border-2 border-border-strong bg-brand-forest text-brand-forest-fg text-xs font-bold px-2 py-1 hover:bg-surface-card hover:text-foreground transition"
               >
                 {loading ? "Guardando..." : "Guardar"}
               </button>
@@ -214,7 +214,7 @@ export default function HabitRegister({
                   setHabitFrequency(0);
                   setHabitMinutes(0);
                 }}
-                className="w-full rounded border-2 border-black bg-white text-black text-xs font-bold px-2 py-1 hover:bg-red-900 hover:border-white hover:text-white hover: transition"
+                className="w-full rounded border-2 border-border-strong bg-surface-card text-foreground text-xs font-bold px-2 py-1 hover:bg-red-900 hover:border-white hover:text-white hover: transition"
               >
                 {loading ? "Guardando..." : "Cancelar"}
               </button>
@@ -223,7 +223,7 @@ export default function HabitRegister({
 
           <div className="space-y-2">
             {habitsProp.length === 0 ? (
-              <p className="text-sm text-black/70">
+              <p className="text-sm text-text-secondary">
                 No hay hábitos. Crea uno para empezar.
               </p>
             ) : (
@@ -242,12 +242,12 @@ export default function HabitRegister({
                 return (
                   <div
                     key={habit.id}
-                    className="border-2 border-black/20 rounded-lg p-3"
+                    className="border-2 border-border-default rounded-lg p-3"
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex-1">
                         <p className="font-bold text-sm">{habit.title}</p>
-                        <p className="text-xs text-black/70">
+                        <p className="text-xs text-text-secondary">
                           {habit.category}
                         </p>
                       </div>
@@ -256,16 +256,16 @@ export default function HabitRegister({
                           setSelectedHabit(habit);
                           setShowActivityForm(true);
                         }}
-                        className="ml-2 text-xs font-bold text-white bg-black px-2 py-1 rounded hover:bg-black/80"
+                        className="ml-2 text-xs font-bold text-white bg-brand-forest px-2 py-1 rounded hover:bg-brand-forest/80"
                       >
                         Registrar habito +
                       </button>
                     </div>
                     <div className="mt-2 flex gap-2 text-xs font-bold">
-                      <span className="bg-black/10 px-2 py-1 rounded">
+                      <span className="bg-brand-forest/10 px-2 py-1 rounded">
                         ✓ {timesCompleted}
                       </span>
-                      <span className="bg-black/10 px-2 py-1 rounded">
+                      <span className="bg-brand-forest/10 px-2 py-1 rounded">
                         ⏱ {totalMinutes}m
                       </span>
                     </div>
@@ -273,7 +273,7 @@ export default function HabitRegister({
                     <button
                       disabled={loadingDelete}
                       onClick={() => setHabitToDelete(habit || null)}
-                      className="bg-black/10 px-3 mt-5 rounded hover:transform hover:scale-105"
+                      className="bg-brand-forest/10 px-3 mt-5 rounded hover:transform hover:scale-105"
                     >
                       Eliminar
                     </button>
@@ -289,9 +289,9 @@ export default function HabitRegister({
 
           {showActivityForm && selectedHabit ? (
             <form onSubmit={handleLogActivity} className="space-y-4">
-              <div className="bg-black/5 rounded-lg p-4 border-2 border-black">
+              <div className="bg-brand-forest/5 rounded-lg p-4 border-2 border-border-strong">
                 <p className="text-sm font-bold">{selectedHabit.title}</p>
-                <p className="text-xs text-black/70">
+                <p className="text-xs text-text-secondary">
                   Meta: {selectedHabit.target_minutes} min
                 </p>
               </div>
@@ -305,11 +305,11 @@ export default function HabitRegister({
                   value={activityMinutes}
                   onChange={(e) => setActivityMinutes(parseInt(e.target.value))}
                   placeholder="0"
-                  className="w-full text-sm rounded border-2 border-black px-3 py-2 outline-none focus:bg-black/5"
+                  className="w-full text-sm rounded border-2 border-border-strong px-3 py-2 outline-none focus:bg-brand-forest/5"
                   min="0"
                   required
                 />
-                <p className="text-[10px] text-black/60">
+                <p className="text-[10px] text-text-muted">
                   Tiempo real que invertiste. Esto mide tu dedicación frente a
                   lo planificado.
                 </p>
@@ -327,15 +327,15 @@ export default function HabitRegister({
                       onClick={() => setActivityQuality(q)}
                       className={`flex-1 py-2 border-2 font-bold rounded ${
                         activityQuality === q
-                          ? "border-black bg-black text-white"
-                          : "border-black/20 hover:border-black"
+                          ? "border-border-strong bg-brand-forest text-brand-forest-fg"
+                          : "border-border-default hover:border-border-strong"
                       }`}
                     >
                       {q}
                     </button>
                   ))}
                 </div>
-                <p className="text-[10px] text-black/60">
+                <p className="text-[10px] text-text-muted">
                   Qué tan bien lo hiciste. No es solo cumplir, es cómo lo
                   ejecutas.
                 </p>
@@ -353,15 +353,15 @@ export default function HabitRegister({
                       onClick={() => setActivityEnergy(e)}
                       className={`flex-1 py-2 border-2 font-bold rounded ${
                         activityEnergy === e
-                          ? "border-black bg-black text-white"
-                          : "border-black/20 hover:border-black"
+                          ? "border-border-strong bg-brand-forest text-brand-forest-fg"
+                          : "border-border-default hover:border-border-strong"
                       }`}
                     >
                       {e}
                     </button>
                   ))}
                 </div>
-                <p className="text-[10px] text-black/60">
+                <p className="text-[10px] text-text-muted">
                   Nivel físico/mental. Te ayuda a entender tu rendimiento en
                   distintos estados.
                 </p>
@@ -374,7 +374,7 @@ export default function HabitRegister({
                 <select
                   value={activityMentalState}
                   onChange={(e) => setActivityMentalState(e.target.value)}
-                  className="w-full text-sm rounded border-2 border-black px-3 py-2 outline-none focus:bg-black/5"
+                  className="w-full text-sm rounded border-2 border-border-strong px-3 py-2 outline-none focus:bg-brand-forest/5"
                 >
                   <option value="">Selecciona</option>
                   <option value="focused">Enfocado</option>
@@ -383,7 +383,7 @@ export default function HabitRegister({
                   <option value="motivated">Motivado</option>
                   <option value="stressed">Estresado</option>
                 </select>
-                <p className="text-[10px] text-black/60">
+                <p className="text-[10px] text-text-muted">
                   Cómo te sentías. Esto conecta rendimiento con tu mente.
                 </p>
               </div>
@@ -396,7 +396,7 @@ export default function HabitRegister({
                   value={activityNotes}
                   onChange={(e) => setActivityNotes(e.target.value)}
                   placeholder="Rápidas notas..."
-                  className="w-full text-sm rounded border-2 border-black px-3 py-2 outline-none focus:bg-black/5 h-20"
+                  className="w-full text-sm rounded border-2 border-border-strong px-3 py-2 outline-none focus:bg-brand-forest/5 h-20"
                 />
               </div>
 
@@ -404,7 +404,7 @@ export default function HabitRegister({
                 <button
                   disabled={loadingSaveLog}
                   type="submit"
-                  className="flex-1 rounded-full border-2 border-black bg-black px-4 py-2 text-xs font-bold uppercase tracking-widest text-white transition hover:bg-white hover:text-black"
+                  className="flex-1 rounded-full border-2 border-border-strong bg-brand-forest px-4 py-2 text-xs font-bold uppercase tracking-widest text-white transition hover:bg-surface-card hover:text-foreground"
                 >
                   {loadingSaveLog ? "Guardando..." : " Registrar ✓"}
                 </button>
@@ -418,14 +418,14 @@ export default function HabitRegister({
                     setActivityQuality(399999);
                     setActivityNotes("");
                   }}
-                  className="flex-1 rounded-full border-2 border-black/30 px-4 py-2 text-xs font-bold uppercase tracking-widest hover:border-black transition"
+                  className="flex-1 rounded-full border-2 border-border-default px-4 py-2 text-xs font-bold uppercase tracking-widest hover:border-border-strong transition"
                 >
                   {loadingSaveLog ? "Cargando" : "Cancelar"}
                 </button>
               </div>
             </form>
           ) : (
-            <div className="text-sm text-black/70 p-4 border-2 border-black/20 rounded-lg">
+            <div className="text-sm text-text-secondary p-4 border-2 border-border-default rounded-lg">
               {habitsProp.length === 0
                 ? "Crea un hábito primero para registrar actividades."
                 : "Selecciona un hábito de la izquierda para registrar actividad."}
@@ -434,11 +434,11 @@ export default function HabitRegister({
 
           {/* TODAY'S SUMMARY TABLE */}
           {todayLogsProps.length > 0 && (
-            <div className="mt-6 border-t-2 border-black pt-6">
+            <div className="mt-6 border-t-2 border-border-strong pt-6">
               <h3 className="text-sm font-black mb-4">Resumen de hoy</h3>
               <div className="overflow-x-auto">
                 <table className="w-full text-xs">
-                  <thead className="border-b-2 border-black">
+                  <thead className="border-b-2 border-border-strong">
                     <tr>
                       <th className="text-left py-2 font-black">Acción</th>
                       <th className="text-center py-2 font-black">Veces</th>
@@ -453,7 +453,7 @@ export default function HabitRegister({
                         (h) => h.id === log.habit_id,
                       );
                       return (
-                        <tr key={idx} className="border-b border-black/10">
+                        <tr key={idx} className="border-b border-border-subtle">
                           <td className="py-2 font-bold">
                             {habit?.title || "Unknown"}
                           </td>
@@ -466,7 +466,7 @@ export default function HabitRegister({
                           <td className="text-center py-2">
                             {log.quality_score}/5
                           </td>
-                          <td className="py-2 text-black/70">
+                          <td className="py-2 text-text-secondary">
                             {log.notes || "—"}
                           </td>
                         </tr>
@@ -481,7 +481,7 @@ export default function HabitRegister({
       </div>
 
       {message && (
-        <div className="fixed bottom-6 right-6 bg-black text-white px-6 py-3 rounded-full text-sm font-bold">
+        <div className="fixed bottom-6 right-6 bg-brand-forest text-brand-forest-fg px-6 py-3 rounded-full text-sm font-bold">
           {message}
 
           <button onClick={() => setMessage("")}>Cerrar</button>
