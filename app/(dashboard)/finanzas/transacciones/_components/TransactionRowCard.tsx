@@ -13,7 +13,7 @@ function TypeIcon({ type }: { type: TransactionRow["type"] }) {
   if (type === "INCOME") {
     return (
       <span
-        className={`${wrap} border-emerald-200/80 bg-emerald-50 text-emerald-700`}
+        className={`${wrap} border-emerald-200/80 bg-accent-subtle text-emerald-700`}
       >
         <ArrowDownLeft className="size-5" strokeWidth={2} />
       </span>
@@ -48,7 +48,7 @@ export default function TransactionRowCard({
   const isPositive = tx.amount >= 0;
 
   return (
-    <article className="flex gap-4 rounded-2xl border border-brand-forest/10 bg-white p-4 shadow-sm transition hover:border-brand-forest/20 hover:shadow-md md:gap-5 md:p-5">
+    <article className="flex gap-4 rounded-2xl border border-brand-forest/10 bg-surface-card p-4 shadow-sm transition hover:border-brand-forest/20 hover:shadow-md md:gap-5 md:p-5">
       <TypeIcon type={tx.type} />
       <div className="min-w-0 flex-1 space-y-2">
         <div className="flex flex-wrap items-start justify-between gap-2 gap-y-1">
@@ -64,7 +64,7 @@ export default function TransactionRowCard({
             {formatMoney(tx.amount, tx.currency)}
           </p>
         </div>
-        <div className="flex flex-wrap items-center gap-2 text-sm text-neutral-600">
+        <div className="flex flex-wrap items-center gap-2 text-sm text-text-secondary">
           {category ? (
             <span
               className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-xs font-semibold ${tone.pill}`}
@@ -73,15 +73,15 @@ export default function TransactionRowCard({
               {category.name}
             </span>
           ) : null}
-          <span className="text-neutral-400">·</span>
+          <span className="text-text-muted">·</span>
           <span>{tx.accountName}</span>
           {tx.type === "TRANSFER" && tx.toAccountName ? (
             <>
-              <span className="text-neutral-400">→</span>
+              <span className="text-text-muted">→</span>
               <span>{tx.toAccountName}</span>
             </>
           ) : null}
-          <span className="text-neutral-400">·</span>
+          <span className="text-text-muted">·</span>
           <time dateTime={tx.at} className="tabular-nums">
             {time}
           </time>

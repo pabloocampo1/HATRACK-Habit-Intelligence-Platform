@@ -5,7 +5,7 @@ import {
   Smartphone,
   Wallet,
 } from "lucide-react";
-import type { AccountType } from "../accounts.constants";
+import type { AccountType } from "@/lib/types";
 
 export function AccountTypeIcon({ type }: { type: AccountType }) {
   const cls = "size-5 stroke-[1.55]";

@@ -12,9 +12,9 @@ export default function PlayerCard() {
   };
 
   return (
-    <div className=" bg-black text-white rounded-2xl p-6 w-64 shadow-lg">
+    <div className=" bg-brand-forest text-brand-forest-fg rounded-2xl p-6 w-64 shadow-lg">
       <div className="flex items-center gap-4 mb-4">
-        <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
+        <div className="w-12 h-12 bg-foreground/20 rounded-full flex items-center justify-center">
           <span className="text-2xl">👤</span>
         </div>
         <div>
@@ -27,9 +27,9 @@ export default function PlayerCard() {
           <span>DISCIPLINA</span>
           <span>{stats?.disciplina || 0}%</span>
         </div>
-        <div className="w-full bg-white/20 rounded-full h-2">
+        <div className="w-full bg-foreground/20 rounded-full h-2">
           <div
-            className="bg-white h-2 rounded-full"
+            className="bg-surface-card h-2 rounded-full"
             style={{ width: `${stats?.disciplina || 0}%` }}
           ></div>
         </div>
@@ -37,9 +37,9 @@ export default function PlayerCard() {
           <span>CONSISTENCIA</span>
           <span>{stats?.consistencia || 0}%</span>
         </div>
-        <div className="w-full bg-white/20 rounded-full h-2">
+        <div className="w-full bg-foreground/20 rounded-full h-2">
           <div
-            className="bg-white h-2 rounded-full"
+            className="bg-surface-card h-2 rounded-full"
             style={{ width: `${stats?.consistencia || 0}%` }}
           ></div>
         </div>
@@ -47,9 +47,9 @@ export default function PlayerCard() {
           <span>ENFOQUE</span>
           <span>{stats?.enfoque || 0}%</span>
         </div>
-        <div className="w-full bg-white/20 rounded-full h-2">
+        <div className="w-full bg-foreground/20 rounded-full h-2">
           <div
-            className="bg-white h-2 rounded-full"
+            className="bg-surface-card h-2 rounded-full"
             style={{ width: `${stats?.enfoque || 0}%` }}
           ></div>
         </div>
@@ -57,9 +57,9 @@ export default function PlayerCard() {
           <span>DEDICACIÓN</span>
           <span>{stats?.dedicacion || 0}%</span>
         </div>
-        <div className="w-full bg-white/20 rounded-full h-2">
+        <div className="w-full bg-foreground/20 rounded-full h-2">
           <div
-            className="bg-white h-2 rounded-full"
+            className="bg-surface-card h-2 rounded-full"
             style={{ width: `${stats?.dedicacion || 0}%` }}
           ></div>
         </div>
@@ -67,9 +67,9 @@ export default function PlayerCard() {
           <span>CRECIMIENTO</span>
           <span>{stats?.crecimiento || 0}%</span>
         </div>
-        <div className="w-full bg-white/20 rounded-full h-2">
+        <div className="w-full bg-foreground/20 rounded-full h-2">
           <div
-            className="bg-white h-2 rounded-full"
+            className="bg-surface-card h-2 rounded-full"
             style={{ width: `${stats?.crecimiento || 0}%` }}
           ></div>
         </div>

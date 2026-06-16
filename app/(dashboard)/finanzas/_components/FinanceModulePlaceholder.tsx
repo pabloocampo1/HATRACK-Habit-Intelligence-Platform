@@ -10,13 +10,13 @@ export default function FinanceModulePlaceholder({
   return (
     <div className="space-y-4">
       <div>
-        <h1 className="text-xl font-bold tracking-tight text-gray-900">{title}</h1>
-        <p className="mt-1 text-sm text-gray-600 leading-relaxed">{description}</p>
+        <h1 className="text-xl font-bold tracking-tight text-text-primary">{title}</h1>
+        <p className="mt-1 text-sm text-text-secondary leading-relaxed">{description}</p>
         {examples ? (
-          <p className="mt-2 text-sm text-gray-400">{examples}</p>
+          <p className="mt-2 text-sm text-text-muted">{examples}</p>
         ) : null}
       </div>
-      <div className="rounded-2xl border border-dashed border-gray-200 bg-white p-12 text-center text-sm text-gray-400">
+      <div className="rounded-2xl border border-dashed border-border-default bg-surface-card p-12 text-center text-sm text-text-muted">
         Módulo en construcción.
       </div>
     </div>

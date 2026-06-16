@@ -82,24 +82,24 @@ export default function HabitHeatmap({
   );
 
   return (
-    <div className="habit-heatmap-panel w-full overflow-x-auto rounded-2xl border border-white/[0.08] bg-white/[0.03] p-6 md:p-8">
+    <div className="habit-heatmap-panel w-full overflow-x-auto rounded-2xl border border-border-subtle bg-surface-subtle p-6 md:p-8">
       <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div className="flex items-start gap-3">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-emerald-500/25 bg-emerald-950/40">
-            <Target className="h-5 w-5 text-emerald-400" strokeWidth={2} />
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-brand-forest/25 bg-accent-subtle">
+            <Target className="h-5 w-5 text-brand-forest" strokeWidth={2} />
           </div>
           <div>
-            <h3 className="text-base font-bold tracking-tight text-white md:text-lg">
+            <h3 className="text-base font-bold tracking-tight text-text-primary md:text-lg">
               Matriz de{" "}
-              <span className="text-emerald-400">consistencia</span>
+              <span className="text-brand-forest">consistencia</span>
             </h3>
-            <p className="mt-1 text-xs font-medium text-white/40">
-              <strong className="text-white/55">Últimos 90 días</strong> (~3 meses): un
+            <p className="mt-1 text-xs font-medium text-text-muted">
+              <strong className="text-text-secondary">Últimos 90 días</strong> (~3 meses): un
               cuadrado por día, todos los días del rango. Pasá el cursor para ver la fecha.
             </p>
           </div>
         </div>
-        <span className="shrink-0 self-start rounded-full border border-white/10 bg-black/30 px-3 py-1.5 text-[10px] font-mono font-bold uppercase tracking-widest text-white/45 sm:self-auto">
+        <span className="shrink-0 self-start rounded-full border border-border-default bg-surface-muted px-3 py-1.5 text-[10px] font-mono font-bold uppercase tracking-widest text-text-muted sm:self-auto">
           {rangeBadge}
         </span>
       </div>
@@ -119,7 +119,7 @@ export default function HabitHeatmap({
         />
       </div>
 
-      <div className="mt-5 flex flex-wrap items-center justify-end gap-1.5 border-t border-white/5 pt-4 text-[7px] font-bold uppercase tracking-tighter text-white/30">
+      <div className="mt-5 flex flex-wrap items-center justify-end gap-1.5 border-t border-border-subtle pt-4 text-[7px] font-bold uppercase tracking-tighter text-text-muted">
         <span>Menos</span>
         <HeatmapLegendScale />
         <span>Más</span>

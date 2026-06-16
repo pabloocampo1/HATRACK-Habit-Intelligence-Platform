@@ -15,7 +15,7 @@ export default function CuentasKpiCard({
 }) {
   return (
     <article
-      className={`flex h-full min-h-0 flex-col rounded-xl border border-brand-forest/10 bg-white p-6 shadow-sm transition hover:shadow-md ${
+      className={`flex h-full min-h-0 flex-col rounded-xl border border-brand-forest/10 bg-surface-card p-6 shadow-sm transition hover:shadow-md ${
         accent ? "ring-2 ring-brand-forest/15" : ""
       } ${warn ? "border-amber-200/90 bg-amber-50/50 ring-1 ring-amber-200/60" : ""}`}
     >
@@ -29,9 +29,9 @@ export default function CuentasKpiCard({
       >
         {value}
       </p>
-      <p className="mt-2 text-base leading-snug text-neutral-600">{hint}</p>
+      <p className="mt-2 text-base leading-snug text-text-secondary">{hint}</p>
       {description ? (
-        <p className="mt-4 border-t border-brand-forest/10 pt-4 text-sm leading-relaxed text-neutral-600">
+        <p className="mt-4 border-t border-brand-forest/10 pt-4 text-sm leading-relaxed text-text-secondary">
           {description}
         </p>
       ) : null}

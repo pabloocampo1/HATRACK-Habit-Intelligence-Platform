@@ -14,7 +14,7 @@ export default function FormField({
       </span>
       {children}
       {hint ? (
-        <span className="block text-sm leading-relaxed text-neutral-600">
+        <span className="block text-sm leading-relaxed text-text-secondary">
           {hint}
         </span>
       ) : null}

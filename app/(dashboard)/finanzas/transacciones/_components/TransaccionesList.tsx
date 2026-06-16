@@ -24,11 +24,11 @@ export default function TransaccionesList({
           title="Sin resultados con estos filtros"
           description="Amplía el período, limpia la búsqueda o cambia categoría. Los datos son mock: cualquier combinación es solo demostración."
         />
-        <div className="rounded-2xl border border-dashed border-brand-forest/25 bg-white p-10 text-center shadow-md">
+        <div className="rounded-2xl border border-dashed border-brand-forest/25 bg-surface-card p-10 text-center shadow-md">
           <p className="text-base font-semibold text-brand-slate">
             No hay movimientos que coincidan.
           </p>
-          <p className="mx-auto mt-3 max-w-md text-base text-neutral-600">
+          <p className="mx-auto mt-3 max-w-md text-base text-text-secondary">
             Prueba con otro rango de fechas o restablece los filtros desde arriba.
           </p>
         </div>

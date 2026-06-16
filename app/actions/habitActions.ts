@@ -5,6 +5,7 @@ import { CreateHabitPayload, Habit } from "@/lib/types";
 import {
   getAllHabitsByUser,
   saveHabit,
+  updateHabit as habitUpdate,
   deleteHabit as habitDelete,
 } from "@/services/habitService";
 
@@ -42,6 +43,24 @@ export async function save(habit: CreateHabitPayload, userId: string) {
     return result;
   } catch {
     return { success: false as const, error: "Error creando hábito" };
+  }
+}
+
+export async function updateHabit(
+  habitId: string,
+  fields: Partial<Pick<Habit, "title" | "description" | "category" | "frequency" | "target_minutes">>,
+) {
+  try {
+    if (!fields.title?.trim()) {
+      return { success: false as const, error: "El título es obligatorio." };
+    }
+    return await habitUpdate(habitId, {
+      ...fields,
+      title: fields.title!.trim(),
+      description: fields.description?.trim() || undefined,
+    });
+  } catch {
+    return { success: false as const, error: "Error actualizando hábito" };
   }
 }
 

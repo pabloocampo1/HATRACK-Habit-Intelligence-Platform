@@ -20,7 +20,7 @@ export default function TransaccionesHeader({
               </span>
               Movimientos
             </h1>
-            <p className="max-w-xl text-base leading-relaxed text-neutral-600">
+            <p className="max-w-xl text-base leading-relaxed text-text-secondary">
               Registro unificado de ingresos, gastos y transferencias. Los totales
               respetan el período y los filtros activos; los datos son mock para
               maquetar la experiencia.

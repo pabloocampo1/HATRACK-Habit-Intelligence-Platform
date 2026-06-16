@@ -121,13 +121,13 @@ export default function CreateHabitModal({ open, onClose, userId }: Props) {
 
   return (
     <div
-      className="fixed inset-0 z-[100] flex items-center justify-center p-4"
+      className="dark fixed inset-0 z-[100] flex items-center justify-center p-4"
       aria-labelledby={titleId}
       role="presentation"
     >
       <button
         type="button"
-        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+        className="absolute inset-0 bg-brand-scrim backdrop-blur-sm"
         aria-label="Cerrar"
         onClick={onClose}
       />
@@ -136,24 +136,24 @@ export default function CreateHabitModal({ open, onClose, userId }: Props) {
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
-        className="relative w-full max-w-lg rounded-[1.75rem] border border-white/10 bg-[#0a0a0a] shadow-2xl shadow-black/40"
+        className="relative w-full max-w-lg rounded-[1.75rem] border border-border-subtle bg-surface-card shadow-2xl"
       >
-        <div className="flex items-start justify-between gap-4 border-b border-white/10 px-6 py-5">
+        <div className="flex items-start justify-between gap-4 border-b border-border-subtle px-6 py-5">
           <div>
-            <p className="text-[10px] font-black uppercase tracking-[0.35em] text-emerald-500/90">
+            <p className="text-[10px] font-black uppercase tracking-[0.35em] text-brand-forest/80">
               Nuevo hábito
             </p>
-            <h2 id={titleId} className="mt-2 text-xl font-black tracking-tight text-white">
+            <h2 id={titleId} className="mt-2 text-xl font-black tracking-tight text-text-primary">
               Crear en tu cuenta
             </h2>
-            <p className="mt-1 text-xs font-medium text-white/45">
+            <p className="mt-1 text-xs font-medium text-text-muted">
               Coincide con tu tabla: título, descripción, categoría, frecuencia y minutos.
             </p>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="rounded-xl border border-white/10 p-2 text-white/50 transition hover:border-white/20 hover:bg-white/5 hover:text-white"
+            className="rounded-xl border border-border-default p-2 text-text-muted transition hover:border-border-strong hover:bg-surface-muted hover:text-text-primary"
             aria-label="Cerrar modal"
           >
             <X className="h-5 w-5" strokeWidth={2} />
@@ -162,7 +162,7 @@ export default function CreateHabitModal({ open, onClose, userId }: Props) {
 
         <form onSubmit={handleSubmit} className="space-y-4 px-6 py-6">
           <div>
-            <label htmlFor="habit-title" className="text-[10px] font-bold uppercase tracking-widest text-white/40">
+            <label htmlFor="habit-title" className="text-[10px] font-bold uppercase tracking-widest text-text-muted">
               Título
             </label>
             <input
@@ -170,7 +170,7 @@ export default function CreateHabitModal({ open, onClose, userId }: Props) {
               name="title"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="mt-1.5 w-full rounded-xl border border-white/10 bg-black/30 px-4 py-3 text-sm font-medium text-white placeholder:text-white/25 outline-none transition focus:border-emerald-500/50 focus:ring-2 focus:ring-emerald-500/20"
+              className="mt-1.5 w-full rounded-xl border border-border-default bg-surface-muted px-4 py-3 text-sm font-medium text-text-primary placeholder:text-text-muted outline-none transition focus:border-brand-forest/50 focus:ring-2 focus:ring-brand-forest/20"
               placeholder="Ej. Lectura matutina"
               autoComplete="off"
               disabled={submitting}
@@ -180,7 +180,7 @@ export default function CreateHabitModal({ open, onClose, userId }: Props) {
           <div>
             <label
               htmlFor="habit-description"
-              className="text-[10px] font-bold uppercase tracking-widest text-white/40"
+              className="text-[10px] font-bold uppercase tracking-widest text-text-muted"
             >
               Descripción (opcional)
             </label>
@@ -190,14 +190,14 @@ export default function CreateHabitModal({ open, onClose, userId }: Props) {
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               rows={3}
-              className="mt-1.5 w-full resize-none rounded-xl border border-white/10 bg-black/30 px-4 py-3 text-sm font-medium text-white placeholder:text-white/25 outline-none transition focus:border-emerald-500/50 focus:ring-2 focus:ring-emerald-500/20"
+              className="mt-1.5 w-full resize-none rounded-xl border border-border-default bg-surface-muted px-4 py-3 text-sm font-medium text-text-primary placeholder:text-text-muted outline-none transition focus:border-brand-forest/50 focus:ring-2 focus:ring-brand-forest/20"
               placeholder="Notas o contexto del hábito"
               disabled={submitting}
             />
           </div>
 
           <div>
-            <label htmlFor="habit-category" className="text-[10px] font-bold uppercase tracking-widest text-white/40">
+            <label htmlFor="habit-category" className="text-[10px] font-bold uppercase tracking-widest text-text-muted">
               Categoría
             </label>
             <select
@@ -205,11 +205,11 @@ export default function CreateHabitModal({ open, onClose, userId }: Props) {
               name="category"
               value={category}
               onChange={(e) => setCategory(e.target.value)}
-              className="mt-1.5 w-full rounded-xl border border-white/10 bg-black/30 px-4 py-3 text-sm font-medium text-white outline-none transition focus:border-emerald-500/50 focus:ring-2 focus:ring-emerald-500/20"
+              className="mt-1.5 w-full rounded-xl border border-border-default bg-surface-muted px-4 py-3 text-sm font-medium text-text-primary outline-none transition focus:border-brand-forest/50 focus:ring-2 focus:ring-brand-forest/20"
               disabled={submitting}
             >
               {CATEGORIES.map((c) => (
-                <option key={c.value} value={c.value} className="bg-neutral-900">
+                <option key={c.value} value={c.value} className="bg-surface-card">
                   {c.label}
                 </option>
               ))}
@@ -220,7 +220,7 @@ export default function CreateHabitModal({ open, onClose, userId }: Props) {
             <div>
               <label
                 htmlFor="habit-frequency"
-                className="text-[10px] font-bold uppercase tracking-widest text-white/40"
+                className="text-[10px] font-bold uppercase tracking-widest text-text-muted"
               >
                 Frecuencia (por semana)
               </label>
@@ -232,14 +232,14 @@ export default function CreateHabitModal({ open, onClose, userId }: Props) {
                 max={21}
                 value={frequency}
                 onChange={(e) => setFrequency(e.target.value)}
-                className="mt-1.5 w-full rounded-xl border border-white/10 bg-black/30 px-4 py-3 text-sm font-medium text-white outline-none transition focus:border-emerald-500/50 focus:ring-2 focus:ring-emerald-500/20"
+                className="mt-1.5 w-full rounded-xl border border-border-default bg-surface-muted px-4 py-3 text-sm font-medium text-text-primary outline-none transition focus:border-brand-forest/50 focus:ring-2 focus:ring-brand-forest/20"
                 disabled={submitting}
               />
             </div>
             <div>
               <label
                 htmlFor="habit-minutes"
-                className="text-[10px] font-bold uppercase tracking-widest text-white/40"
+                className="text-[10px] font-bold uppercase tracking-widest text-text-muted"
               >
                 Minutos objetivo
               </label>
@@ -251,7 +251,7 @@ export default function CreateHabitModal({ open, onClose, userId }: Props) {
                 max={600}
                 value={targetMinutes}
                 onChange={(e) => setTargetMinutes(e.target.value)}
-                className="mt-1.5 w-full rounded-xl border border-white/10 bg-black/30 px-4 py-3 text-sm font-medium text-white outline-none transition focus:border-emerald-500/50 focus:ring-2 focus:ring-emerald-500/20"
+                className="mt-1.5 w-full rounded-xl border border-border-default bg-surface-muted px-4 py-3 text-sm font-medium text-text-primary outline-none transition focus:border-brand-forest/50 focus:ring-2 focus:ring-brand-forest/20"
                 disabled={submitting}
               />
             </div>
@@ -267,14 +267,14 @@ export default function CreateHabitModal({ open, onClose, userId }: Props) {
             <button
               type="button"
               onClick={onClose}
-              className="rounded-xl border border-white/15 px-5 py-3 text-[11px] font-black uppercase tracking-widest text-white/70 transition hover:bg-white/5 hover:text-white"
+              className="rounded-xl border border-border-default px-5 py-3 text-[11px] font-black uppercase tracking-widest text-text-secondary transition hover:bg-surface-muted hover:text-text-primary"
               disabled={submitting}
             >
               Cancelar
             </button>
             <button
               type="submit"
-              className="rounded-xl border border-emerald-500/40 bg-emerald-900/30 px-5 py-3 text-[11px] font-black uppercase tracking-widest text-emerald-300 transition hover:border-emerald-400/60 hover:bg-emerald-900/45 disabled:opacity-50"
+              className="rounded-xl border border-brand-forest/40 bg-brand-forest px-5 py-3 text-[11px] font-black uppercase tracking-widest text-brand-forest-fg transition hover:brightness-110 disabled:opacity-50"
               disabled={submitting}
             >
               {submitting ? "Guardando…" : "Crear hábito"}

@@ -94,7 +94,7 @@ export default function CalendarHead() {
 
   return (
     <div>
-      <article className="rounded-[2rem] border border-white/10 bg-[#0a0a0a] p-8 shadow-2xl shadow-black/30">
+      <article className="rounded-[2rem] border border-border-default bg-[#0a0a0a] p-8 shadow-2xl shadow-black/30">
         <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div className="flex items-start gap-3">
             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-emerald-500/25 bg-emerald-950/40">
@@ -111,7 +111,7 @@ export default function CalendarHead() {
               </p>
             </div>
           </div>
-          <span className="shrink-0 self-start rounded-full border border-white/10 bg-black/30 px-3 py-1.5 text-[10px] font-mono font-bold uppercase tracking-widest text-white/45 sm:self-auto">
+          <span className="shrink-0 self-start rounded-full border border-border-default bg-brand-forest/30 px-3 py-1.5 text-[10px] font-mono font-bold uppercase tracking-widest text-white/45 sm:self-auto">
             {rangeBadge}
           </span>
         </div>

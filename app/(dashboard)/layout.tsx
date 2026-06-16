@@ -1,52 +1,40 @@
-"use client";
-import { useState } from "react";
-import Sidebar from "@/components/SideBar";
-import Header from "@/components/header";
-import { X } from "lucide-react";
+import { getCurrentUser } from "@/services/authService";
+import { profileRepository } from "@/lib/supabase/repository/profileRepository";
+import { subscriptionRepository } from "@/lib/supabase/repository/subscriptionRepository";
+import { getLimits } from "@/lib/plans/limits";
+import DashboardShell from "./_components/DashboardShell";
 
-export default function DashboardLayout({
+export default async function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const user = await getCurrentUser();
 
-  const closeMenu = () => setIsMenuOpen(false);
+  let displayName = "Usuario";
+  let planLabel = "Gratuito";
+  let isPremium = false;
+
+  if (user?.id) {
+    const [profile, subscription] = await Promise.all([
+      profileRepository.findByUser(user.id),
+      subscriptionRepository.findByUser(user.id),
+    ]);
+    displayName =
+      profile?.display_name ||
+      (user.email ? user.email.split("@")[0] : "Usuario");
+    const limits = getLimits(subscription.plan);
+    planLabel = limits.label;
+    isPremium = limits.isPremium;
+  }
 
   return (
-    <div className="flex h-screen bg-brand-offwhite overflow-hidden">
-      <aside className="hidden md:flex w-64 flex-col border-r border-gray-100 bg-white">
-        <Sidebar />
-      </aside>
-
-      {isMenuOpen && (
-        <div className="md:hidden fixed inset-0 z-50 flex">
-          <div
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm transition-opacity"
-            onClick={closeMenu}
-          />
-
-          <div className="relative flex flex-col w-72 h-full bg-white shadow-2xl transition-transform duration-300">
-            <div className="flex justify-end p-4">
-              <button
-                onClick={closeMenu}
-                className="p-2 text-gray-500 hover:bg-gray-100 rounded-lg"
-              >
-                <X size={24} />
-              </button>
-            </div>
-
-            <div className="flex-1 overflow-y-auto">
-              <Sidebar onClose={closeMenu} />
-            </div>
-          </div>
-        </div>
-      )}
-
-      <div className="flex flex-1 flex-col min-w-0 overflow-hidden">
-        <Header onOpenMenu={() => setIsMenuOpen(true)} userName="Juan Díaz" />
-        <main className="flex-1 overflow-y-auto bg-gray-50/50">{children}</main>
-      </div>
-    </div>
+    <DashboardShell
+      userName={displayName}
+      planLabel={planLabel}
+      isPremium={isPremium}
+    >
+      {children}
+    </DashboardShell>
   );
 }

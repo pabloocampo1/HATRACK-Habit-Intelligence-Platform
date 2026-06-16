@@ -1,9 +1,26 @@
-"use client";
+import { redirect } from "next/navigation";
+import { getCurrentUser } from "@/services/authService";
+import { fetchProfilePageData } from "@/app/actions/profile/profileActions";
+import ProfileClient from "./_components/ProfileClient";
 
-export default function ProfilePage() {
+export const metadata = { title: "Mi perfil" };
+
+export default async function ProfilePage() {
+  const user = await getCurrentUser();
+
+  if (!user?.id) redirect("/login");
+
+  const data = await fetchProfilePageData(
+    user.id,
+    user.email ?? "",
+    user.created_at ?? new Date().toISOString(),
+  );
+
   return (
-    <main className="min-h-screen bg-slate-50 p-6 md:p-10 font-sans selection:bg-emerald-100 selection:text-emerald-900">
-      <p>Profile - en construcción</p>
-    </main>
+    <ProfileClient
+      data={data}
+      userId={user.id}
+      userEmail={user.email ?? ""}
+    />
   );
 }

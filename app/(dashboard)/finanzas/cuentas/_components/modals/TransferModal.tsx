@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import type { AccountRow } from "../../accounts.constants";
+import type { Account } from "@/lib/types";
 import { btnGhost, btnPrimary, inputSurface } from "../../cuentas-ui";
 import { formatMoney, parseMoneyInput } from "../../utils/formatMoney";
 import FormField from "./FormField";
@@ -12,7 +12,7 @@ export default function TransferModal({
   onClose,
   onApply,
 }: {
-  accounts: AccountRow[];
+  accounts: Account[];
   onClose: () => void;
   onApply: (p: {
     fromId: string;
@@ -21,9 +21,10 @@ export default function TransferModal({
     note: string;
   }) => void;
 }) {
-  const defaultFrom = accounts[0]?.id ?? "";
+  const defaultFrom = accounts[0]?.account_id ?? "";
   const defaultTo =
-    accounts.find((a) => a.id !== defaultFrom)?.id ?? defaultFrom;
+    accounts.find((a) => a.account_id !== defaultFrom)?.account_id ??
+    defaultFrom;
   const [fromId, setFromId] = useState(defaultFrom);
   const [toId, setToId] = useState(defaultTo);
   const [amount, setAmount] = useState("");
@@ -32,13 +33,13 @@ export default function TransferModal({
 
   useEffect(() => {
     if (fromId === toId) {
-      const other = accounts.find((a) => a.id !== fromId);
-      if (other) setToId(other.id);
+      const other = accounts.find((a) => a.account_id !== fromId);
+      if (other) setToId(other.account_id);
     }
   }, [fromId, toId, accounts]);
 
-  const from = accounts.find((a) => a.id === fromId);
-  const to = accounts.find((a) => a.id === toId);
+  const from = accounts.find((a) => a.account_id === fromId);
+  const to = accounts.find((a) => a.account_id === toId);
   const sameCurrency = from && to && from.currency === to.currency;
 
   const submit = () => {
@@ -57,8 +58,8 @@ export default function TransferModal({
       setError("Ingresa un monto válido mayor a cero.");
       return;
     }
-    if (!from.allowNegative && from.balanceStored < n) {
-      setError("Saldo insuficiente: esta cuenta no permite quedar en negativo.");
+    if (from.balance < n) {
+      setError("Saldo insuficiente en la cuenta origen.");
       return;
     }
     onApply({ fromId, toId, amount: n, note: note.trim() });
@@ -67,56 +68,44 @@ export default function TransferModal({
   return (
     <ModalShell
       title="Transferir entre cuentas"
-      subtitle="Mueve saldo entre dos fuentes del mismo usuario y misma moneda. En backend esto debería crear dos apuntes enlazados (salida y entrada) más actualización atómica de balances."
+      subtitle="Actualiza balance en ambas cuentas (misma moneda). En producción conviene hacerlo en una transacción atómica en el backend."
       onClose={onClose}
     >
       <div className="grid gap-7 sm:grid-cols-2">
-        <FormField
-          label="Cuenta origen"
-          hint="Debe tener saldo suficiente si no permites negativos."
-        >
+        <FormField label="Cuenta origen" hint="Debe tener saldo suficiente.">
           <select
             value={fromId}
             onChange={(e) => setFromId(e.target.value)}
             className={inputSurface}
           >
             {accounts.map((a) => (
-              <option key={a.id} value={a.id}>
-                {a.name} · {a.currency}
+              <option key={a.account_id} value={a.account_id}>
+                {a.account_name} · {a.currency}
               </option>
             ))}
           </select>
         </FormField>
-        <FormField
-          label="Cuenta destino"
-          hint="Recibirá el mismo monto en la misma moneda."
-        >
+        <FormField label="Cuenta destino" hint="Recibe el mismo monto.">
           <select
             value={toId}
             onChange={(e) => setToId(e.target.value)}
             className={inputSurface}
           >
             {accounts.map((a) => (
-              <option key={a.id} value={a.id}>
-                {a.name} · {a.currency}
+              <option key={a.account_id} value={a.account_id}>
+                {a.account_name} · {a.currency}
               </option>
             ))}
           </select>
         </FormField>
-        <FormField
-          label="Monto a mover"
-          hint="Escribe números simples; el backend normalizará formato local."
-        >
+        <FormField label="Monto" hint="Se resta del balance origen y suma al destino.">
           <input
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
             className={`${inputSurface} tabular-nums`}
           />
         </FormField>
-        <FormField
-          label="Nota interna (opcional)"
-          hint="Aparecerá en la descripción del movimiento mock."
-        >
+        <FormField label="Nota (opcional)" hint="Referencia interna del movimiento.">
           <input
             value={note}
             onChange={(e) => setNote(e.target.value)}
@@ -126,7 +115,7 @@ export default function TransferModal({
       </div>
 
       {from && to ? (
-        <div className="mt-8 rounded-xl border border-brand-forest/15 bg-brand-offwhite px-5 py-4 text-base leading-relaxed text-neutral-600 shadow-sm">
+        <div className="mt-8 rounded-xl border border-brand-forest/15 bg-brand-offwhite px-5 py-4 text-base leading-relaxed text-text-secondary shadow-sm">
           <span className="font-semibold text-brand-forest">Vista previa · </span>
           Se descontará{" "}
           <span className="font-bold tabular-nums text-brand-slate">
@@ -135,13 +124,13 @@ export default function TransferModal({
               from.currency,
             )}
           </span>{" "}
-          de <span className="font-semibold text-brand-slate">{from.name}</span> y se
-          acreditará en{" "}
-          <span className="font-semibold text-brand-slate">{to.name}</span>.
+          de{" "}
+          <span className="font-semibold text-brand-slate">{from.account_name}</span>{" "}
+          y se acreditará en{" "}
+          <span className="font-semibold text-brand-slate">{to.account_name}</span>.
           {!sameCurrency ? (
             <span className="mt-2 block font-medium text-amber-800">
-              Monedas distintas: ajusta las cuentas o añade conversión FX en otra
-              iteración.
+              Monedas distintas: elige cuentas con la misma currency.
             </span>
           ) : null}
         </div>

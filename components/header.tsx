@@ -1,7 +1,8 @@
 "use client";
 import { supabase } from "@/lib/supabase/config/supabaseClient";
-import { Menu, Moon } from "lucide-react";
-
+import { Menu, Moon, Sun } from "lucide-react";
+import { useTheme } from "@/components/providers/ThemeProvider";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 export default function Header({
@@ -12,12 +13,12 @@ export default function Header({
   userName: string;
 }) {
   const router = useRouter();
+  const { theme, toggleTheme } = useTheme();
 
   const handleLogout = async () => {
+    // Sign out on both server (clears HttpOnly cookies) and client (clears browser state)
     await fetch("/api/auth/logout", { method: "POST" });
-
     await supabase.auth.signOut();
-
     router.push("/login");
     router.refresh();
   };
@@ -36,41 +37,53 @@ export default function Header({
   });
 
   return (
-    <header className="h-14 flex items-center justify-between px-6 border-b border-gray-100 bg-white flex-shrink-0">
-      <div className="flex items-center gap-3">
+    <header className="flex h-14 shrink-0 items-center justify-between border-b border-border-subtle bg-surface-card px-4 sm:px-6">
+      <div className="flex min-w-0 items-center gap-3">
         <button
           onClick={onOpenMenu}
-          className="flex md:hidden w-8 h-8 items-center justify-center rounded-lg border border-gray-200 text-gray-500 hover:bg-gray-50 transition-all"
+          className="flex min-h-11 min-w-11 items-center justify-center rounded-lg border border-border-default text-text-secondary hover:bg-surface-muted transition-all md:hidden"
+          aria-label="Abrir menú"
         >
           <Menu size={18} />
         </button>
 
         <div>
-          <p className="text-[15px] font-semibold text-gray-900 tracking-tight leading-tight">
+          <p className="text-[15px] font-semibold text-text-primary tracking-tight leading-tight">
             !Bienvenido¡
           </p>
-          <p className="text-[11.5px] text-gray-400 capitalize">{today}</p>
+          <p className="text-[11.5px] text-text-muted capitalize">{today}</p>
         </div>
       </div>
 
       <div className="flex items-center gap-2">
         <button
-          className="w-8 h-8 rounded-lg border border-gray-200 flex items-center justify-center text-gray-400 hover:bg-gray-50 hover:text-gray-600 hover:border-gray-300 transition-all"
-          onClick={() => alert("in process to build")}
+          type="button"
+          aria-label={theme === "dark" ? "Modo claro" : "Modo oscuro"}
+          className="flex min-h-11 min-w-11 items-center justify-center rounded-lg border border-border-default text-text-muted hover:bg-surface-muted hover:text-text-secondary hover:border-border-strong transition-all"
+          onClick={toggleTheme}
         >
-          <Moon size={13} strokeWidth={1.75} />
+          {theme === "dark" ? (
+            <Sun size={13} strokeWidth={1.75} />
+          ) : (
+            <Moon size={13} strokeWidth={1.75} />
+          )}
         </button>
+
+        {/* Avatar — navega a /profile */}
+        <Link
+          href="/profile"
+          title={`${userName} · Ver perfil`}
+          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border-2 border-brand-forest/40 bg-brand-forest text-[12px] font-black tracking-tight text-brand-forest-fg shadow-sm hover:brightness-110 hover:scale-105 transition-all select-none"
+        >
+          {initials}
+        </Link>
 
         <button
           onClick={handleLogout}
-          className="h-8 px-3 rounded-lg border border-gray-200 text-[12.5px] font-medium text-gray-500 hover:bg-gray-50 hover:text-gray-700 hover:border-gray-300 transition-all"
+          className="hidden sm:block min-h-11 rounded-lg border border-border-default px-3 text-[12.5px] font-medium text-text-secondary hover:bg-surface-muted hover:text-text-primary hover:border-border-strong transition-all"
         >
           Cerrar sesión
         </button>
-
-        <div className="hidden sm:flex w-8 h-8 rounded-full bg-brand-forest border-2 border-emerald-200 items-center justify-center text-[11px] font-semibold text-emerald-100 cursor-pointer">
-          {initials}
-        </div>
       </div>
     </header>
   );

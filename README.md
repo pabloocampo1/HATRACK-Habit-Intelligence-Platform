@@ -1,295 +1,212 @@
-# 🧠 HATRACK — Sistema de Autogestión y Rendimiento Personal
+# HaTrack — Personal OS
 
-## 🚀 Descripción General
+> *No se trata de hacer más. Se trata de entender cómo estás viviendo.*
 
-**HATRACK** es una aplicación diseñada para transformar la manera en que una persona entiende su disciplina, consistencia y crecimiento personal.
+HaTrack es un sistema de gestión de vida personal diseñado para personas que quieren medir, mejorar y dominar todas las áreas importantes de su vida desde un solo lugar.
 
-No es simplemente un tracker de hábitos.
-
-Es un sistema que convierte acciones diarias en métricas interpretables, permitiendo analizar no solo _qué haces_, sino también:
-
-- Cómo lo haces
-- Por qué lo haces
-- En qué condiciones lo haces
-- Y cómo evolucionas con el tiempo
+No es una app de hábitos. Es un sistema operativo personal.
 
 ---
 
-## 🎯 Propósito del Proyecto
+## Qué es y para qué sirve
 
-La mayoría de las aplicaciones de hábitos se quedan en lo superficial:
+La mayoría de las apps de productividad se quedan en lo superficial: marcar tareas, contar rachas, mostrar gráficas bonitas. HaTrack va más profundo.
 
-> ✔️ Marcar tareas completadas
-> ❌ Entender el comportamiento detrás de ellas
+El sistema responde preguntas reales:
 
-Este proyecto nace de una necesidad más profunda:
+- ¿Soy disciplinado o solo motivado cuando me conviene?
+- ¿Mi rendimiento depende de mi energía ese día?
+- ¿Cuándo soy más productivo y por qué?
+- ¿Estoy creciendo o solo repitiendo los mismos patrones?
+- ¿Mis hábitos están alineados con mis metas de vida?
+- ¿Mis finanzas reflejan mis prioridades?
 
-> **Convertir el esfuerzo diario en información útil para mejorar como persona.**
-
-HATRACK busca responder preguntas como:
-
-- ¿Soy disciplinado o solo motivado a veces?
-- ¿Mi rendimiento depende de mi energía?
-- ¿Cuándo soy más productivo?
-- ¿Estoy creciendo o solo repitiendo patrones?
+Cada módulo captura una dimensión diferente de tu vida y todas convergen en el dashboard para darte una visión unificada de quién eres como persona.
 
 ---
 
-## 🧩 Historia del Proyecto
+## Módulos actuales
 
-Este sistema surge de un enfoque personal hacia la mejora continua.
+### Hábitos personales
 
-En lugar de depender únicamente de motivación, se plantea una filosofía basada en:
+El núcleo del sistema. Cada hábito no solo se marca como hecho — se registra con contexto real:
 
-- **Consistencia diaria**
-- **Medición objetiva del progreso**
-- **Reflexión consciente del comportamiento**
+- Minutos dedicados vs minutos objetivo
+- Calidad de ejecución (1–5)
+- Nivel de energía (1–5)
+- Estado mental (enfocado, motivado, distraído, cansado, estresado)
+- Notas de la sesión
 
-El objetivo fue crear una herramienta que funcione como:
+Esto permite analizar no solo *qué hiciste*, sino *cómo* y *en qué condiciones* lo hiciste.
 
-> 🧠 Un espejo de tu disciplina
-> 📊 Un analizador de tu comportamiento
-> 📈 Un sistema de mejora continua
+### Retos personales
 
----
+Sistema de desafíos de duración definida (7, 15, 30, 60 o 90 días). Cada reto puede vincular hábitos existentes o crear hábitos exclusivos para el reto.
 
-## 🏗️ Arquitectura Conceptual
+Incluye:
+- Mapa de días completados / fallidos
+- Racha actual y máxima
+- Tasa de completitud por hábito
+- Banner de resumen al finalizar
 
-El sistema se basa en tres niveles de información:
+### Metas personales
 
-### 1. Datos Cuantitativos
+Define objetivos grandes con fecha límite, motivación ("¿por qué lo quieres?") y prioridad. Divide cada meta en hitos alcanzables que calculan automáticamente el progreso.
 
-- Minutos dedicados
-- Frecuencia de hábitos
-- Completitud
+Los usuarios PRO pueden vincular sus hábitos y retos existentes a una meta para ver cómo su trabajo diario contribuye a objetivos mayores.
 
-### 2. Datos Cualitativos
+### Vida financiera
 
-- Calidad de ejecución (1-5)
-- Nivel de enfoque
-- Estado mental
+Seguimiento de ingresos, gastos y flujo de dinero con:
 
-### 3. Contexto Personal
+- Cuentas (Nequi, efectivo, bancaria, tarjeta)
+- Transacciones categorizadas
+- Obligaciones periódicas
+- Presupuestos por categoría
+- Metas de ahorro
+- Reportes
 
-- Energía
-- Notas
-- Intención diaria (focus)
+### Dashboard unificado
 
----
-
-## 📊 Sistema de Métricas (KPIs)
-
-El núcleo del sistema está basado en 5 métricas clave:
-
-### 🔵 Disciplina
-
-- Basada en: hábitos completados vs esperados
-- Representa: cumplimiento de compromisos
+Vista consolidada del día con:
+- KPIs de rendimiento (disciplina, consistencia, enfoque, dedicación, crecimiento)
+- Check-in diario de hábitos con registro de sesión inline
+- Meta personal destacada (la de mayor prioridad activa)
+- Estadísticas semanales y mensuales
 
 ---
 
-### 🟢 Consistencia
+## Próximamente
 
-- Basada en: frecuencia de actividad
-- Representa: qué tan seguido apareces
-
----
-
-### 🟡 Enfoque
-
-- Basado en: calidad de ejecución
-- Representa: qué tan bien haces las cosas
+- **Módulo Fitness** — seguimiento de entrenamientos, series, repeticiones y progresión de carga
+- **Módulo Aprendizaje** — libros leídos, cursos, horas de estudio
+- **Journal diario** — reflexión breve conectada al estado mental registrado en los hábitos
+- **Dashboard de vida unificado** — radar por área (hábitos, finanzas, fitness, aprendizaje)
+- **Insights automáticos** — detección de patrones y correlaciones en tu comportamiento
 
 ---
 
-### 🟣 Dedicación
+## Sistema de planes
 
-- Basada en: tiempo invertido vs planificado
-- Representa: cuánto esfuerzo real aplicas
+| Función | FREE | PRO |
+|---|---|---|
+| Hábitos activos | 8 | Ilimitados |
+| Retos activos | 4 | Ilimitados |
+| Hábitos por reto | 5 | Ilimitados |
+| Metas activas | 5 | Ilimitadas |
+| Hitos por meta | 3 | Ilimitados |
+| Vincular hábitos/retos a metas | No | Sí |
+| Historial visible | 30 días | Todo |
+| Sesiones por hábito por día | 1 | Ilimitadas |
 
 ---
 
-### 🔴 Crecimiento
+## Métricas del sistema
 
-- Basado en: evolución respecto a periodos anteriores
-- Representa: mejora continua
+El sistema calcula 5 KPIs internos que reflejan diferentes dimensiones del rendimiento:
+
+| Métrica | Qué mide |
+|---|---|
+| Disciplina | Hábitos completados vs esperados |
+| Consistencia | Frecuencia con que apareces (días activos) |
+| Enfoque | Calidad promedio de ejecución |
+| Dedicación | Tiempo invertido vs tiempo planeado |
+| Crecimiento | Evolución respecto a periodos anteriores |
 
 ---
 
-## 🧱 Modelo de Datos
+## Stack técnico
 
-### Habit
+| Capa | Tecnología |
+|---|---|
+| Framework | Next.js 15+ (App Router) |
+| Lenguaje | TypeScript |
+| Base de datos | Supabase (PostgreSQL + Auth + RLS) |
+| Estilos | TailwindCSS v4 |
+| Autenticación | Supabase Auth + `@supabase/ssr` |
+| PWA | `@ducanh2912/next-pwa` |
 
-```ts
-interface Habit {
-  id: string;
-  user_id: string;
-  title: string;
-  category: string;
-  frequency: number; // veces por semana
-  target_minutes: number;
-  created_at: string;
-}
+---
+
+## Arquitectura
+
+El sistema sigue un patrón estricto de tres capas para cada módulo:
+
+```
+Server Action (controlador)
+    ↓
+Service (lógica de negocio + validaciones de plan)
+    ↓
+Repository (acceso a Supabase)
 ```
 
-### HabitLog
+**Reglas:**
+- Los Server Actions son los únicos puntos de entrada desde el cliente
+- Los Services contienen toda la lógica de negocio, incluyendo guards de límites por plan
+- Los Repositories son la única capa que habla con Supabase directamente
+- Row Level Security (RLS) activo en todas las tablas — el backend nunca asume que el usuario tiene acceso
 
-```ts
-interface HabitLog {
-  id: string;
-  habit_id: string;
-  user_id: string;
-  log_date: string;
-  minutes_completed: number;
-  quality_score: number;
-  completed: boolean;
-  notes?: string;
-  daily_focus?: string;
-  energy_level?: number;
-  mental_state?: string;
-}
+---
+
+## Estructura de carpetas
+
+```
+app/
+  (auth)/          — Login, Signup
+  (dashboard)/
+    dashboard/     — Dashboard principal
+    habits/        — Módulo hábitos
+    retos/         — Módulo retos
+    metas/         — Módulo metas personales
+    finanzas/      — Módulo vida financiera
+    profile/       — Perfil y plan
+  actions/         — Server actions por módulo
+services/          — Lógica de negocio
+  habitService.ts
+  goals/
+  challenges/
+  plans/
+  finance/
+lib/
+  supabase/
+    repository/    — Acceso a DB
+    config/        — Cliente browser y server
+  plans/
+    limits.ts      — Fuente única de verdad para límites por plan
+  types.ts         — Interfaces TypeScript globales
+components/        — Componentes compartidos (Sidebar, Header, etc.)
 ```
 
 ---
 
-## 🎨 Experiencia de Usuario
+## Variables de entorno
 
-El diseño de la aplicación está enfocado en:
-
-- Minimalismo visual
-- Feedback inmediato
-- Interpretación clara de datos
-- Reflexión consciente
-
-Cada input dentro del sistema tiene una intención:
-
-| Campo         | Propósito               |
-| ------------- | ----------------------- |
-| Minutos       | Medir esfuerzo real     |
-| Calidad       | Evaluar ejecución       |
-| Notas         | Capturar contexto       |
-| Enfoque       | Definir intención       |
-| Energía       | Analizar rendimiento    |
-| Estado mental | Entender comportamiento |
+```env
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
+```
 
 ---
 
-## ⚙️ Tecnologías
+## Desarrollo local
 
-- **Frontend:** React / Next.js
-- **Backend:** (Integrable con Spring Boot o APIs REST)
-- **Lenguaje:** TypeScript
-- **Estilos:** TailwindCSS
-- **Arquitectura:** Modular y escalable
+```bash
+npm install
+npm run dev
+```
 
----
+Para producción con webpack (requerido por next-pwa):
 
-## 🤝 Guía para Contribuidores (Open Source)
-
-Este proyecto está diseñado para crecer con la comunidad.
-
-Si quieres contribuir, aquí hay áreas clave donde puedes aportar valor:
-
-### 📊 Sistema de Gráficas (PRIORIDAD ALTA)
-
-Actualmente, el sistema **no cuenta con visualización avanzada de datos**, lo cual limita la interpretación del progreso.
-
-Se necesitan contribuciones para implementar:
-
-#### 🔹 Gráficas en el Perfil del Usuario
-
-- Evolución de disciplina en el tiempo
-- Tendencia de consistencia semanal
-- Promedio de calidad por hábito
-
-#### 🔹 Gráficas en la Sección de Estadísticas
-
-- Comparación entre hábitos
-- Distribución de tiempo invertido
-- Relación entre energía vs rendimiento
-- Crecimiento histórico
+```bash
+npm run build
+```
 
 ---
 
-### 🛠️ Sugerencias Técnicas
+## Filosofía
 
-Puedes implementar estas gráficas usando:
+Este sistema nace de una premisa simple: **la motivación es temporal, los sistemas son permanentes**.
 
-- Recharts
-- Chart.js
-- D3.js (nivel más avanzado)
-
-Se recomienda:
-
-- Componentes reutilizables
-- Separación clara entre lógica y UI
-- Manejo eficiente de datos (memoización si es necesario)
-
----
-
-### 📌 Issues Recomendados
-
-Puedes comenzar creando o tomando issues como:
-
-- `feature: user profile charts`
-- `feature: habit statistics dashboard`
-- `enhancement: data visualization layer`
-- `refactor: metrics calculation optimization`
-
----
-
-### 🧪 Buenas Prácticas
-
-- Mantener código limpio y legible
-- Seguir principios de componentes desacoplados
-- Documentar funciones complejas
-- Crear commits descriptivos
-
----
-
-## 🧠 Filosofía del Sistema
-
-Este proyecto se basa en una idea clave:
-
-> _No puedes mejorar lo que no mides, y no puedes entender lo que no interpretas._
-
-Por eso, el sistema no solo muestra números.
-
-Los explica.
-
----
-
-## 📈 Futuras Mejoras
-
-- 🔍 Análisis inteligente de patrones
-- 🤖 Insights automáticos (tipo coach)
-- 📊 Comparación histórica avanzada
-- 🧬 Sistema de niveles (gamificación)
-- 📅 Proyecciones de rendimiento
-
----
-
-## 🏁 Conclusión
-
-HATRACK no es una app de hábitos común.
-
-Es un sistema diseñado para personas que buscan:
-
-- Disciplina real
-- Mejora continua
-- Autoconocimiento profundo
-
----
-
-## 👨‍💻 Autor
-
-Desarrollado con enfoque en crecimiento personal, disciplina y mejora continua.
-
----
-
-## ⚡ Frase del sistema
-
-> “No se trata de hacer más…
-> se trata de entender cómo estás viviendo.”
+HaTrack no te motiva. Te muestra en datos quién eres realmente, para que puedas decidir conscientemente quién quieres ser.
 
 ---

@@ -1,15 +1,10 @@
+import { createClient } from "@/lib/supabase/config/server";
 import { NextResponse } from "next/server";
 
 export async function POST() {
-  const response = NextResponse.json({ ok: true });
+  const supabase = await createClient();
+  await supabase.auth.signOut();
 
-  response.cookies.set("hackhabit_auth", "", {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    path: "/",
-    expires: new Date(0),
-  });
-
-  return response;
+  // Redirect to login — Supabase clears its own session cookies automatically
+  return NextResponse.json({ ok: true });
 }
