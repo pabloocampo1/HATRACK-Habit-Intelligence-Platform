@@ -1,500 +1,526 @@
 "use client";
 
-import deleteHabit, { save } from "@/app/actions/habitActions";
-import { CreateHabitPayload, Habit, HabitLog } from "@/lib/types";
-import { AwardIcon, Delete } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
-import DeleteHabitModal from "./deleteHabitModal";
 import { saveHabitLog } from "@/app/actions/habitLogsActions";
+import { Habit, HabitLog } from "@/lib/types";
+import {
+  CheckCircle2,
+  Circle,
+  ChevronDown,
+  ChevronUp,
+  Zap,
+  Clock,
+  Star,
+  Brain,
+  StickyNote,
+  BarChart2,
+} from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useState, useTransition } from "react";
+
+// ── helpers ─────────────────────────────────────────────────
+
+const MENTAL_STATES = [
+  { value: "focused", label: "Enfocado" },
+  { value: "motivated", label: "Motivado" },
+  { value: "distracted", label: "Distraído" },
+  { value: "tired", label: "Cansado" },
+  { value: "stressed", label: "Estresado" },
+];
+
+const CATEGORY_COLORS: Record<string, string> = {
+  fitness: "text-orange-400",
+  programming: "text-blue-400",
+  reading: "text-purple-400",
+  learning: "text-yellow-400",
+  languages: "text-pink-400",
+  health: "text-emerald-400",
+  productivity: "text-cyan-400",
+  meditation: "text-indigo-400",
+  finance: "text-lime-400",
+  social: "text-rose-400",
+  other: "text-text-muted",
+};
+
+function ScoreButtons({
+  value,
+  onChange,
+  max = 5,
+}: {
+  value: number;
+  onChange: (v: number) => void;
+  max?: number;
+}) {
+  return (
+    <div className="flex gap-1.5">
+      {Array.from({ length: max }, (_, i) => i + 1).map((n) => (
+        <button
+          key={n}
+          type="button"
+          onClick={() => onChange(n)}
+          className={`flex-1 rounded-lg py-2 text-sm font-black transition ${
+            value === n
+              ? "bg-brand-forest text-brand-forest-fg"
+              : "border border-border-default bg-surface-muted text-text-muted hover:border-brand-forest/40 hover:text-text-primary"
+          }`}
+        >
+          {n}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+// ── Log form (inline panel) ──────────────────────────────────
+
+function LogForm({
+  habit,
+  userId,
+  onDone,
+  onCancel,
+}: {
+  habit: Habit;
+  userId: string;
+  onDone: () => void;
+  onCancel: () => void;
+}) {
+  const router = useRouter();
+  const [isPending, startTransition] = useTransition();
+
+  const [minutes, setMinutes] = useState(habit.target_minutes ?? 0);
+  const [quality, setQuality] = useState(4);
+  const [energy, setEnergy] = useState(3);
+  const [mental, setMental] = useState("focused");
+  const [notes, setNotes] = useState("");
+  const [error, setError] = useState<string | null>(null);
+
+  function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setError(null);
+    startTransition(async () => {
+      const res = await saveHabitLog(
+        habit.id ?? "",
+        {
+          minutes_completed: minutes,
+          quality_score: quality,
+          completed: minutes > 0,
+          notes: notes.trim() || undefined,
+          daily_focus: undefined,
+          energy_level: energy,
+          mental_state: mental,
+        },
+        userId,
+      );
+      if (!res.success) {
+        setError(res.error ?? "Error al registrar.");
+        return;
+      }
+      router.refresh();
+      onDone();
+    });
+  }
+
+  const labelCls =
+    "text-[10px] font-bold uppercase tracking-widest text-text-muted";
+
+  return (
+    <form
+      onSubmit={handleSubmit}
+      className="mt-3 space-y-4 rounded-2xl border border-brand-forest/20 bg-accent-subtle/30 p-5"
+    >
+      {/* Minutes */}
+      <div className="space-y-1.5">
+        <label className={labelCls}>
+          <Clock className="inline size-3 mr-1" strokeWidth={2.5} />
+          Minutos dedicados
+        </label>
+        <div className="flex items-center gap-3">
+          <input
+            type="number"
+            min={0}
+            max={600}
+            value={minutes}
+            onChange={(e) => setMinutes(Number(e.target.value))}
+            className="w-24 rounded-xl border border-border-default bg-surface-card px-3 py-2 text-center text-lg font-black text-text-primary outline-none focus:border-brand-forest/50"
+          />
+          <span className="text-sm text-text-muted">
+            meta: {habit.target_minutes} min
+          </span>
+          {habit.target_minutes > 0 && (
+            <span className="ml-auto rounded-full border border-brand-forest/20 bg-brand-forest/10 px-2 py-0.5 text-[10px] font-black text-brand-forest">
+              {Math.round((minutes / habit.target_minutes) * 100)}%
+            </span>
+          )}
+        </div>
+      </div>
+
+      {/* Quality */}
+      <div className="space-y-1.5">
+        <label className={labelCls}>
+          <Star className="inline size-3 mr-1" strokeWidth={2.5} />
+          Calidad (1–5)
+        </label>
+        <ScoreButtons value={quality} onChange={setQuality} />
+      </div>
+
+      {/* Energy */}
+      <div className="space-y-1.5">
+        <label className={labelCls}>
+          <Zap className="inline size-3 mr-1" strokeWidth={2.5} />
+          Energía (1–5)
+        </label>
+        <ScoreButtons value={energy} onChange={setEnergy} />
+      </div>
+
+      {/* Mental state */}
+      <div className="space-y-1.5">
+        <label className={labelCls}>
+          <Brain className="inline size-3 mr-1" strokeWidth={2.5} />
+          Estado mental
+        </label>
+        <div className="flex flex-wrap gap-1.5">
+          {MENTAL_STATES.map((s) => (
+            <button
+              key={s.value}
+              type="button"
+              onClick={() => setMental(s.value)}
+              className={`rounded-lg px-3 py-1.5 text-xs font-bold transition ${
+                mental === s.value
+                  ? "bg-brand-forest text-brand-forest-fg"
+                  : "border border-border-default bg-surface-muted text-text-secondary hover:border-brand-forest/30"
+              }`}
+            >
+              {s.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Notes */}
+      <div className="space-y-1.5">
+        <label className={labelCls}>
+          <StickyNote className="inline size-3 mr-1" strokeWidth={2.5} />
+          Notas (opcional)
+        </label>
+        <textarea
+          rows={2}
+          value={notes}
+          onChange={(e) => setNotes(e.target.value)}
+          placeholder="¿Algo relevante de esta sesión?"
+          className="w-full resize-none rounded-xl border border-border-default bg-surface-card px-3 py-2 text-sm text-text-primary placeholder:text-text-muted outline-none focus:border-brand-forest/40"
+        />
+      </div>
+
+      {error && (
+        <p className="rounded-lg border border-red-500/20 bg-red-500/10 px-3 py-2 text-xs text-red-400">
+          {error}
+        </p>
+      )}
+
+      <div className="flex gap-2">
+        <button
+          type="submit"
+          disabled={isPending}
+          className="flex-1 min-h-11 rounded-xl bg-brand-forest text-sm font-bold text-brand-forest-fg hover:brightness-110 transition disabled:opacity-50"
+        >
+          {isPending ? "Guardando…" : "Registrar sesión"}
+        </button>
+        <button
+          type="button"
+          disabled={isPending}
+          onClick={onCancel}
+          className="min-h-11 rounded-xl border border-border-default px-4 text-sm font-bold text-text-secondary hover:bg-surface-muted transition"
+        >
+          Cancelar
+        </button>
+      </div>
+    </form>
+  );
+}
+
+// ── Habit card ───────────────────────────────────────────────
+
+function HabitCard({
+  habit,
+  logs,
+  userId,
+}: {
+  habit: Habit;
+  logs: HabitLog[];
+  userId: string;
+}) {
+  const [open, setOpen] = useState(false);
+
+  const todayLogs = logs.filter((l) => l.habit_id === habit.id);
+  const completedCount = todayLogs.filter((l) => l.completed).length;
+  const totalMinutes = todayLogs.reduce(
+    (s, l) => s + (l.minutes_completed ?? 0),
+    0,
+  );
+  const isDone = completedCount > 0;
+  const catColor = CATEGORY_COLORS[habit.category] ?? "text-text-muted";
+
+  return (
+    <article
+      className={`rounded-2xl border transition-all ${
+        isDone
+          ? "border-brand-forest/30 bg-accent-subtle/40"
+          : "border-border-subtle bg-surface-card"
+      }`}
+    >
+      {/* Main row */}
+      <div className="flex items-start gap-4 p-4">
+        {/* Done indicator */}
+        <div
+          className={`mt-0.5 shrink-0 ${isDone ? "text-brand-forest" : "text-text-muted"}`}
+        >
+          {isDone ? (
+            <CheckCircle2 className="size-5" strokeWidth={2.5} />
+          ) : (
+            <Circle className="size-5" strokeWidth={1.75} />
+          )}
+        </div>
+
+        {/* Info */}
+        <div className="flex-1 min-w-0">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className={`text-[9px] font-bold uppercase tracking-widest ${catColor}`}>
+              {habit.category}
+            </span>
+            {isDone && (
+              <span className="rounded-full border border-brand-forest/20 bg-brand-forest/10 px-2 py-0.5 text-[9px] font-black text-brand-forest">
+                {totalMinutes} min · ×{completedCount}
+              </span>
+            )}
+          </div>
+          <p
+            className={`mt-0.5 font-bold tracking-tight ${isDone ? "text-brand-forest" : "text-text-primary"}`}
+          >
+            {habit.title}
+          </p>
+          <p className="mt-0.5 text-xs text-text-muted">
+            Meta: {habit.target_minutes} min · {habit.frequency}×/sem
+          </p>
+        </div>
+
+        {/* Actions */}
+        <div className="flex shrink-0 items-center gap-1">
+          <button
+            type="button"
+            onClick={() => setOpen((v) => !v)}
+            className={`flex min-h-9 items-center gap-1.5 rounded-xl border px-3 text-xs font-bold transition ${
+              open
+                ? "border-brand-forest/40 bg-brand-forest text-brand-forest-fg"
+                : "border-border-default text-text-secondary hover:border-brand-forest/30 hover:text-brand-forest"
+            }`}
+          >
+            {open ? (
+              <>
+                <ChevronUp className="size-3.5" strokeWidth={2.5} /> Cerrar
+              </>
+            ) : (
+              <>
+                <ChevronDown className="size-3.5" strokeWidth={2.5} />
+                {isDone ? "Otra sesión" : "Registrar"}
+              </>
+            )}
+          </button>
+        </div>
+      </div>
+
+      {/* Inline log form */}
+      {open && (
+        <div className="px-4 pb-4">
+          <LogForm
+            habit={habit}
+            userId={userId}
+            onDone={() => setOpen(false)}
+            onCancel={() => setOpen(false)}
+          />
+        </div>
+      )}
+    </article>
+  );
+}
+
+// ── Daily summary ────────────────────────────────────────────
+
+function DailySummary({
+  habits,
+  logs,
+}: {
+  habits: Habit[];
+  logs: HabitLog[];
+}) {
+  if (logs.length === 0) return null;
+
+  const completedHabits = habits.filter((h) =>
+    logs.some((l) => l.habit_id === h.id && l.completed),
+  );
+  const totalMinutes = logs.reduce((s, l) => s + (l.minutes_completed ?? 0), 0);
+  const avgQuality =
+    logs.length > 0
+      ? (logs.reduce((s, l) => s + (l.quality_score ?? 0), 0) / logs.length).toFixed(1)
+      : "—";
+
+  return (
+    <div className="mt-4 rounded-2xl border border-border-subtle bg-surface-muted p-5">
+      <p className="mb-3 text-[10px] font-black uppercase tracking-[0.3em] text-text-muted">
+        Resumen del día
+      </p>
+      <div className="grid grid-cols-3 gap-3">
+        {[
+          { label: "Completados", value: `${completedHabits.length}/${habits.length}` },
+          { label: "Minutos totales", value: `${totalMinutes}m` },
+          { label: "Calidad media", value: `${avgQuality}/5` },
+        ].map((s) => (
+          <div key={s.label} className="rounded-xl border border-border-subtle bg-surface-card p-3 text-center">
+            <p className="text-[9px] font-bold uppercase tracking-widest text-text-muted">{s.label}</p>
+            <p className="mt-1 text-xl font-black tabular-nums text-text-primary">{s.value}</p>
+          </div>
+        ))}
+      </div>
+
+      {/* Log rows */}
+      <div className="mt-3 space-y-1.5">
+        {logs.map((log, i) => {
+          const habit = habits.find((h) => h.id === log.habit_id);
+          if (!habit) return null;
+          return (
+            <div
+              key={i}
+              className="flex items-center gap-3 rounded-xl border border-border-subtle bg-surface-card px-4 py-2.5"
+            >
+              <CheckCircle2
+                className={`size-4 shrink-0 ${log.completed ? "text-brand-forest" : "text-text-muted"}`}
+                strokeWidth={2.5}
+              />
+              <span className="flex-1 text-sm font-medium text-text-primary truncate">
+                {habit.title}
+              </span>
+              <span className="text-xs font-bold tabular-nums text-text-muted">
+                {log.minutes_completed}m
+              </span>
+              <span className="text-xs font-bold text-text-muted">
+                ★ {log.quality_score}/5
+              </span>
+              {log.mental_state && (
+                <span className="hidden sm:block rounded-full border border-border-subtle bg-surface-muted px-2 py-0.5 text-[9px] font-bold text-text-muted capitalize">
+                  {log.mental_state}
+                </span>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+// ── Main component ───────────────────────────────────────────
 
 export default function HabitRegister({
   habitsProp = [],
   todayLogsProps = [],
   userId,
 }: {
-  habitsProp: Habit[] | [];
-  todayLogsProps: HabitLog[] | [];
+  habitsProp: Habit[];
+  todayLogsProps: HabitLog[];
   userId: string;
 }) {
-  const router = useRouter();
+  const completedCount = habitsProp.filter((h) =>
+    todayLogsProps.some((l) => l.habit_id === h.id && l.completed),
+  ).length;
 
-  const [showNewHabitForm, setShowNewHabitForm] = useState(false);
-  const [habitToDelete, setHabitToDelete] = useState<Habit | null>(null);
-
-  const [loading, setLoading] = useState(false);
-  const [loadingDelete, setLoadingDelete] = useState(false);
-  const [loadingSaveLog, setLoadingSaveLog] = useState(false);
-
-  const [habitTitle, setHabitTitle] = useState("");
-  const [habitCategory, setHabitCategory] = useState("other");
-  const [habitFrequency, setHabitFrequency] = useState(0);
-  const [habitMinutes, setHabitMinutes] = useState(30);
-
-  const [message, setMessage] = useState("");
-  const [habitId, setHabitId] = useState("");
-  const [showActivityForm, setShowActivityForm] = useState(false);
-  const [selectedHabit, setSelectedHabit] = useState<Habit | null>(null);
-
-  const [activityMinutes, setActivityMinutes] = useState(0);
-  const [activityQuality, setActivityQuality] = useState(0);
-  const [activityNotes, setActivityNotes] = useState("");
-  const [activityFocus, setActivityFocus] = useState("");
-  const [activityEnergy, setActivityEnergy] = useState(3); // Valor por defecto neutro
-  const [activityMentalState, setActivityMentalState] = useState("focused"); // O dejarlo vacío para obligar a elegir
-
-  const handleCreateHabit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-
-    try {
-      const habit: CreateHabitPayload = {
-        title: habitTitle || "",
-        category: habitCategory || "",
-        frequency: habitFrequency || 0,
-        target_minutes: habitMinutes || 0,
-      };
-
-      const response = await save(habit, userId);
-
-      console.log(response);
-
-      if (response.success) {
-        setHabitTitle("");
-        setShowNewHabitForm(false);
-        setMessage("¡Hábito creado! ✅");
-        router.refresh();
-      } else {
-        setMessage(
-          `Error al crear hábito: ${response.error || "Desconocido"} ❌`,
-        );
-      }
-    } catch (error: any) {
-      setMessage(error.message || "Error al registrar actividad");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleDeleteHabit = async () => {
-    if (!habitToDelete) return;
-
-    setLoadingDelete(true);
-    const response = await deleteHabit(habitToDelete.id || "");
-
-    if (response.success) {
-      setHabitToDelete(null);
-      setMessage("Hábito eliminado exitosamente ✅");
-
-      router.refresh();
-    } else {
-      setMessage(
-        `Error al eliminar hábito: ${response.error || "Desconocido"} ❌`,
-      );
-    }
-
-    setLoadingDelete(false);
-  };
-
-  const handleLogActivity = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoadingSaveLog(true);
-
-    const res = await saveHabitLog(
-      selectedHabit?.id || "",
-      {
-        minutes_completed: activityMinutes,
-        quality_score: activityQuality,
-        completed: activityMinutes > 0 ? true : false,
-        notes: activityNotes,
-        daily_focus: activityFocus,
-        energy_level: activityEnergy,
-        mental_state: activityMentalState,
-      },
-      userId,
-    );
-
-    if (res.success) {
-      setShowActivityForm(false);
-
-      setActivityFocus("");
-      setActivityEnergy(0);
-      setActivityMentalState("focused");
-      setActivityMinutes(0);
-      setActivityQuality(0);
-      setActivityNotes("");
-      setMessage("Actividad registrada exitosamente ✅");
-      router.refresh();
-    } else {
-      setMessage(
-        `Error al registrar actividad: ${res.error || "Desconocido"} ❌`,
-      );
-    }
-
-    setLoadingSaveLog(false);
-  };
+  const pct =
+    habitsProp.length > 0
+      ? Math.round((completedCount / habitsProp.length) * 100)
+      : 0;
 
   return (
-    <div
-      className=" 
-     p-6 md:p-10 font-sans bg-surface-card selection:text-emerald-900 "
-    >
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 ">
-        <section className="rounded-3xl  p-8">
-          <h2 className="text-xl font-black mb-4">📋 Mis hábitos</h2>
-          <button
-            disabled={loading}
-            onClick={() => setShowNewHabitForm(!showNewHabitForm)}
-            className="w-full rounded-full border-2 border-border-strong bg-brand-forest px-4 py-2 text-xs font-bold uppercase tracking-widest text-white transition hover:bg-surface-card hover:text-foreground mb-4"
-          >
-            {loading ? "Cargando..." : " + Nuevo hábito"}
-          </button>
-
-          {showNewHabitForm && (
-            <form
-              onSubmit={handleCreateHabit}
-              className="mb-4 p-4 border-2 border-border-strong rounded-lg space-y-3"
-            >
-              <input
-                type="text"
-                value={habitTitle}
-                onChange={(e) => setHabitTitle(e.target.value)}
-                placeholder="Nombre del hábito"
-                className="w-full text-sm rounded border border-border-default px-2 py-1 outline-none focus:border-border-strong"
-                required
-              />
-              <select
-                value={habitCategory}
-                onChange={(e) => setHabitCategory(e.target.value)}
-                className="w-full text-sm rounded border border-border-default px-2 py-1 outline-none focus:border-border-strong"
-              >
-                <option value="fitness">🏋️ Fitness & Sport</option>
-                <option value="programming">💻 Programming & Tech</option>
-                <option value="reading">📚 Reading</option>
-                <option value="learning">🧠 Learning & Studies</option>
-                <option value="languages">🗣️ Languages study</option>
-                <option value="health">❤️ Health & Diet</option>
-                <option value="productivity">🚀 Productivity</option>
-                <option value="meditation">🧘 Mental Health & Focus</option>
-                <option value="finance">💰 Finance</option>
-                <option value="social">🤝 Social & Family</option>
-                <option value="other">📌 Other</option>
-              </select>
-              <label htmlFor="habitFrequency">Veces por semana</label>
-              <input
-                type="number"
-                value={habitFrequency}
-                onChange={(e) => setHabitFrequency(parseInt(e.target.value))}
-                placeholder="Veces por semana"
-                id="habitFrequency"
-                className="w-full text-sm rounded border border-border-default px-2 py-1 outline-none focus:border-border-strong"
-                min="1"
-              />
-              <input
-                type="number"
-                value={habitMinutes}
-                onChange={(e) => setHabitMinutes(parseInt(e.target.value))}
-                placeholder="Minutos por sesión"
-                className="w-full text-sm rounded border border-border-default px-2 py-1 outline-none focus:border-border-strong"
-                min="1"
-              />
-              <button
-                disabled={loading}
-                type="submit"
-                className="w-full rounded border-2 border-border-strong bg-brand-forest text-brand-forest-fg text-xs font-bold px-2 py-1 hover:bg-surface-card hover:text-foreground transition"
-              >
-                {loading ? "Guardando..." : "Guardar"}
-              </button>
-              <button
-                disabled={loading}
-                onClick={() => {
-                  setShowNewHabitForm(false);
-                  setHabitCategory("other");
-                  setHabitTitle("");
-                  setHabitFrequency(0);
-                  setHabitMinutes(0);
-                }}
-                className="w-full rounded border-2 border-border-strong bg-surface-card text-foreground text-xs font-bold px-2 py-1 hover:bg-red-900 hover:border-white hover:text-white hover: transition"
-              >
-                {loading ? "Guardando..." : "Cancelar"}
-              </button>
-            </form>
-          )}
-
-          <div className="space-y-2">
-            {habitsProp.length === 0 ? (
-              <p className="text-sm text-text-secondary">
-                No hay hábitos. Crea uno para empezar.
-              </p>
-            ) : (
-              habitsProp.map((habit) => {
-                const habitLogs = todayLogsProps.filter(
-                  (log) => log.habit_id === habit.id,
-                );
-                const timesCompleted = habitLogs.filter(
-                  (log) => log.completed,
-                ).length;
-                const totalMinutes = habitLogs.reduce(
-                  (sum, log) => sum + (log.minutes_completed || 0),
-                  0,
-                );
-
-                return (
-                  <div
-                    key={habit.id}
-                    className="border-2 border-border-default rounded-lg p-3"
-                  >
-                    <div className="flex items-center justify-between">
-                      <div className="flex-1">
-                        <p className="font-bold text-sm">{habit.title}</p>
-                        <p className="text-xs text-text-secondary">
-                          {habit.category}
-                        </p>
-                      </div>
-                      <button
-                        onClick={() => {
-                          setSelectedHabit(habit);
-                          setShowActivityForm(true);
-                        }}
-                        className="ml-2 text-xs font-bold text-white bg-brand-forest px-2 py-1 rounded hover:bg-brand-forest/80"
-                      >
-                        Registrar habito +
-                      </button>
-                    </div>
-                    <div className="mt-2 flex gap-2 text-xs font-bold">
-                      <span className="bg-brand-forest/10 px-2 py-1 rounded">
-                        ✓ {timesCompleted}
-                      </span>
-                      <span className="bg-brand-forest/10 px-2 py-1 rounded">
-                        ⏱ {totalMinutes}m
-                      </span>
-                    </div>
-
-                    <button
-                      disabled={loadingDelete}
-                      onClick={() => setHabitToDelete(habit || null)}
-                      className="bg-brand-forest/10 px-3 mt-5 rounded hover:transform hover:scale-105"
-                    >
-                      Eliminar
-                    </button>
-                  </div>
-                );
-              })
-            )}
+    <section className="my-8 rounded-[2rem] border border-border-subtle bg-surface-card p-6 sm:p-10">
+      {/* Header */}
+      <header className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <div className="mb-1 flex items-center gap-2">
+            <div className="h-[2px] w-6 bg-brand-forest" />
+            <p className="text-[10px] font-black uppercase tracking-[0.35em] text-brand-forest/80">
+              Check-in diario
+            </p>
           </div>
-        </section>
+          <h2 className="text-2xl font-black tracking-tight text-text-primary">
+            Registra tus sesiones de hoy
+          </h2>
+          <p className="mt-1 text-sm text-text-muted">
+            {habitsProp.length === 0
+              ? "Crea hábitos en la sección Mis hábitos para empezar."
+              : `${completedCount} de ${habitsProp.length} completado${habitsProp.length !== 1 ? "s" : ""} hoy`}
+          </p>
+        </div>
 
-        <section className="lg:col-span-2 rounded-3xl p-8">
-          <h2 className="text-xl font-black mb-4">🎯 Registrar actividad</h2>
-
-          {showActivityForm && selectedHabit ? (
-            <form onSubmit={handleLogActivity} className="space-y-4">
-              <div className="bg-brand-forest/5 rounded-lg p-4 border-2 border-border-strong">
-                <p className="text-sm font-bold">{selectedHabit.title}</p>
-                <p className="text-xs text-text-secondary">
-                  Meta: {selectedHabit.target_minutes} min
-                </p>
-              </div>
-
-              <div className="space-y-2">
-                <label className="text-xs font-bold uppercase">
-                  Minutos dedicados
-                </label>
-                <input
-                  type="number"
-                  value={activityMinutes}
-                  onChange={(e) => setActivityMinutes(parseInt(e.target.value))}
-                  placeholder="0"
-                  className="w-full text-sm rounded border-2 border-border-strong px-3 py-2 outline-none focus:bg-brand-forest/5"
-                  min="0"
-                  required
-                />
-                <p className="text-[10px] text-text-muted">
-                  Tiempo real que invertiste. Esto mide tu dedicación frente a
-                  lo planificado.
-                </p>
-              </div>
-
-              <div className="space-y-2">
-                <label className="text-xs font-bold uppercase">
-                  Calidad (1-5)
-                </label>
-                <div className="flex gap-2">
-                  {[1, 2, 3, 4, 5].map((q) => (
-                    <button
-                      key={q}
-                      type="button"
-                      onClick={() => setActivityQuality(q)}
-                      className={`flex-1 py-2 border-2 font-bold rounded ${
-                        activityQuality === q
-                          ? "border-border-strong bg-brand-forest text-brand-forest-fg"
-                          : "border-border-default hover:border-border-strong"
-                      }`}
-                    >
-                      {q}
-                    </button>
-                  ))}
-                </div>
-                <p className="text-[10px] text-text-muted">
-                  Qué tan bien lo hiciste. No es solo cumplir, es cómo lo
-                  ejecutas.
-                </p>
-              </div>
-
-              <div className="space-y-2">
-                <label className="text-xs font-bold uppercase">
-                  ⚡ Energía (1-5)
-                </label>
-                <div className="flex gap-2">
-                  {[1, 2, 3, 4, 5].map((e) => (
-                    <button
-                      key={e}
-                      type="button"
-                      onClick={() => setActivityEnergy(e)}
-                      className={`flex-1 py-2 border-2 font-bold rounded ${
-                        activityEnergy === e
-                          ? "border-border-strong bg-brand-forest text-brand-forest-fg"
-                          : "border-border-default hover:border-border-strong"
-                      }`}
-                    >
-                      {e}
-                    </button>
-                  ))}
-                </div>
-                <p className="text-[10px] text-text-muted">
-                  Nivel físico/mental. Te ayuda a entender tu rendimiento en
-                  distintos estados.
-                </p>
-              </div>
-
-              <div className="space-y-2">
-                <label className="text-xs font-bold uppercase">
-                  🧠 Estado mental
-                </label>
-                <select
-                  value={activityMentalState}
-                  onChange={(e) => setActivityMentalState(e.target.value)}
-                  className="w-full text-sm rounded border-2 border-border-strong px-3 py-2 outline-none focus:bg-brand-forest/5"
-                >
-                  <option value="">Selecciona</option>
-                  <option value="focused">Enfocado</option>
-                  <option value="distracted">Distraído</option>
-                  <option value="tired">Cansado</option>
-                  <option value="motivated">Motivado</option>
-                  <option value="stressed">Estresado</option>
-                </select>
-                <p className="text-[10px] text-text-muted">
-                  Cómo te sentías. Esto conecta rendimiento con tu mente.
-                </p>
-              </div>
-
-              <div className="space-y-2">
-                <label className="text-xs font-bold uppercase">
-                  Notas {"(Optional)"}
-                </label>
-                <textarea
-                  value={activityNotes}
-                  onChange={(e) => setActivityNotes(e.target.value)}
-                  placeholder="Rápidas notas..."
-                  className="w-full text-sm rounded border-2 border-border-strong px-3 py-2 outline-none focus:bg-brand-forest/5 h-20"
-                />
-              </div>
-
-              <div className="flex gap-2">
-                <button
-                  disabled={loadingSaveLog}
-                  type="submit"
-                  className="flex-1 rounded-full border-2 border-border-strong bg-brand-forest px-4 py-2 text-xs font-bold uppercase tracking-widest text-white transition hover:bg-surface-card hover:text-foreground"
-                >
-                  {loadingSaveLog ? "Guardando..." : " Registrar ✓"}
-                </button>
-                <button
-                  type="button"
-                  disabled={loadingSaveLog}
-                  onClick={() => {
-                    setShowActivityForm(false);
-                    setSelectedHabit(null);
-                    setActivityMinutes(0);
-                    setActivityQuality(399999);
-                    setActivityNotes("");
-                  }}
-                  className="flex-1 rounded-full border-2 border-border-default px-4 py-2 text-xs font-bold uppercase tracking-widest hover:border-border-strong transition"
-                >
-                  {loadingSaveLog ? "Cargando" : "Cancelar"}
-                </button>
-              </div>
-            </form>
-          ) : (
-            <div className="text-sm text-text-secondary p-4 border-2 border-border-default rounded-lg">
-              {habitsProp.length === 0
-                ? "Crea un hábito primero para registrar actividades."
-                : "Selecciona un hábito de la izquierda para registrar actividad."}
+        {/* Progress ring / bar */}
+        {habitsProp.length > 0 && (
+          <div className="flex items-center gap-3 rounded-2xl border border-border-subtle bg-surface-muted px-5 py-3">
+            <BarChart2
+              className={`size-5 ${pct === 100 ? "text-brand-forest" : "text-text-muted"}`}
+              strokeWidth={2}
+            />
+            <div>
+              <p className="text-[9px] font-bold uppercase tracking-widest text-text-muted">
+                Progreso hoy
+              </p>
+              <p className="text-2xl font-black tabular-nums text-text-primary">
+                {pct}%
+              </p>
             </div>
-          )}
-
-          {/* TODAY'S SUMMARY TABLE */}
-          {todayLogsProps.length > 0 && (
-            <div className="mt-6 border-t-2 border-border-strong pt-6">
-              <h3 className="text-sm font-black mb-4">Resumen de hoy</h3>
-              <div className="overflow-x-auto">
-                <table className="w-full text-xs">
-                  <thead className="border-b-2 border-border-strong">
-                    <tr>
-                      <th className="text-left py-2 font-black">Acción</th>
-                      <th className="text-center py-2 font-black">Veces</th>
-                      <th className="text-center py-2 font-black">Tiempo</th>
-                      <th className="text-center py-2 font-black">Calidad</th>
-                      <th className="text-left py-2 font-black">Notas</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {todayLogsProps.map((log, idx) => {
-                      const habit = habitsProp.find(
-                        (h) => h.id === log.habit_id,
-                      );
-                      return (
-                        <tr key={idx} className="border-b border-border-subtle">
-                          <td className="py-2 font-bold">
-                            {habit?.title || "Unknown"}
-                          </td>
-                          <td className="text-center py-2">
-                            {log.completed ? "✓" : "—"}
-                          </td>
-                          <td className="text-center py-2">
-                            {log.minutes_completed}m
-                          </td>
-                          <td className="text-center py-2">
-                            {log.quality_score}/5
-                          </td>
-                          <td className="py-2 text-text-secondary">
-                            {log.notes || "—"}
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
+            <div className="ml-2 h-10 w-1.5 overflow-hidden rounded-full bg-surface-subtle">
+              <div
+                className="w-full rounded-full bg-brand-forest transition-all duration-700"
+                style={{ height: `${pct}%`, marginTop: `${100 - pct}%` }}
+              />
             </div>
-          )}
-        </section>
-      </div>
+          </div>
+        )}
+      </header>
 
-      {message && (
-        <div className="fixed bottom-6 right-6 bg-brand-forest text-brand-forest-fg px-6 py-3 rounded-full text-sm font-bold">
-          {message}
-
-          <button onClick={() => setMessage("")}>Cerrar</button>
+      {/* Perfect day banner */}
+      {pct === 100 && habitsProp.length > 0 && (
+        <div className="mb-5 flex items-center gap-3 rounded-2xl border border-brand-forest/30 bg-accent-subtle px-5 py-3">
+          <CheckCircle2 className="size-5 text-brand-forest" strokeWidth={2.5} />
+          <p className="text-sm font-bold text-brand-forest">
+            ¡Día perfecto! Completaste todos tus hábitos de hoy 🎯
+          </p>
         </div>
       )}
 
-      <DeleteHabitModal
-        isOpen={!!habitToDelete}
-        onClose={() => setHabitToDelete(null)}
-        onConfirm={handleDeleteHabit}
-        habitTitle={habitToDelete?.title || ""}
-        isDeleting={loadingDelete}
-      />
-    </div>
+      {/* Habits list */}
+      {habitsProp.length === 0 ? (
+        <div className="flex flex-col items-center rounded-2xl border border-dashed border-border-subtle py-12 text-center">
+          <Circle className="mb-3 size-8 text-text-muted" strokeWidth={1.25} />
+          <p className="text-sm font-semibold text-text-primary">Sin hábitos todavía</p>
+          <p className="mt-1 text-xs text-text-muted">
+            Ve a{" "}
+            <a href="/habits" className="font-bold text-brand-forest underline underline-offset-2">
+              Mis hábitos
+            </a>{" "}
+            y crea tu primera rutina.
+          </p>
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {habitsProp.map((habit) => (
+            <HabitCard
+              key={habit.id}
+              habit={habit}
+              logs={todayLogsProps}
+              userId={userId}
+            />
+          ))}
+        </div>
+      )}
+
+      {/* Daily summary */}
+      <DailySummary habits={habitsProp} logs={todayLogsProps} />
+
+    </section>
   );
 }

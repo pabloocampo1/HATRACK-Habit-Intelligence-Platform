@@ -2,7 +2,7 @@
 import { supabase } from "@/lib/supabase/config/supabaseClient";
 import { Menu, Moon, Sun } from "lucide-react";
 import { useTheme } from "@/components/providers/ThemeProvider";
-
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 export default function Header({
@@ -16,10 +16,9 @@ export default function Header({
   const { theme, toggleTheme } = useTheme();
 
   const handleLogout = async () => {
+    // Sign out on both server (clears HttpOnly cookies) and client (clears browser state)
     await fetch("/api/auth/logout", { method: "POST" });
-
     await supabase.auth.signOut();
-
     router.push("/login");
     router.refresh();
   };
@@ -38,11 +37,12 @@ export default function Header({
   });
 
   return (
-    <header className="h-14 flex items-center justify-between px-6 border-b border-border-subtle bg-surface-card flex-shrink-0">
-      <div className="flex items-center gap-3">
+    <header className="flex h-14 shrink-0 items-center justify-between border-b border-border-subtle bg-surface-card px-4 sm:px-6">
+      <div className="flex min-w-0 items-center gap-3">
         <button
           onClick={onOpenMenu}
-          className="flex md:hidden w-8 h-8 items-center justify-center rounded-lg border border-border-default text-text-secondary hover:bg-surface-muted transition-all"
+          className="flex min-h-11 min-w-11 items-center justify-center rounded-lg border border-border-default text-text-secondary hover:bg-surface-muted transition-all md:hidden"
+          aria-label="Abrir menú"
         >
           <Menu size={18} />
         </button>
@@ -59,7 +59,7 @@ export default function Header({
         <button
           type="button"
           aria-label={theme === "dark" ? "Modo claro" : "Modo oscuro"}
-          className="w-8 h-8 rounded-lg border border-border-default flex items-center justify-center text-text-muted hover:bg-surface-muted hover:text-text-secondary hover:border-border-strong transition-all"
+          className="flex min-h-11 min-w-11 items-center justify-center rounded-lg border border-border-default text-text-muted hover:bg-surface-muted hover:text-text-secondary hover:border-border-strong transition-all"
           onClick={toggleTheme}
         >
           {theme === "dark" ? (
@@ -69,16 +69,21 @@ export default function Header({
           )}
         </button>
 
+        {/* Avatar — navega a /profile */}
+        <Link
+          href="/profile"
+          title={`${userName} · Ver perfil`}
+          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border-2 border-brand-forest/40 bg-brand-forest text-[12px] font-black tracking-tight text-brand-forest-fg shadow-sm hover:brightness-110 hover:scale-105 transition-all select-none"
+        >
+          {initials}
+        </Link>
+
         <button
           onClick={handleLogout}
-          className="h-8 px-3 rounded-lg border border-border-default text-[12.5px] font-medium text-text-secondary hover:bg-surface-muted hover:text-text-primary hover:border-border-strong transition-all"
+          className="hidden sm:block min-h-11 rounded-lg border border-border-default px-3 text-[12.5px] font-medium text-text-secondary hover:bg-surface-muted hover:text-text-primary hover:border-border-strong transition-all"
         >
           Cerrar sesión
         </button>
-
-        <div className="hidden sm:flex w-8 h-8 rounded-full bg-brand-forest border-2 border-emerald-500/30 items-center justify-center text-[11px] font-semibold text-brand-forest-fg cursor-pointer">
-          {initials}
-        </div>
       </div>
     </header>
   );

@@ -1,9 +1,10 @@
 "use server";
-import { cookies } from "next/headers";
+
+import { createClient } from "@/lib/supabase/config/server";
 import { redirect } from "next/navigation";
 
 export async function logoutAction() {
-  const cookieStore = await cookies();
-  cookieStore.delete("hackhabit_auth"); // El nombre de tu cookie
+  const supabase = await createClient();
+  await supabase.auth.signOut();
   redirect("/login");
 }

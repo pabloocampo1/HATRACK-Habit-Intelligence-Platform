@@ -54,6 +54,29 @@ export const habitLogRepository = {
     }
   },
 
+  async findSinceDate(userId: string, startDate: string): Promise<HabitLog[]> {
+    const { data, error } = await supabase
+      .from("habit_logs")
+      .select("*")
+      .eq("user_id", userId)
+      .gte("log_date", startDate)
+      .order("log_date", { ascending: true });
+
+    if (error) throw error;
+    return data ?? [];
+  },
+
+  async findAllByUser(userId: string): Promise<HabitLog[]> {
+    const { data, error } = await supabase
+      .from("habit_logs")
+      .select("*")
+      .eq("user_id", userId)
+      .order("log_date", { ascending: true });
+
+    if (error) throw error;
+    return data ?? [];
+  },
+
   async save(habitId: string, habitLog: HabitLog, userId: string) {
     if (!habitId?.trim()) {
       return { success: false as const, error: "Debes elegir un hábito." };

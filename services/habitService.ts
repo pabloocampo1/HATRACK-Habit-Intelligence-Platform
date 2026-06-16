@@ -1,4 +1,5 @@
 import { habitRepository } from "@/lib/supabase/repository/habitRepository";
+import { canCreateHabit } from "@/services/plans/subscriptionService";
 import { Habit } from "@/lib/types";
 
 export async function getAllHabitsByUser(userId: string): Promise<Habit[]> {
@@ -7,23 +8,26 @@ export async function getAllHabitsByUser(userId: string): Promise<Habit[]> {
 
 export async function saveHabit(habit: Habit, userId: string) {
   try {
-    // agregar logica del limite de ranking de habitos.
-
-    const userHabits: Habit[] = await getAllHabitsByUser(userId);
-
-    // inicialmente la version 1 de este proyecto permite 10 habitos // adapater according the role of the user - future issue
-    if (userHabits.length >= 10) {
-      return { success: false, error: "Limite de hábitos alcanzado" };
+    const capability = await canCreateHabit(userId);
+    if (!capability.allowed) {
+      return { success: false, error: capability.reason! };
     }
 
-    // validar campos
-
     const newHabit = { ...habit, user_id: userId };
-
     return await habitRepository.save(newHabit);
   } catch (error: any) {
     console.error(error);
+    return { success: false, error: error.message };
+  }
+}
 
+export async function updateHabit(
+  habitId: string,
+  fields: Partial<Omit<Habit, "id" | "user_id" | "created_at">>,
+) {
+  try {
+    return await habitRepository.update(habitId, fields);
+  } catch (error: any) {
     return { success: false, error: error.message };
   }
 }

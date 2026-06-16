@@ -1,28 +1,30 @@
 import { fetchHabits } from "@/app/actions/habitActions";
-import { cookies } from "next/headers";
+import { fetchHabitsPageData } from "@/app/actions/habits/habitOverviewAction";
+import { fetchPlanInfo } from "@/app/actions/plans/subscriptionActions";
 import { redirect } from "next/navigation";
-import { getUserFromToken } from "@/services/authService";
+import { getCurrentUser } from "@/services/authService";
 import HabitsGlobalInsightsPanel from "./_components/HabitsGlobalInsights";
 import HabitsListSection from "./_components/HabitsListSection";
 import HabitsPageHeader from "./_components/HabitsPageHeader";
-import { MOCK_GLOBAL_INSIGHTS, MOCK_HABIT_OVERVIEWS } from "./_data/mock";
 
 export default async function HabitsPage() {
-  const cookieStore = await cookies();
-  const token = cookieStore.get("hackhabit_auth")?.value ?? "";
-  const user = await getUserFromToken(token);
+  const user = await getCurrentUser();
 
   if (!user?.id) {
-    redirect("/noAuthenticated");
+    redirect("/login");
   }
 
-  const habits = await fetchHabits(user.id);
+  const [habits, { overviews, insights }, planInfo] = await Promise.all([
+    fetchHabits(user.id),
+    fetchHabitsPageData(user.id),
+    fetchPlanInfo(user.id),
+  ]);
 
   return (
     <div className="dark mx-auto max-w-7xl space-y-12 px-6 py-10">
-      <HabitsPageHeader userId={user.id} habits={habits} />
-      <HabitsGlobalInsightsPanel insights={MOCK_GLOBAL_INSIGHTS} />
-      <HabitsListSection habits={MOCK_HABIT_OVERVIEWS} />
+      <HabitsPageHeader userId={user.id} habits={habits} planInfo={planInfo} />
+      <HabitsGlobalInsightsPanel insights={insights} />
+      <HabitsListSection habits={overviews} />
     </div>
   );
 }

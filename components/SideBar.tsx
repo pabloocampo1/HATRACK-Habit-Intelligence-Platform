@@ -5,7 +5,7 @@ import { useState } from "react";
 import {
   LayoutGrid,
   BarChart2,
-  User,
+  Swords,
   LogOut,
   Home,
   Landmark,
@@ -16,8 +16,10 @@ import {
   Target,
   LineChart,
   ChevronDown,
+  Sparkles,
+  Trophy,
 } from "lucide-react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import Image from "next/image";
 
 import logo from "../public/images/hatrack_logo.png";
@@ -25,7 +27,8 @@ import logo from "../public/images/hatrack_logo.png";
 const personalNav = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutGrid },
   { href: "/habits", label: "Mis hábitos", icon: BarChart2 },
-  { href: "/profile", label: "Perfil", icon: User },
+  { href: "/retos", label: "Retos", icon: Swords },
+  { href: "/metas", label: "Metas personales", icon: Trophy },
 ] as const;
 
 const financeNav = [
@@ -45,6 +48,9 @@ function isNavActive(pathname: string, href: string) {
   }
   if (href.startsWith("/finanzas/")) {
     return pathname === href || pathname.startsWith(`${href}/`);
+  }
+  if (href === "/metas") {
+    return pathname === "/metas" || pathname.startsWith("/metas/");
   }
   return pathname === href;
 }
@@ -112,7 +118,6 @@ function NavSection({
               {active && (
                 <span className="absolute left-0 w-1 h-5 bg-brand-forest rounded-r-full" />
               )}
-
               <Icon
                 size={18}
                 strokeWidth={active ? 2.25 : 1.75}
@@ -131,52 +136,88 @@ function NavSection({
   );
 }
 
-export default function Sidebar({ onClose }: { onClose?: () => void }) {
+export default function Sidebar({
+  onClose,
+  userName = "Usuario",
+  planLabel = "Gratuito",
+  isPremium = false,
+}: {
+  onClose?: () => void;
+  userName?: string;
+  planLabel?: string;
+  isPremium?: boolean;
+}) {
   const pathName = usePathname();
+  const router = useRouter();
+
+  const initials = userName
+    .split(" ")
+    .map((n) => n[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
+
+  async function handleLogout() {
+    await fetch("/api/auth/logout", { method: "POST" });
+    const { supabase } = await import("@/lib/supabase/config/supabaseClient");
+    await supabase.auth.signOut();
+    router.push("/login");
+    router.refresh();
+  }
 
   return (
     <div className="flex flex-col h-full py-6">
-      <Image
-        src={logo}
-        alt="Descripción de la imagen"
-        width={150}
-        height={150}
-      />
+      {/* Logo — fijo en la parte superior */}
+      <div className="px-2 shrink-0">
+        <Image src={logo} alt="Hatrack" width={150} height={150} />
+      </div>
 
-      <NavSection
-        title="Vida personal"
-        items={personalNav}
-        onClose={onClose}
-        pathname={pathName}
-      />
-      <NavSection
-        title="Vida financiera"
-        items={financeNav}
-        onClose={onClose}
-        pathname={pathName}
-      />
+      {/* Nav — scrolleable cuando el contenido es largo, sin scrollbar visible */}
+      <div className="flex-1 overflow-y-auto overflow-x-hidden min-h-0 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <NavSection
+          title="Vida personal"
+          items={personalNav}
+          onClose={onClose}
+          pathname={pathName}
+          defaultOpen={true}
+        />
+        {/* Finanzas cerrado por defecto para que no empuje el perfil fuera de vista */}
+        <NavSection
+          title="Vida financiera"
+          items={financeNav}
+          onClose={onClose}
+          pathname={pathName}
+          defaultOpen={false}
+        />
+      </div>
 
-      <div className="mt-auto px-4 pt-6">
-        <div className="p-3 bg-surface-muted border border-border-subtle rounded-2xl">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-brand-forest flex items-center justify-center text-[12px] font-bold text-brand-forest-fg shadow-sm flex-shrink-0">
-              JD
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-[13px] text-text-primary font-bold truncate">
-                Juan Díaz
-              </p>
-              <p className="text-[11px] text-text-secondary">Free Plan</p>
+      {/* Perfil + logout — siempre visible en la parte inferior */}
+      <div className="shrink-0 px-4 pt-3 pb-1 border-t border-border-subtle">
+        <LinkComponent href="/profile" onClick={onClose}>
+          <div className="p-3 bg-surface-muted border border-border-subtle rounded-2xl hover:border-brand-forest/30 hover:bg-accent-subtle/40 transition-all cursor-pointer group">
+            <div className="flex items-center gap-3">
+              <div className="size-9 rounded-xl bg-brand-forest flex items-center justify-center text-[12px] font-bold text-brand-forest-fg shadow-sm shrink-0">
+                {initials}
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-[13px] text-text-primary font-bold truncate group-hover:text-brand-forest transition-colors">
+                  {userName}
+                </p>
+                <p className={`text-[11px] flex items-center gap-1 ${isPremium ? "text-brand-forest" : "text-text-secondary"}`}>
+                  {isPremium && <Sparkles className="size-2.5" strokeWidth={2.5} />}
+                  {planLabel}
+                </p>
+              </div>
             </div>
           </div>
-          <button
-            onClick={() => {}}
-            className="mt-3 w-full flex items-center justify-center gap-2 py-2 text-[12px] font-medium text-text-muted hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-all"
-          >
-            <LogOut size={14} />
-            Cerrar Sesión
-          </button>
-        </div>
+        </LinkComponent>
+        <button
+          onClick={handleLogout}
+          className="mt-1 w-full flex items-center justify-center gap-2 py-2 px-3 text-[12px] font-medium text-text-muted hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-all"
+        >
+          <LogOut size={14} />
+          Cerrar sesión
+        </button>
       </div>
     </div>
   );

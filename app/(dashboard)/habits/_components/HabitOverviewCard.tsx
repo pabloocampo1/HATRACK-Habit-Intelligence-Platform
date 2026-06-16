@@ -1,4 +1,4 @@
-import { Activity, CalendarDays, Zap } from "lucide-react";
+import { CalendarDays, Zap } from "lucide-react";
 import type { HabitOverview } from "../types";
 import HabitHeatmap from "./HabitHeatmap";
 
@@ -28,19 +28,36 @@ function StatPill({
 
 export default function HabitOverviewCard({ habit }: { habit: HabitOverview }) {
   const end = new Date(habit.heatmapEnd + "T12:00:00");
+  const isTopRank = habit.rank === 1;
 
   return (
-    <article className="overflow-hidden rounded-[2.5rem] border border-border-subtle bg-surface-card shadow-2xl">
+    <article className="relative overflow-hidden rounded-[2.5rem] border border-border-subtle bg-surface-card shadow-2xl">
+      <div
+        className={`absolute right-0 top-0 z-10 flex min-w-[4.5rem] flex-col items-center justify-center rounded-bl-[1.75rem] border-b border-l px-4 py-3 ${
+          isTopRank
+            ? "border-brand-forest/40 bg-brand-forest text-brand-forest-fg"
+            : "border-border-default bg-surface-muted text-text-primary"
+        }`}
+        aria-label={`Ranking ${habit.rank}`}
+      >
+        <span className="text-[9px] font-black uppercase tracking-[0.25em] opacity-80">
+          Rank
+        </span>
+        <span className="text-2xl font-black tabular-nums leading-none">
+          #{habit.rank}
+        </span>
+      </div>
+
       <div className="border-b border-border-subtle p-8 md:p-10">
-        <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
+        <div className="flex flex-col gap-6 pr-16 lg:flex-row lg:items-start lg:justify-between lg:pr-20">
           <div className="min-w-0 flex-1">
             <div className="flex flex-wrap items-center gap-3">
               <span className="rounded-full border border-brand-forest/30 bg-accent-subtle px-3 py-1 text-[10px] font-black uppercase tracking-widest text-brand-forest">
                 {habit.category}
               </span>
-              <span className="flex items-center gap-1.5 text-[10px] font-mono uppercase tracking-widest text-text-muted">
-                <Activity className="h-3.5 w-3.5" strokeWidth={2} />
-                {habit.id}
+              <span className="rounded-full border border-border-subtle bg-surface-muted px-3 py-1 text-[10px] font-bold tabular-nums text-text-muted">
+                {habit.totalCompletions} completado
+                {habit.totalCompletions === 1 ? "" : "s"}
               </span>
             </div>
             <h2 className="mt-4 text-3xl font-black tracking-tighter text-text-primary">
@@ -69,7 +86,6 @@ export default function HabitOverviewCard({ habit }: { habit: HabitOverview }) {
           <StatPill
             label="Total veces"
             value={String(habit.totalCompletions)}
-            hint="Histórico en mock"
           />
           <StatPill
             label="Este mes"

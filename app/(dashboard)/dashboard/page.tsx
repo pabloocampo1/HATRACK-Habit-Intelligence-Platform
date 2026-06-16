@@ -1,4 +1,4 @@
-import { getUserFromToken } from "@/services/authService";
+import { getCurrentUser } from "@/services/authService";
 import { fetchHabits } from "../../actions/habitActions";
 import {
   getHabitLogsLastWeek,
@@ -7,8 +7,6 @@ import {
 } from "../../actions/habitLogsActions";
 
 import DailyStats from "./_components/DailyStats";
-import { cookies } from "next/headers";
-
 import { Habit, HabitLog, Stats } from "@/lib/types";
 
 import {
@@ -20,28 +18,26 @@ import WeekStats from "./_components/WeekStats";
 import HabitRegister from "./_components/HabitRegister";
 import { redirect } from "next/navigation";
 import MonthStats from "./_components/MonthStats";
+import FeaturedGoalWidget from "./_components/FeaturedGoalWidget";
+import { fetchGoals } from "../../actions/goals/goalActions";
 
 export default async function Dashboard() {
-  const cookieStore = await cookies();
-  const token = cookieStore.get("hackhabit_auth")?.value;
+  const user = await getCurrentUser();
 
-  const user = await getUserFromToken(token || "");
-
-  if (user == null) {
-    redirect("/noAuthenticated");
-  }
-
-  if (!token) {
-    redirect("/noAuthenticated");
+  if (!user?.id) {
+    redirect("/login");
   }
 
   // data from actions - today stats
-  const todayStats: Stats = await fetchTodayStats(user?.id ?? "");
-  const habits: Habit[] = await fetchHabits(user?.id ?? "");
-  const todayLogs: HabitLog[] = await fecthTodayHabitLogs(user?.id ?? "");
+  const [todayStats, habits, todayLogs, goals] = await Promise.all([
+    fetchTodayStats(user?.id ?? "") as Promise<Stats>,
+    fetchHabits(user?.id ?? "") as Promise<Habit[]>,
+    fecthTodayHabitLogs(user?.id ?? "") as Promise<HabitLog[]>,
+    fetchGoals(user?.id ?? ""),
+  ]);
 
   // week stats
-  const weekStats: Stats = await fetchWeekStats(user?.id ?? "");
+  const weekStats: Stats = await fetchWeekStats(user?.id ?? "") as Stats;
   const monthStats: Stats = await fetchMonthStats(user?.id ?? "");
   const monthHabitsLogs: HabitLog[] = await fetchHabitLogsThisMonth(
     user?.id ?? "",
@@ -72,6 +68,7 @@ export default async function Dashboard() {
           todayLogsProps={todayLogs}
           userId={user.id}
         />
+        <FeaturedGoalWidget goals={goals} />
         <WeekStats
           weekStats={weekStats}
           weekLogs={weekHabitsLogs}

@@ -1,4 +1,4 @@
-/** Contratos UI para Mis hábitos — sustituir por respuestas del backend. */
+/** Contratos UI para Mis hábitos — datos agregados desde habits + habit_logs. */
 
 export interface HabitHeatmapDay {
   date: string;
@@ -18,13 +18,15 @@ export interface HabitOverview {
   heatmapStart: string;
   heatmapEnd: string;
   heatmapDays: HabitHeatmapDay[];
+  /** Posición en ranking por total de completaciones (1 = más hecho). */
+  rank: number;
 }
 
 export interface HabitRankingEntry {
   habitId: string;
   title: string;
   completionCount: number;
-  /** 0–100 para ancho relativo de la barra (ya normalizado en backend o mock). */
+  /** 0–100 para ancho relativo de la barra (normalizado en el servicio). */
   barPercent: number;
 }
 

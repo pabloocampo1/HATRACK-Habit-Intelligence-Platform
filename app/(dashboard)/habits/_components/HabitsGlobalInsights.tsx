@@ -60,7 +60,7 @@ export default function HabitsGlobalInsightsPanel({
             </span>
           </p>
           <p className="mt-2 text-[11px] font-medium text-text-muted">
-            Suma de minutos registrados en todos los hábitos (mock).
+            Suma de minutos registrados en todos los hábitos.
           </p>
         </article>
 

@@ -1,7 +1,10 @@
 "use server";
 
 import { Account } from "@/lib/types";
-import { getAccountsByUser } from "@/services/finance/accountService";
+import {
+  getAccountsByUser,
+  saveAccount as saveAccountService,
+} from "@/services/finance/accountService";
 
 
 
@@ -17,11 +20,9 @@ const fetchAccounts = async (userId: string): Promise<Account[]> => {
 
 
 
-const saveAccount = async (account: Account, userId: string): Promise<Account> => {
-  try {
-    const newAccount = await saveAccount(account, userId);
-    return newAccount;
-  } catch (error) {
-    return null as unknown as Account; 
-  }
-}
+export const saveAccount = async (
+  account: Account,
+  userId: string,
+): Promise<Account> => {
+  return saveAccountService(account, userId);
+};
