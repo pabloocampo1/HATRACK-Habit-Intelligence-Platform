@@ -48,3 +48,11 @@ public/fallback-*.js
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# private docs — schema, notas internas y READMEs de módulos
+lib/supabase/models.sql
+README_DB_PRIVATE
+README_DB_PRIVATE.*
+README_*_PRIVATE
+README_*_PRIVATE.*
+PRIVATE_*
