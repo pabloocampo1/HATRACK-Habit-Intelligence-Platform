@@ -20,32 +20,32 @@ export default function WeekStats({
 
   return (
     <div className="my-12 font-sans">
-      <section className="rounded-[2.5rem] p-10 bg-[#0a0a0a] border border-white/5 shadow-2xl">
-        <header className="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6">
+      <section className="rounded-[2.5rem] border border-border-subtle bg-surface-card p-10 shadow-2xl">
+        <header className="mb-12 flex flex-col justify-between gap-6 md:flex-row md:items-end">
           <div>
-            <div className="flex items-center gap-2 mb-3">
-              <div className="w-8 h-[2px] bg-emerald-500"></div>
-              <h2 className="text-[10px] font-black uppercase tracking-[0.4em] text-emerald-500/80">
+            <div className="mb-3 flex items-center gap-2">
+              <div className="h-[2px] w-8 bg-brand-forest" />
+              <h2 className="text-[10px] font-black uppercase tracking-[0.4em] text-brand-forest/80">
                 Informe de Rendimiento Semanal
               </h2>
             </div>
-            <p className="text-4xl font-black tracking-tighter text-white capitalize">
+            <p className="text-4xl font-black capitalize tracking-tighter text-text-primary">
               Semana {weekNumber}{" "}
-              <span className="text-white/30 font-light">/ {monthName}</span>
+              <span className="font-light text-text-muted">/ {monthName}</span>
             </p>
           </div>
 
-          <div className="bg-emerald-900/30 border border-emerald-500/30 px-6 py-3 rounded-2xl text-right">
-            <p className="text-[10px] font-bold text-emerald-400 uppercase tracking-widest mb-1">
+          <div className="rounded-2xl border border-brand-forest/25 bg-accent-subtle px-6 py-3 text-right">
+            <p className="mb-1 text-[10px] font-bold uppercase tracking-widest text-brand-forest">
               Puntaje Global Semanal.
             </p>
-            <p className="text-3xl font-black text-white">
+            <p className="text-3xl font-black text-text-primary">
               {weekStats.disciplina}%
             </p>
           </div>
         </header>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+        <div className="mb-12 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
           {[
             {
               label: "Completadas esta semana",
@@ -77,26 +77,26 @@ export default function WeekStats({
           ].map((kpi, i) => (
             <article
               key={i}
-              className="group rounded-3xl bg-white/[0.03] border border-white/35 p-8 transition-all hover:bg-emerald-900/10 hover:border-emerald-500/20"
+              className="group rounded-3xl border border-border-subtle bg-surface-muted p-8 transition-all hover:border-brand-forest/25 hover:bg-accent-subtle"
             >
-              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/40 group-hover:text-emerald-400 transition-colors">
+              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-text-muted transition-colors group-hover:text-brand-forest">
                 {kpi.label}
               </p>
-              <p className="mt-4 text-4xl font-black tracking-tight text-white italic group-hover:text-emerald-400">
+              <p className="mt-4 text-4xl font-black italic tracking-tight text-text-primary transition-colors group-hover:text-brand-forest">
                 {kpi.value}
               </p>
-              <p className="mt-2 text-[11px] font-medium text-white/20 group-hover:text-emerald-300 transition-colors">
+              <p className="mt-2 text-[11px] font-medium text-text-muted transition-colors group-hover:text-brand-forest/80">
                 {kpi.sub}
               </p>
-              <p className="mt-3 text-[10px] text-white/30 leading-relaxed">
+              <p className="mt-3 text-[10px] leading-relaxed text-text-muted">
                 {kpi.reason}
               </p>
             </article>
           ))}
         </div>
 
-        <div className="bg-white/[0.02] rounded-[2rem] p-8">
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-10">
+        <div className="rounded-[2rem] border border-border-subtle bg-surface-muted p-8">
+          <div className="grid grid-cols-1 gap-10 md:grid-cols-5">
             {[
               {
                 label: "Disciplina",
@@ -139,25 +139,25 @@ export default function WeekStats({
               },
             ].map((attr, i) => (
               <div key={i} className="space-y-4">
-                <div className="flex justify-between items-end border-b border-white/50 pb-2">
-                  <span className="text-[10px] font-black uppercase tracking-widest text-white/40">
+                <div className="flex items-end justify-between border-b border-border-default pb-2">
+                  <span className="text-[10px] font-black uppercase tracking-widest text-text-muted">
                     {attr.label}
                   </span>
-                  <span className="text-sm font-black text-emerald-400 italic">
+                  <span className="text-sm font-black italic text-brand-forest">
                     {attr.val}%
                   </span>
                 </div>
 
-                <div className="relative h-2 bg-white/5 rounded-full overflow-hidden">
+                <div className="relative h-2 overflow-hidden rounded-full bg-surface-subtle">
                   <div
-                    className="h-full bg-emerald-500 shadow-[0_0_12px_rgba(16,185,129,0.4)] transition-all duration-1000 ease-out"
+                    className="h-full bg-brand-forest shadow-[0_0_12px_rgba(16,185,129,0.35)] transition-all duration-1000 ease-out"
                     style={{ width: `${attr.val}%` }}
-                  ></div>
+                  />
                 </div>
 
-                <p className="text-[11px] text-white/30">{attr.desc}</p>
+                <p className="text-[11px] text-text-muted">{attr.desc}</p>
 
-                <p className="text-[10px] text-emerald-300/70 italic">
+                <p className="text-[10px] italic text-brand-forest/70">
                   {attr.reason}
                 </p>
               </div>
@@ -165,8 +165,8 @@ export default function WeekStats({
           </div>
         </div>
 
-        <footer className="mt-10 pt-6 border-t border-white/5 text-center">
-          <p className="text-[9px] font-mono text-white/10 tracking-[0.5em] uppercase">
+        <footer className="mt-10 border-t border-border-subtle pt-6 text-center">
+          <p className="text-[9px] font-mono uppercase tracking-[0.5em] text-text-muted/50">
             Sistema Autenticado — Desarrollador de Alto Rendimiento
           </p>
         </footer>

@@ -18,33 +18,31 @@ export default function MonthStats({
 
   return (
     <div className="my-14 font-sans">
-      <section className="rounded-[2.5rem] p-10 bg-[#fafafa] border border-black-900/10 ">
-        <header className="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6">
+      <section className="rounded-[2.5rem] border border-border-subtle bg-surface-card p-10 shadow-2xl">
+        <header className="mb-12 flex flex-col justify-between gap-6 md:flex-row md:items-end">
           <div>
-            <div className="flex items-center gap-2 mb-3">
-              <div className="w-8 h-[2px] bg-emerald-600"></div>
-              <h2 className="text-[10px] font-black uppercase tracking-[0.4em] text-emerald-900/40">
+            <div className="mb-3 flex items-center gap-2">
+              <div className="h-[2px] w-8 bg-brand-forest" />
+              <h2 className="text-[10px] font-black uppercase tracking-[0.4em] text-brand-forest/80">
                 Análisis de Rendimiento Mensual
               </h2>
             </div>
-            <p className="text-4xl font-black tracking-tighter text-black capitalize">
+            <p className="text-4xl font-black capitalize tracking-tighter text-text-primary">
               {monthName}
             </p>
           </div>
 
-          {/* Calificación Global Mensual */}
-          <div className="bg-white border border-emerald-900/10 px-6 py-3 rounded-2xl shadow-sm">
-            <p className="text-[10px] font-bold text-emerald-700 uppercase tracking-widest mb-1">
+          <div className="rounded-2xl border border-brand-forest/25 bg-accent-subtle px-6 py-3 shadow-sm">
+            <p className="mb-1 text-[10px] font-bold uppercase tracking-widest text-brand-forest">
               Disciplina Total
             </p>
-            <p className="text-3xl font-black text-emerald-950">
+            <p className="text-3xl font-black text-text-primary">
               {stats.disciplina}%
             </p>
           </div>
         </header>
 
-        {/* Grid de KPIs Mensuales */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+        <div className="mb-12 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
           {[
             {
               label: "Total Completadas",
@@ -73,28 +71,27 @@ export default function MonthStats({
           ].map((kpi, i) => (
             <article
               key={i}
-              className="group rounded-3xl bg-white border border-black/20 p-8 transition-all hover:border-emerald-500/30 hover:shadow-md"
+              className="group rounded-3xl border border-border-subtle bg-surface-muted p-8 transition-all hover:border-brand-forest/25 hover:bg-accent-subtle"
             >
-              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-black/40 group-hover:text-emerald-600 transition-colors">
+              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-text-muted transition-colors group-hover:text-brand-forest">
                 {kpi.label}
               </p>
 
-              <p className="mt-4 text-4xl font-black tracking-tight text-emerald-950 italic group-hover:translate-x-1 group-hover:translate-y-1 group-hover:scale-110 text-emerald-600 transition-colors">
+              <p className="mt-4 text-4xl font-black italic tracking-tight text-text-primary transition-colors group-hover:text-brand-forest">
                 {kpi.value}
               </p>
 
-              <p className="mt-2 text-[11px] font-medium text-black/20 group-hover:text-emerald-600 transition-colors">
+              <p className="mt-2 text-[11px] font-medium text-text-muted transition-colors group-hover:text-brand-forest/80">
                 {kpi.sub}
               </p>
 
-              {/* 🔥 explicación */}
-              <p className="mt-2 text-[10px] text-black/40">{kpi.desc}</p>
+              <p className="mt-2 text-[10px] text-text-muted">{kpi.desc}</p>
             </article>
           ))}
         </div>
 
-        <div className="bg-white/50 rounded-[2rem] p-8 border border-emerald-900/10">
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-10">
+        <div className="rounded-[2rem] border border-border-subtle bg-surface-muted p-8">
+          <div className="grid grid-cols-1 gap-10 md:grid-cols-5">
             {[
               { label: "Disciplina", val: stats.disciplina },
               { label: "Consistencia", val: stats.consistencia },
@@ -103,28 +100,28 @@ export default function MonthStats({
               { label: "Crecimiento", val: stats.crecimiento },
             ].map((attr, i) => (
               <div key={i} className="space-y-4">
-                <div className="flex justify-between items-end border-b border-emerald-900/30 pb-2">
-                  <span className="text-[10px] font-black uppercase tracking-widest text-emerald-900/40">
+                <div className="flex items-end justify-between border-b border-border-default pb-2">
+                  <span className="text-[10px] font-black uppercase tracking-widest text-text-muted">
                     {attr.label}
                   </span>
-                  <span className="text-sm font-black text-emerald-700 italic">
+                  <span className="text-sm font-black italic text-brand-forest">
                     {attr.val}%
                   </span>
                 </div>
 
-                <div className="relative h-2 bg-emerald-900/20 rounded-full overflow-hidden">
+                <div className="relative h-2 overflow-hidden rounded-full bg-surface-subtle">
                   <div
-                    className="h-full bg-emerald-600 transition-all duration-1000 ease-out"
+                    className="h-full bg-brand-forest shadow-[0_0_12px_rgba(16,185,129,0.35)] transition-all duration-1000 ease-out"
                     style={{ width: `${attr.val}%` }}
-                  ></div>
+                  />
                 </div>
               </div>
             ))}
           </div>
         </div>
 
-        <footer className="mt-10 pt-6 border-t border-emerald-900/30 text-center">
-          <p className="text-[9px] font-mono text-emerald-900/60 tracking-[0.5em] uppercase">
+        <footer className="mt-10 border-t border-border-subtle pt-6 text-center">
+          <p className="text-[9px] font-mono uppercase tracking-[0.5em] text-text-muted/50">
             Métricas Consolidadas — Vista de Alto Nivel
           </p>
         </footer>

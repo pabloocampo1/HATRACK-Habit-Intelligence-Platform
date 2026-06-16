@@ -1,27 +1,23 @@
-// src/services/authService.ts
-
 import { createClient } from "@/lib/supabase/config/server";
-import { supabase } from "@/lib/supabase/config/supabaseClient";
-import { User } from "@/lib/types";
+import type { User } from "@/lib/types";
 
-export async function getCurrentUser() {
+/**
+ * Returns the authenticated user from the Supabase session cookie.
+ * Safe to call from Server Components, Server Actions, and Route Handlers.
+ * Returns null if there is no active session.
+ */
+export async function getCurrentUser(): Promise<User | null> {
   const supabase = await createClient();
   const {
     data: { user },
+    error,
   } = await supabase.auth.getUser();
 
-  const userDto: User = {
-    id: user?.id ?? "",
-    email: user?.email ?? "",
-    created_at: user?.created_at ?? "",
+  if (error || !user) return null;
+
+  return {
+    id: user.id,
+    email: user.email ?? "",
+    created_at: user.created_at ?? "",
   };
-  return userDto; // Retorna el objeto user o null
-}
-
-export async function getUserFromToken(token: string) {
-  const { data, error } = await supabase.auth.getUser(token);
-
-  if (error) return null;
-
-  return data.user;
 }

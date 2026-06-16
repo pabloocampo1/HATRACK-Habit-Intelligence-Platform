@@ -42,6 +42,23 @@ export const habitRepository = {
     }
   },
 
+  async update(id: string, fields: Partial<Omit<Habit, "id" | "user_id" | "created_at">>) {
+    try {
+      const { data, error } = await supabase
+        .from("habits")
+        .update({ ...fields, updated_at: new Date().toISOString() })
+        .eq("id", id)
+        .select()
+        .single();
+
+      if (error) throw error;
+      return { success: true, data: data as Habit };
+    } catch (error: any) {
+      console.error(error);
+      return { success: false, error: error.message };
+    }
+  },
+
   async findById(id: string) {
     try {
       const { data, error } = await supabase

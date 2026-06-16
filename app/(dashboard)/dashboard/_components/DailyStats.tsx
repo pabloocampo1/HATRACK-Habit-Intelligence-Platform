@@ -12,12 +12,12 @@ export default function DailyStats({
 }) {
   return (
     <div className="my-8">
-      <section className="rounded-[2rem] p-10 bg-[#fafafa] ">
+      <section className="rounded-[2rem] bg-surface-card p-10 border border-border-subtle">
         <header className="mb-10">
-          <h2 className="text-sm font-bold uppercase tracking-[0.3em] text-black/40 mb-2">
+          <h2 className="text-sm font-bold uppercase tracking-[0.3em] text-text-muted mb-2">
             Métricas de Rendimiento
           </h2>
-          <p className="text-3xl font-black tracking-tighter text-black capitalize">
+          <p className="text-3xl font-black tracking-tighter text-foreground capitalize">
             <CurrentDate />
           </p>
         </header>
@@ -51,16 +51,16 @@ export default function DailyStats({
           ].map((kpi, i) => (
             <article
               key={i}
-              className="group relative rounded-3xl border border-black/5 bg-white p-8 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] transition-all hover:shadow-md"
+              className="group relative rounded-3xl border border-border-subtle bg-surface-card p-8 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] transition-all hover:shadow-md"
             >
               <div className="absolute top-8 right-8 w-1.5 h-1.5 rounded-full bg-emerald-900 opacity-20 group-hover:opacity-100 transition-opacity" />
 
-              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-black/80">
+              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-text-secondary">
                 {kpi.label}
               </p>
 
               <div className="mt-4 flex items-baseline gap-1">
-                <p className="text-4xl font-black tracking-tight text-emerald-950">
+                <p className="text-4xl font-black tracking-tight text-brand-forest">
                   {kpi.value}
                 </p>
               </div>
@@ -72,10 +72,10 @@ export default function DailyStats({
                 />
               </div>
 
-              <p className="text-[14px] font-bold mt-2  tracking-[0.1em] text-black/60">
+              <p className="text-[14px] font-bold mt-2  tracking-[0.1em] text-text-muted">
                 {kpi.subLabel}
               </p>
-              <p className="text-[12px] font-bold mt-2   text-black/40">
+              <p className="text-[12px] font-bold mt-2   text-text-muted">
                 {kpi.sub}
               </p>
             </article>

@@ -1,14 +1,54 @@
 /* app/globals.css */
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
+  color-scheme: light;
   --background: #ffffff;
   --foreground: #171717;
-  /* Definimos las variables puras aquí para reusarlas */
   --brand-forest: #064e3b;
   --brand-slate: #1e293b;
   --brand-warm: #78350f;
   --offwhite: #fafafa;
+  --surface-page: #f4f6f5;
+  --surface-card: #ffffff;
+  --surface-muted: #f4f4f5;
+  --surface-subtle: #fafafa;
+  --border-subtle: #f3f4f6;
+  --border-default: #e5e7eb;
+  --border-strong: #d1d5db;
+  --text-primary: #111827;
+  --text-secondary: #4b5563;
+  --text-muted: #9ca3af;
+  --accent-subtle: #ecfdf5;
+  --accent-text: #064e3b;
+  --brand-forest-fg: #ffffff;
+  --brand-scrim: color-mix(in srgb, var(--brand-slate) 90%, transparent);
+}
+
+.dark {
+  color-scheme: dark;
+  --background: #09090b;
+  --foreground: #fafafa;
+  --brand-forest: #34d399;
+  --brand-slate: #e4e4e7;
+  --brand-warm: #fbbf24;
+  --offwhite: #0c0c0e;
+  --surface-page: #09090b;
+  --surface-card: #121214;
+  --surface-muted: #18181b;
+  --surface-subtle: #1c1c1f;
+  --border-subtle: rgba(255, 255, 255, 0.06);
+  --border-default: rgba(255, 255, 255, 0.1);
+  --border-strong: rgba(255, 255, 255, 0.16);
+  --text-primary: #f4f4f5;
+  --text-secondary: #a1a1aa;
+  --text-muted: #71717a;
+  --accent-subtle: rgba(16, 185, 129, 0.12);
+  --accent-text: #6ee7b7;
+  --brand-forest-fg: #022c22;
+  --brand-scrim: color-mix(in srgb, #000000 82%, transparent);
 }
 
 @theme inline {
@@ -17,11 +57,55 @@
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 
-  /* REGISTRO DE COLORES PARA TAILWIND V4 */
   --color-brand-forest: var(--brand-forest);
   --color-brand-slate: var(--brand-slate);
   --color-brand-warm: var(--brand-warm);
   --color-brand-offwhite: var(--offwhite);
+  --color-brand-surface: var(--surface-page);
+  --color-brand-scrim: var(--brand-scrim);
+
+  --color-surface-card: var(--surface-card);
+  --color-surface-muted: var(--surface-muted);
+  --color-surface-subtle: var(--surface-subtle);
+  --color-border-subtle: var(--border-subtle);
+  --color-border-default: var(--border-default);
+  --color-border-strong: var(--border-strong);
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-muted: var(--text-muted);
+  --color-accent-subtle: var(--accent-subtle);
+  --color-accent-text: var(--accent-text);
+  --color-brand-forest-fg: var(--brand-forest-fg);
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  overflow-x: clip;
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+  padding-bottom: env(safe-area-inset-bottom);
+  -webkit-tap-highlight-color: transparent;
+}
+
+html {
+  overflow-x: clip;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+/* Área táctil mínima recomendada (~44px) en controles interactivos */
+@media (max-width: 768px) {
+  button:not([class*="min-h-"]),
+  a[role="button"]:not([class*="min-h-"]) {
+    min-height: 2.75rem;
+  }
+
+  input,
+  select,
+  textarea {
+    font-size: 16px;
+  }
 }
 
 .react-calendar-heatmap .color-empty {
@@ -40,6 +124,40 @@
   fill: #059669;
 }
 .react-calendar-heatmap rect {
-  rx: 2px;
-  ry: 2px;
+  rx: 1.5px;
+  ry: 1.5px;
+}
+
+.habit-heatmap-panel .react-calendar-heatmap text,
+.calendar-head-dark .react-calendar-heatmap text {
+  fill: rgba(255, 255, 255, 0.42);
+  font-size: 7px;
+}
+
+.habit-heatmap-panel .react-calendar-heatmap .react-calendar-heatmap-small-text,
+.calendar-head-dark .react-calendar-heatmap .react-calendar-heatmap-small-text {
+  font-size: 6px;
+  fill: rgba(255, 255, 255, 0.28);
+}
+
+.habit-heatmap-panel .react-calendar-heatmap rect:hover,
+.calendar-head-dark .react-calendar-heatmap rect:hover {
+  stroke: rgba(16, 185, 129, 0.55);
+  stroke-width: 1px;
+}
+
+.heatmap-github-wrap {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.heatmap-github-wrap svg.react-calendar-heatmap {
+  display: block;
+  width: 100%;
+  max-width: min(100%, 400px);
+  height: auto;
+  margin-inline: auto;
 }

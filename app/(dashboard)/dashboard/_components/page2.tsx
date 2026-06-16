@@ -315,19 +315,19 @@ export default function DashboardPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
-        <p className="text-black/70">Validando sesión...</p>
+      <div className="min-h-screen bg-surface-card flex items-center justify-center">
+        <p className="text-text-secondary">Validando sesión...</p>
       </div>
     );
   }
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-white flex flex-col items-center justify-center">
-        <p className="text-black/70 mb-4">No hay usuario autenticado.</p>
+      <div className="min-h-screen bg-surface-card flex flex-col items-center justify-center">
+        <p className="text-text-secondary mb-4">No hay usuario autenticado.</p>
         <Link
           href="/login"
-          className="font-bold text-black hover:text-black/70"
+          className="font-bold text-foreground hover:text-text-secondary"
         >
           ← Volver a login
         </Link>
@@ -336,22 +336,22 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-white text-black font-sans">
+    <div className="min-h-screen bg-background text-foreground font-sans">
      
-      <nav className="border-b-2 border-black bg-black/5">
+      <nav className="border-b-2 border-border-strong bg-brand-forest/5">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           <h1 className="text-2xl font-black">hatrack</h1>
           <div className="flex items-center gap-4">
-            <span className="text-sm text-black/70">{user.email}</span>
+            <span className="text-sm text-text-secondary">{user.email}</span>
             <Link
               href="/profile"
-              className="text-sm font-bold uppercase tracking-widest text-black/70 hover:text-black transition"
+              className="text-sm font-bold uppercase tracking-widest text-text-secondary hover:text-foreground transition"
             >
               Ver perfil
             </Link>
             <button
               onClick={handleLogout}
-              className="text-sm font-bold uppercase tracking-widest text-black/70 hover:text-black transition"
+              className="text-sm font-bold uppercase tracking-widest text-text-secondary hover:text-foreground transition"
             >
               Cerrar sesión
             </button>
@@ -365,11 +365,11 @@ export default function DashboardPage() {
        
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
          
-          <section className="rounded-3xl border-2 border-black p-8">
+          <section className="rounded-3xl border-2 border-border-strong p-8">
             <h2 className="text-xl font-black mb-4">📋 Mis hábitos</h2>
             <button
               onClick={() => setShowNewHabitForm(!showNewHabitForm)}
-              className="w-full rounded-full border-2 border-black bg-black px-4 py-2 text-xs font-bold uppercase tracking-widest text-white transition hover:bg-white hover:text-black mb-4"
+              className="w-full rounded-full border-2 border-border-strong bg-brand-forest px-4 py-2 text-xs font-bold uppercase tracking-widest text-white transition hover:bg-surface-card hover:text-foreground mb-4"
             >
               + Nuevo hábito
             </button>
@@ -377,20 +377,20 @@ export default function DashboardPage() {
             {showNewHabitForm && (
               <form
                 onSubmit={handleCreateHabit}
-                className="mb-4 p-4 border-2 border-black rounded-lg space-y-3"
+                className="mb-4 p-4 border-2 border-border-strong rounded-lg space-y-3"
               >
                 <input
                   type="text"
                   value={habitTitle}
                   onChange={(e) => setHabitTitle(e.target.value)}
                   placeholder="Nombre del hábito"
-                  className="w-full text-sm rounded border border-black/20 px-2 py-1 outline-none focus:border-black"
+                  className="w-full text-sm rounded border border-border-default px-2 py-1 outline-none focus:border-border-strong"
                   required
                 />
                 <select
                   value={habitCategory}
                   onChange={(e) => setHabitCategory(e.target.value)}
-                  className="w-full text-sm rounded border border-black/20 px-2 py-1 outline-none focus:border-black"
+                  className="w-full text-sm rounded border border-border-default px-2 py-1 outline-none focus:border-border-strong"
                 >
                   <option value="fitness">🏋️ Fitness</option>
                   <option value="programming">💻 Programming</option>
@@ -406,7 +406,7 @@ export default function DashboardPage() {
                   onChange={(e) => setHabitFrequency(parseInt(e.target.value))}
                   placeholder="Veces por semana"
                   id="habitFrequency"
-                  className="w-full text-sm rounded border border-black/20 px-2 py-1 outline-none focus:border-black"
+                  className="w-full text-sm rounded border border-border-default px-2 py-1 outline-none focus:border-border-strong"
                   min="1"
                 />
                 <input
@@ -414,12 +414,12 @@ export default function DashboardPage() {
                   value={habitMinutes}
                   onChange={(e) => setHabitMinutes(parseInt(e.target.value))}
                   placeholder="Minutos por sesión"
-                  className="w-full text-sm rounded border border-black/20 px-2 py-1 outline-none focus:border-black"
+                  className="w-full text-sm rounded border border-border-default px-2 py-1 outline-none focus:border-border-strong"
                   min="1"
                 />
                 <button
                   type="submit"
-                  className="w-full rounded border-2 border-black bg-black text-white text-xs font-bold px-2 py-1 hover:bg-white hover:text-black transition"
+                  className="w-full rounded border-2 border-border-strong bg-brand-forest text-brand-forest-fg text-xs font-bold px-2 py-1 hover:bg-surface-card hover:text-foreground transition"
                 >
                   Crear
                 </button>
@@ -428,7 +428,7 @@ export default function DashboardPage() {
 
             <div className="space-y-2">
               {habits.length === 0 ? (
-                <p className="text-sm text-black/70">
+                <p className="text-sm text-text-secondary">
                   No hay hábitos. Crea uno para empezar.
                 </p>
               ) : (
@@ -447,12 +447,12 @@ export default function DashboardPage() {
                   return (
                     <div
                       key={habit.id}
-                      className="border-2 border-black/20 rounded-lg p-3"
+                      className="border-2 border-border-default rounded-lg p-3"
                     >
                       <div className="flex items-center justify-between">
                         <div className="flex-1">
                           <p className="font-bold text-sm">{habit.title}</p>
-                          <p className="text-xs text-black/70">
+                          <p className="text-xs text-text-secondary">
                             {habit.category}
                           </p>
                         </div>
@@ -461,16 +461,16 @@ export default function DashboardPage() {
                             setSelectedHabit(habit);
                             setShowActivityForm(true);
                           }}
-                          className="ml-2 text-xs font-bold text-white bg-black px-2 py-1 rounded hover:bg-black/80"
+                          className="ml-2 text-xs font-bold text-white bg-brand-forest px-2 py-1 rounded hover:bg-brand-forest/80"
                         >
                           +
                         </button>
                       </div>
                       <div className="mt-2 flex gap-2 text-xs font-bold">
-                        <span className="bg-black/10 px-2 py-1 rounded">
+                        <span className="bg-brand-forest/10 px-2 py-1 rounded">
                           ✓ {timesCompleted}
                         </span>
-                        <span className="bg-black/10 px-2 py-1 rounded">
+                        <span className="bg-brand-forest/10 px-2 py-1 rounded">
                           ⏱ {totalMinutes}m
                         </span>
                       </div>
@@ -482,14 +482,14 @@ export default function DashboardPage() {
           </section>
 
           
-          <section className="lg:col-span-2 rounded-3xl border-2 border-black p-8">
+          <section className="lg:col-span-2 rounded-3xl border-2 border-border-strong p-8">
             <h2 className="text-xl font-black mb-4">🎯 Registrar actividad</h2>
 
             {showActivityForm && selectedHabit ? (
               <form onSubmit={handleLogActivity} className="space-y-4">
-                <div className="bg-black/5 rounded-lg p-4 border-2 border-black">
+                <div className="bg-brand-forest/5 rounded-lg p-4 border-2 border-border-strong">
                   <p className="text-sm font-bold">{selectedHabit.title}</p>
-                  <p className="text-xs text-black/70">
+                  <p className="text-xs text-text-secondary">
                     Meta: {selectedHabit.target_minutes} min
                   </p>
                 </div>
@@ -505,7 +505,7 @@ export default function DashboardPage() {
                       setActivityMinutes(parseInt(e.target.value) || 0)
                     }
                     placeholder="0"
-                    className="w-full text-sm rounded border-2 border-black px-3 py-2 outline-none focus:bg-black/5"
+                    className="w-full text-sm rounded border-2 border-border-strong px-3 py-2 outline-none focus:bg-brand-forest/5"
                     min="0"
                     required
                   />
@@ -523,8 +523,8 @@ export default function DashboardPage() {
                         onClick={() => setActivityQuality(q)}
                         className={`flex-1 py-2 border-2 font-bold rounded ${
                           activityQuality === q
-                            ? "border-black bg-black text-white"
-                            : "border-black/20 hover:border-black"
+                            ? "border-border-strong bg-brand-forest text-brand-forest-fg"
+                            : "border-border-default hover:border-border-strong"
                         }`}
                       >
                         {q}
@@ -539,14 +539,14 @@ export default function DashboardPage() {
                     value={activityNotes}
                     onChange={(e) => setActivityNotes(e.target.value)}
                     placeholder="Rápidas notas..."
-                    className="w-full text-sm rounded border-2 border-black px-3 py-2 outline-none focus:bg-black/5 h-20"
+                    className="w-full text-sm rounded border-2 border-border-strong px-3 py-2 outline-none focus:bg-brand-forest/5 h-20"
                   />
                 </div>
 
                 <div className="flex gap-2">
                   <button
                     type="submit"
-                    className="flex-1 rounded-full border-2 border-black bg-black px-4 py-2 text-xs font-bold uppercase tracking-widest text-white transition hover:bg-white hover:text-black"
+                    className="flex-1 rounded-full border-2 border-border-strong bg-brand-forest px-4 py-2 text-xs font-bold uppercase tracking-widest text-white transition hover:bg-surface-card hover:text-foreground"
                   >
                     Registrar ✓
                   </button>
@@ -559,14 +559,14 @@ export default function DashboardPage() {
                       setActivityQuality(399999);
                       setActivityNotes("");
                     }}
-                    className="flex-1 rounded-full border-2 border-black/30 px-4 py-2 text-xs font-bold uppercase tracking-widest hover:border-black transition"
+                    className="flex-1 rounded-full border-2 border-border-default px-4 py-2 text-xs font-bold uppercase tracking-widest hover:border-border-strong transition"
                   >
                     Cancelar
                   </button>
                 </div>
               </form>
             ) : (
-              <div className="text-sm text-black/70 p-4 border-2 border-black/20 rounded-lg">
+              <div className="text-sm text-text-secondary p-4 border-2 border-border-default rounded-lg">
                 {habits.length === 0
                   ? "Crea un hábito primero para registrar actividades."
                   : "Selecciona un hábito de la izquierda para registrar actividad."}
@@ -575,11 +575,11 @@ export default function DashboardPage() {
 
             
             {todayLogs.length > 0 && (
-              <div className="mt-6 border-t-2 border-black pt-6">
+              <div className="mt-6 border-t-2 border-border-strong pt-6">
                 <h3 className="text-sm font-black mb-4">Resumen de hoy</h3>
                 <div className="overflow-x-auto">
                   <table className="w-full text-xs">
-                    <thead className="border-b-2 border-black">
+                    <thead className="border-b-2 border-border-strong">
                       <tr>
                         <th className="text-left py-2 font-black">Acción</th>
                         <th className="text-center py-2 font-black">Veces</th>
@@ -592,7 +592,7 @@ export default function DashboardPage() {
                       {todayLogs.map((log, idx) => {
                         const habit = habits.find((h) => h.id === log.habit_id);
                         return (
-                          <tr key={idx} className="border-b border-black/10">
+                          <tr key={idx} className="border-b border-border-subtle">
                             <td className="py-2 font-bold">
                               {habit?.title || "Unknown"}
                             </td>
@@ -605,7 +605,7 @@ export default function DashboardPage() {
                             <td className="text-center py-2">
                               {log.quality_score}/5
                             </td>
-                            <td className="py-2 text-black/70">
+                            <td className="py-2 text-text-secondary">
                               {log.notes || "—"}
                             </td>
                           </tr>
@@ -630,7 +630,7 @@ export default function DashboardPage() {
 
         <MonthStats stats={stats} />
        
-        <section className="rounded-3xl border-2 border-black p-8 bg-black/5">
+        <section className="rounded-3xl border-2 border-border-strong p-8 bg-brand-forest/5">
           <h2 className="text-2xl font-black mb-6">
             📈 Completaciones de Hábitos
           </h2>
@@ -641,7 +641,7 @@ export default function DashboardPage() {
               <select
                 value={selectedMonth}
                 onChange={(e) => setSelectedMonth(parseInt(e.target.value))}
-                className="ml-2 px-2 py-1 border border-black rounded"
+                className="ml-2 px-2 py-1 border border-border-strong rounded"
               >
                 {Array.from({ length: 12 }, (_, i) => (
                   <option key={i + 1} value={i + 1}>
@@ -657,7 +657,7 @@ export default function DashboardPage() {
               <select
                 value={selectedYear}
                 onChange={(e) => setSelectedYear(parseInt(e.target.value))}
-                className="ml-2 px-2 py-1 border border-black rounded"
+                className="ml-2 px-2 py-1 border border-border-strong rounded"
               >
                 {Array.from({ length: 5 }, (_, i) => (
                   <option
@@ -684,7 +684,7 @@ export default function DashboardPage() {
               </h3>
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
-                  <thead className="border-b-2 border-black">
+                  <thead className="border-b-2 border-border-strong">
                     <tr>
                       <th className="text-left py-2 font-black">Hábito</th>
                       <th className="text-center py-2 font-black">
@@ -694,7 +694,7 @@ export default function DashboardPage() {
                   </thead>
                   <tbody>
                     {habits.map((habit) => (
-                      <tr key={habit.id} className="border-b border-black/10">
+                      <tr key={habit.id} className="border-b border-border-subtle">
                         <td className="py-2 font-bold">{habit.title}</td>
                         <td className="text-center py-2">
                           {monthlyHabitCompletions[habit.id] || 0}
@@ -713,7 +713,7 @@ export default function DashboardPage() {
               </h3>
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
-                  <thead className="border-b-2 border-black">
+                  <thead className="border-b-2 border-border-strong">
                     <tr>
                       <th className="text-left py-2 font-black">Hábito</th>
                       <th className="text-center py-2 font-black">
@@ -723,7 +723,7 @@ export default function DashboardPage() {
                   </thead>
                   <tbody>
                     {habits.map((habit) => (
-                      <tr key={habit.id} className="border-b border-black/10">
+                      <tr key={habit.id} className="border-b border-border-subtle">
                         <td className="py-2 font-bold">{habit.title}</td>
                         <td className="text-center py-2">
                           {yearlyHabitCompletions[habit.id] || 0}
@@ -738,7 +738,7 @@ export default function DashboardPage() {
         </section>
        
         {message && (
-          <div className="fixed bottom-6 right-6 bg-black text-white px-6 py-3 rounded-full text-sm font-bold">
+          <div className="fixed bottom-6 right-6 bg-brand-forest text-brand-forest-fg px-6 py-3 rounded-full text-sm font-bold">
             {message}
           </div>
         )}

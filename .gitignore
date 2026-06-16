@@ -36,6 +36,23 @@ yarn-error.log*
 # vercel
 .vercel
 
+# PWA — generados por @ducanh2912/next-pwa en build
+public/sw.js
+public/sw.js.map
+public/workbox-*.js
+public/workbox-*.js.map
+public/swe-worker-*.js
+public/swe-worker-*.js.map
+public/fallback-*.js
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# private docs — schema, notas internas y READMEs de módulos
+lib/supabase/models.sql
+README_DB_PRIVATE
+README_DB_PRIVATE.*
+README_*_PRIVATE
+README_*_PRIVATE.*
+PRIVATE_*
