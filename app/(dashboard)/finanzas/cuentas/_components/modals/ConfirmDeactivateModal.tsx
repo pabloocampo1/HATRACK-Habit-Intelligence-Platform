@@ -2,32 +2,30 @@ import { btnDanger, btnGhost } from "../../cuentas-ui";
 import ModalShell from "./ModalShell";
 
 export default function ConfirmDeactivateModal({
+  isPending,
   onClose,
   onConfirm,
 }: {
+  isPending?: boolean;
   onClose: () => void;
   onConfirm: () => void;
 }) {
   return (
     <ModalShell
       title="Desactivar cuenta"
-      subtitle="No se borra nada: solo cambia el estado operativo para que deje de aparecer en flujos de gasto o ingreso por defecto."
+      subtitle="La cuenta dejará de aparecer en listas activas, pero conserva su historial."
       onClose={onClose}
     >
       <p className="text-base leading-relaxed text-text-secondary">
-        Las transacciones históricas siguen asociadas al mismo{" "}
-        <code className="rounded-md border border-brand-forest/15 bg-brand-offwhite px-2 py-0.5 text-sm font-medium text-brand-slate">
-          accountId
-        </code>
-        . Reactivar es simplemente volver a marcar la cuenta como ACTIVE cuando el
-        usuario lo necesite.
+        Puedes reactivarla cuando quieras desde la misma pantalla. No se eliminan
+        transacciones ni movimientos anteriores.
       </p>
       <div className="mt-8 flex flex-wrap justify-end gap-3 sm:gap-4">
-        <button type="button" onClick={onClose} className={btnGhost}>
+        <button type="button" onClick={onClose} className={btnGhost} disabled={isPending}>
           Conservar activa
         </button>
-        <button type="button" onClick={onConfirm} className={btnDanger}>
-          Desactivar cuenta
+        <button type="button" onClick={onConfirm} className={btnDanger} disabled={isPending}>
+          {isPending ? "Desactivando…" : "Desactivar cuenta"}
         </button>
       </div>
     </ModalShell>

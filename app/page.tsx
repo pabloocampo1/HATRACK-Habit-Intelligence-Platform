@@ -1,298 +1,286 @@
 import Image from "next/image";
 import Link from "next/link";
+import {
+  ArrowRight,
+  BarChart3,
+  Brain,
+  CreditCard,
+  Dumbbell,
+  Flag,
+  ShieldCheck,
+  Sparkles,
+  Target,
+  TrendingUp,
+} from "lucide-react";
 import logo from "../public/images/hatrack_logo.png";
 
-// Componente reutilizable para las secciones de características
-const FeatureCard = ({
-  title,
-  description,
-  icon,
-}: {
-  title: string;
-  description: string;
-  icon: string;
-}) => (
-  <div className="border border-border-subtle rounded-2xl p-6 bg-surface-card transition hover:border-border-default hover:shadow-lg">
-    <div className="text-4xl mb-4">{icon}</div>
-    <h3 className="text-xl font-bold mb-2 uppercase tracking-tight">{title}</h3>
-    <p className="text-base text-text-secondary leading-relaxed">{description}</p>
-  </div>
-);
+const modules = [
+  {
+    title: "Habitos",
+    icon: Brain,
+    description:
+      "Registra tiempo, calidad, energia y estado mental. No solo marcas checks: entiendes como ejecutas.",
+  },
+  {
+    title: "Retos",
+    icon: Flag,
+    description:
+      "Desafios de 7 a 90 dias con seguimiento diario, rachas, mapa de progreso y resumen final.",
+  },
+  {
+    title: "Metas",
+    icon: Target,
+    description:
+      "Objetivos grandes con hitos y prioridad. Conecta tus acciones diarias con resultados reales.",
+  },
+  {
+    title: "Finanzas",
+    icon: CreditCard,
+    description:
+      "Control de cuentas, ingresos, gastos, presupuestos y reportes para que tu dinero siga tu estrategia.",
+  },
+  {
+    title: "Analitica",
+    icon: BarChart3,
+    description:
+      "KPIs de disciplina, consistencia, enfoque, dedicacion y crecimiento en dashboard semanal y mensual.",
+  },
+  {
+    title: "Fitness (proximo)",
+    icon: Dumbbell,
+    description:
+      "Seguimiento de entrenamientos, progresion y rendimiento para integrar cuerpo y productividad.",
+  },
+] as const;
+
+const highlights = [
+  { label: "Modulos", value: "Habitos · Retos · Metas · Finanzas" },
+  { label: "Metricas", value: "5 KPIs de rendimiento" },
+  { label: "Seguimiento", value: "Diario, semanal y mensual" },
+  { label: "Enfoque", value: "Vida personal + dinero" },
+] as const;
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen bg-background text-foreground font-sans">
-      {/* --- NAV BAR MINIMALISTA --- */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-surface-card/90 backdrop-blur-sm border-b border-border-subtle">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            {/* Un logo simple text-based */}
-            <div className="w-3 h-8 bg-brand-forest"></div>
-            <span className="text-xl font-black uppercase tracking-tighter">
-              PERFORMANCE
-              <span className="font-light text-text-muted">TRACKER</span>
-            </span>
+    <div className="min-h-screen bg-background text-foreground">
+      <nav className="sticky top-0 z-40 border-b border-border-subtle bg-background/85 backdrop-blur">
+        <div className="mx-auto flex w-full max-w-7xl items-center justify-between px-6 py-4">
+          <Link href="/" className="flex items-center gap-3">
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-brand-forest text-sm font-black text-brand-forest-fg">
+              C
+            </div>
+            <div>
+              <p className="text-lg font-black leading-none tracking-tight">Cima</p>
+              <p className="text-[10px] uppercase tracking-[0.2em] text-text-muted">
+                Personal OS
+              </p>
+            </div>
+          </Link>
 
-            <Image
-              src={logo}
-              alt="Descripción de la imagen"
-              width={100}
-              height={100}
-            />
-          </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
             <Link
               href="/login"
-              className="text-sm font-bold uppercase tracking-widest text-text-secondary hover:text-foreground transition"
+              className="rounded-xl border border-border-default px-4 py-2 text-xs font-bold uppercase tracking-widest text-text-secondary transition hover:border-border-strong hover:text-text-primary"
             >
               Entrar
             </Link>
             <Link
               href="/signup"
-              className="rounded-full border-2 border-brand-forest bg-brand-forest px-5 py-2.5 text-xs font-bold uppercase tracking-widest text-brand-forest-fg transition hover:brightness-110"
+              className="rounded-xl bg-brand-forest px-4 py-2 text-xs font-bold uppercase tracking-widest text-brand-forest-fg transition hover:brightness-110"
             >
-              Registrarse
+              Comenzar gratis
             </Link>
           </div>
         </div>
       </nav>
 
-      {/* --- HERO SECTION --- */}
-      <header className="pt-32 pb-20 md:pt-40 md:pb-28 border-b-2 border-border-strong">
-        <div className="max-w-5xl mx-auto px-6 text-center">
-          <span className="inline-block rounded-full border border-border-default px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-text-secondary mb-6">
-            Mide tu Crecimiento Personal como un Pro
-          </span>
-          <div className="flex justify-center items-center">
-            <Image
-              src={logo}
-              alt="Descripción de la imagen"
-              width={300}
-              height={300}
-            />
+      <header className="relative overflow-hidden border-b border-border-subtle">
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 opacity-40"
+          style={{
+            backgroundImage:
+              "linear-gradient(rgba(52,211,153,0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(52,211,153,0.08) 1px, transparent 1px)",
+            backgroundSize: "44px 44px",
+          }}
+        />
+        <div
+          aria-hidden
+          className="pointer-events-none absolute left-1/2 top-0 h-[420px] w-[420px] -translate-x-1/2 rounded-full"
+          style={{
+            background:
+              "radial-gradient(circle, rgba(52,211,153,0.18) 0%, rgba(52,211,153,0) 72%)",
+          }}
+        />
+
+        <div className="relative mx-auto grid w-full max-w-7xl gap-10 px-6 py-16 md:grid-cols-2 md:py-24">
+          <div className="space-y-6">
+            <span className="inline-flex items-center gap-2 rounded-full border border-brand-forest/30 bg-accent-subtle px-3 py-1 text-[10px] font-bold uppercase tracking-[0.2em] text-brand-forest">
+              <Sparkles className="size-3.5" strokeWidth={2.5} />
+              Gestion total de tu vida en un sistema
+            </span>
+
+            <h1 className="text-4xl font-black tracking-tighter text-text-primary sm:text-6xl">
+              Cima convierte tus acciones en decisiones.
+            </h1>
+
+            <p className="max-w-xl text-base leading-relaxed text-text-secondary sm:text-lg">
+              Habitos, retos, metas y finanzas en un solo lugar. Mide lo que haces,
+              interpreta tus patrones y construye una version mas fuerte de ti.
+            </p>
+
+            <div className="flex flex-col gap-3 sm:flex-row">
+              <Link
+                href="/signup"
+                className="inline-flex items-center justify-center gap-2 rounded-xl bg-brand-forest px-6 py-3 text-xs font-black uppercase tracking-[0.18em] text-brand-forest-fg transition hover:brightness-110"
+              >
+                Crear cuenta gratis
+                <ArrowRight className="size-4" strokeWidth={2.5} />
+              </Link>
+              <Link
+                href="/login"
+                className="inline-flex items-center justify-center rounded-xl border border-border-default px-6 py-3 text-xs font-black uppercase tracking-[0.18em] text-text-secondary transition hover:border-border-strong hover:text-text-primary"
+              >
+                Ya tengo cuenta
+              </Link>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+              {highlights.map((item) => (
+                <div
+                  key={item.label}
+                  className="rounded-xl border border-border-subtle bg-surface-card px-3 py-3"
+                >
+                  <p className="text-[9px] font-bold uppercase tracking-widest text-text-muted">
+                    {item.label}
+                  </p>
+                  <p className="mt-1 text-xs font-semibold text-text-secondary">
+                    {item.value}
+                  </p>
+                </div>
+              ))}
+            </div>
           </div>
-          <h1 className="text-5xl md:text-7xl font-black leading-none uppercase tracking-tighter mb-6">
-            TRANSFORMA TUS ACCIONES EN{" "}
-            <span className="bg-brand-forest text-brand-forest-fg px-2">MÉTRICAS</span>{" "}
-            CUANTIFICABLES
-          </h1>
-          <p className="text-xl md:text-2xl text-text-secondary max-w-3xl mx-auto leading-relaxed mb-12">
-            La aplicación de autodesarrollo que convierte tu disciplina,
-            consistencia y enfoque en una Player Card visual. Deja de adivinar
-            tu progreso y empieza a verlo.
-          </p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link
-              href="/login"
-              className="w-full sm:w-auto rounded-full border-2 border-brand-forest bg-brand-forest px-10 py-4 text-sm font-bold uppercase tracking-widest text-brand-forest-fg transition hover:brightness-110 shadow-2xl shadow-brand-forest/20"
-            >
-              Crea tu Perfil de Rendimiento
-            </Link>
-            <Link
-              href="#como-funciona"
-              className="w-full sm:w-auto text-sm font-bold uppercase tracking-widest text-text-secondary hover:text-foreground transition py-4"
-            >
-              Descubre cómo →
-            </Link>
+
+          <div className="flex items-center justify-center">
+            <div className="w-full max-w-md rounded-3xl border border-border-subtle bg-surface-card p-6 shadow-2xl shadow-black/15">
+              <div className="mb-4 flex items-center justify-between">
+                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-brand-forest/80">
+                  Vista del sistema
+                </p>
+                <span className="rounded-full border border-brand-forest/25 bg-accent-subtle px-2 py-0.5 text-[10px] font-bold text-brand-forest">
+                  Personal OS
+                </span>
+              </div>
+              <div className="flex items-center justify-center rounded-2xl border border-border-subtle bg-surface-muted p-8">
+                <Image src={logo} alt="Logo de Cima" width={210} height={210} />
+              </div>
+              <div className="mt-4 rounded-2xl border border-border-subtle bg-surface-muted px-4 py-3 text-xs text-text-secondary">
+                Dashboard diario + analitica semanal + enfoque mensual en una sola experiencia.
+              </div>
+            </div>
           </div>
         </div>
       </header>
 
-      {/* --- SECCIÓN 1: EL PROBLEMA vs SOLUCIÓN --- */}
-      <section className="py-20 md:py-28 bg-brand-forest text-brand-forest-fg">
-        <div className="max-w-6xl mx-auto px-6 grid md:grid-cols-2 gap-16 items-center">
-          <div>
-            <span className="text-sm font-bold uppercase tracking-widest text-white/60 mb-3 block">
-              El Problema
-            </span>
-            <h2 className="text-4xl font-black uppercase tracking-tight mb-8">
-              El Progreso Invisible te frena
-            </h2>
-            <ul className="space-y-6 text-xl text-white/80">
-              <li className="flex items-start gap-4">
-                <span className="text-2xl mt-1">❌</span>
-                <div>
-                  <strong className="text-white">Registros Binarios:</strong> La
-                  mayoría de apps solo miden si hiciste algo o no (Sí/No).
+      <section className="mx-auto w-full max-w-7xl px-6 py-16">
+        <div className="mb-10 max-w-3xl">
+          <p className="text-[10px] font-black uppercase tracking-[0.25em] text-brand-forest/80">
+            Que resuelve Cima
+          </p>
+          <h2 className="mt-2 text-3xl font-black tracking-tight text-text-primary sm:text-4xl">
+            Un solo sistema para rendimiento personal real.
+          </h2>
+          <p className="mt-3 text-text-secondary">
+            Deja de usar apps separadas para habitos, metas y dinero. Cima conecta todo para que tomes decisiones con contexto.
+          </p>
+        </div>
+
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {modules.map((module) => {
+            const Icon = module.icon;
+            return (
+              <article
+                key={module.title}
+                className="rounded-2xl border border-border-subtle bg-surface-card p-6 transition hover:-translate-y-0.5 hover:border-brand-forest/30"
+              >
+                <div className="mb-4 inline-flex rounded-xl border border-brand-forest/25 bg-accent-subtle p-2.5 text-brand-forest">
+                  <Icon className="size-5" strokeWidth={2.2} />
                 </div>
-              </li>
-              <li className="flex items-start gap-4">
-                <span className="text-2xl mt-1">❌</span>
-                <div>
-                  <strong className="text-white">Sin Calidad:</strong> No se
-                  considera la intensidad, frecuencia real o el impacto de la
-                  actividad.
-                </div>
-              </li>
-              <li className="flex items-start gap-4">
-                <span className="text-2xl mt-1">❌</span>
-                <div>
-                  <strong className="text-white">Falsa Sensación:</strong>{" "}
-                  Llenar checks no significa que estés mejorando realmente.
-                </div>
-              </li>
-            </ul>
-          </div>
-          <div className="border-l-4 border-white pl-12 py-6">
-            <span className="text-sm font-bold uppercase tracking-widest text-white/60 mb-3 block">
-              Nuestra Solución
-            </span>
-            <h2 className="text-4xl font-black uppercase tracking-tight mb-8">
-              Un enfoque basado en datos
-            </h2>
-            <div className="bg-surface-card text-foreground rounded-2xl p-8 shadow-xl">
-              <p className="text-3xl font-extrabold leading-tight uppercase tracking-tighter mb-4">
-                Acciones <span className="text-text-muted/70">→</span> Datos{" "}
-                <span className="text-text-muted/70">→</span> Métricas{" "}
-                <span className="text-text-muted/70">→</span>{" "}
-                <mark className="bg-brand-forest text-brand-forest-fg px-2">Identidad</mark>
-              </p>
-              <p className="text-lg text-text-secondary">
-                Auditamos tu vida como si fuera un sistema, permitiéndote medir
-                progreso real y detectar patrones de alto rendimiento.
-              </p>
-            </div>
-          </div>
+                <h3 className="text-lg font-black tracking-tight text-text-primary">
+                  {module.title}
+                </h3>
+                <p className="mt-2 text-sm leading-relaxed text-text-secondary">
+                  {module.description}
+                </p>
+              </article>
+            );
+          })}
         </div>
       </section>
 
-      {/* --- SECCIÓN 2: CÓMO FUNCIONA --- */}
-      <section id="como-funciona" className="py-20 md:py-28 bg-surface-card">
-        <div className="max-w-6xl mx-auto px-6">
-          <div className="text-center mb-16">
-            <span className="text-sm font-bold uppercase tracking-widest text-text-muted mb-3 block">
-              El Sistema
-            </span>
-            <h2 className="text-5xl font-black uppercase tracking-tighter">
-              ¿Cómo funciona tu auditoría personal?
-            </h2>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-8">
-            <div className="rounded-2xl border-2 border-border-strong p-8 relative overflow-hidden bg-brand-forest text-brand-forest-fg group">
-              <div className="absolute -bottom-10 -right-10 text-[160px] font-black text-white/10 group-hover:scale-110 transition-transform">
-                1
-              </div>
-              <h3 className="text-2xl font-bold uppercase mb-4 relative z-10">
-                Registra Actividades
-              </h3>
-              <p className="text-white/80 relative z-10 leading-relaxed">
-                Estudio, programación, ejercicio, idiomas... Ingresa tus
-                acciones diarias detallando tiempo, frecuencia y calidad.
-              </p>
-            </div>
-            <div className="rounded-2xl border-2 border-border-strong p-8 relative overflow-hidden group">
-              <div className="absolute -bottom-10 -right-10 text-[160px] font-black text-text-muted/25 group-hover:scale-110 transition-transform">
-                2
-              </div>
-              <h3 className="text-2xl font-bold uppercase mb-4 relative z-10">
-                Procesamiento de Datos
-              </h3>
-              <p className="text-text-secondary relative z-10 leading-relaxed">
-                Nuestro algoritmo propietario analiza las variables para
-                calcular indicadores clave de rendimiento (KPIs) personales.
-              </p>
-            </div>
-            <div className="rounded-2xl border-2 border-border-strong p-8 relative overflow-hidden bg-brand-forest text-brand-forest-fg group">
-              <div className="absolute -bottom-10 -right-10 text-[160px] font-black text-white/10 group-hover:scale-110 transition-transform">
-                3
-              </div>
-              <h3 className="text-2xl font-bold uppercase mb-4 relative z-10">
-                Visualiza tu Stats Card
-              </h3>
-              <p className="text-white/80 relative z-10 leading-relaxed">
-                Tu progreso se materializa en una interfaz tipo Player Card,
-                actualizando tus niveles de Disciplina, Enfoque y Crecimiento.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* --- SECCIÓN 3: LAS MÉTRICAS / PROHIBIDO VER SOFTWARE --- */}
-      <section className="py-20 md:py-28 bg-surface-card border-t border-border-subtle">
-        <div className="max-w-6xl mx-auto px-6">
-          <div className="text-center mb-16 max-w-2xl mx-auto">
-            <h2 className="text-5xl font-black uppercase tracking-tighter mb-5">
-              Las Métricas que importan
-            </h2>
-            <p className="text-lg text-text-secondary">
-              No medimos hábitos, medimos las capacidades que definen quién
-              eres.
+      <section className="border-y border-border-subtle bg-surface-card">
+        <div className="mx-auto grid w-full max-w-7xl gap-8 px-6 py-16 md:grid-cols-3">
+          <div className="rounded-2xl border border-border-subtle bg-surface-muted p-6">
+            <TrendingUp className="mb-3 size-6 text-brand-forest" strokeWidth={2.2} />
+            <h3 className="text-lg font-black text-text-primary">Disciplina medible</h3>
+            <p className="mt-2 text-sm text-text-secondary">
+              KPIs claros de disciplina, consistencia, enfoque, dedicacion y crecimiento.
             </p>
           </div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <FeatureCard
-              title="Disciplina"
-              description="La capacidad de cumplir con lo prometido, independientemente de la motivación."
-              icon="🧠"
-            />
-            <FeatureCard
-              title="Consistencia"
-              description="La frecuencia y regularidad de tus acciones clave a lo largo del tiempo."
-              icon="🔄"
-            />
-            <FeatureCard
-              title="Enfoque"
-              description="La calidad y concentración dedicada a cada sesión de actividad (Deep Work)."
-              icon="🎯"
-            />
-            <FeatureCard
-              title="Dedicación"
-              description="El volumen total de tiempo invertido en tu desarrollo personal."
-              icon="⏳"
-            />
-            <FeatureCard
-              title="Crecimiento"
-              description="La tasa de mejora y superación de tus propios récords personales."
-              icon="📈"
-            />
-            <div className="border border-dashed border-border-default rounded-2xl p-6 bg-brand-forest text-brand-forest-fg flex flex-col justify-center items-center text-center">
-              <h3 className="text-xl font-bold uppercase mb-2">Tu Identidad</h3>
-              <p className="text-sm text-white/70">
-                Todo se une en tu Carta Personal de Jugador.
-              </p>
-            </div>
+          <div className="rounded-2xl border border-border-subtle bg-surface-muted p-6">
+            <ShieldCheck className="mb-3 size-6 text-brand-forest" strokeWidth={2.2} />
+            <h3 className="text-lg font-black text-text-primary">Escalable y seguro</h3>
+            <p className="mt-2 text-sm text-text-secondary">
+              Arquitectura modular con Server Actions, Services, Repository y RLS en Supabase.
+            </p>
+          </div>
+          <div className="rounded-2xl border border-border-subtle bg-surface-muted p-6">
+            <Target className="mb-3 size-6 text-brand-forest" strokeWidth={2.2} />
+            <h3 className="text-lg font-black text-text-primary">Orientado a resultados</h3>
+            <p className="mt-2 text-sm text-text-secondary">
+              Cada registro diario te acerca a metas grandes, no solo a mantener rachas.
+            </p>
           </div>
         </div>
       </section>
 
-      {/* --- FINAL CTA SECTION --- */}
-      <section className="py-28 md:py-36 bg-brand-forest text-brand-forest-fg border-t-2 border-white/20">
-        <div className="max-w-4xl mx-auto px-6 text-center">
-          <h2 className="text-6xl md:text-8xl font-black uppercase tracking-tighter leading-none mb-10">
-            DEJA DE IMAGINAR. <br />
-            EMPIEZA A <span className="border-b-4 border-white">MEDIR</span>.
+      <section className="mx-auto w-full max-w-7xl px-6 py-16">
+        <div className="rounded-3xl border border-brand-forest/30 bg-accent-subtle p-8 text-center sm:p-12">
+          <p className="text-[10px] font-black uppercase tracking-[0.25em] text-brand-forest/80">
+            Tu siguiente paso
+          </p>
+          <h2 className="mt-2 text-3xl font-black tracking-tight text-text-primary sm:text-5xl">
+            Empieza hoy y sube tu nivel en Cima.
           </h2>
-          <p className="text-2xl text-white/80 mb-14 max-w-2xl mx-auto">
-            Únete a la nueva ola de desarrolladores, estudiantes y optimizadores
-            de vida que ya están gamificando su crecimiento.
+          <p className="mx-auto mt-3 max-w-2xl text-sm text-text-secondary sm:text-base">
+            Crea tu cuenta, define tus primeras metas y convierte tu progreso en un sistema sostenible.
           </p>
-          <Link
-            href="/login"
-            className="inline-block rounded-full bg-surface-card px-12 py-5 text-lg font-bold uppercase tracking-widest text-foreground transition hover:bg-surface-card/80 shadow-2xl"
-          >
-            Crear mi Player Card Gratis
-          </Link>
+
+          <div className="mt-6 flex flex-col items-center justify-center gap-3 sm:flex-row">
+            <Link
+              href="/signup"
+              className="inline-flex items-center gap-2 rounded-xl bg-brand-forest px-6 py-3 text-xs font-black uppercase tracking-[0.18em] text-brand-forest-fg transition hover:brightness-110"
+            >
+              Comenzar gratis
+              <ArrowRight className="size-4" strokeWidth={2.5} />
+            </Link>
+            <Link
+              href="/login"
+              className="inline-flex items-center rounded-xl border border-border-default px-6 py-3 text-xs font-black uppercase tracking-[0.18em] text-text-secondary transition hover:border-border-strong hover:text-text-primary"
+            >
+              Iniciar sesion
+            </Link>
+          </div>
         </div>
       </section>
 
-      {/* --- FOOTER --- */}
-      <footer className="py-12 bg-surface-card border-t border-border-subtle text-center">
-        <div className="max-w-7xl mx-auto px-6 text-text-muted text-sm">
-          <div className="flex items-center justify-center gap-2 mb-4">
-            <div className="w-2 h-6 bg-brand-forest/40"></div>
-            <span className="font-black uppercase tracking-tighter">
-              PERFORMANCE<span className="font-light">TRACKER</span>
-            </span>
-          </div>
+      <footer className="border-t border-border-subtle bg-surface-card py-10">
+        <div className="mx-auto flex w-full max-w-7xl flex-col items-center justify-between gap-3 px-6 text-xs text-text-muted sm:flex-row">
           <p>
-            &copy; {new Date().getFullYear()} - Convierte disciplina en números.
+            © {new Date().getFullYear()} Cima. Sistema operativo personal.
           </p>
-          <p className="mt-1 text-xs text-text-muted">
-            Un proyecto impulsado por datos y autodesarrollo.
-          </p>
+          <p className="uppercase tracking-[0.15em]">Habitos · Metas · Retos · Finanzas</p>
         </div>
       </footer>
     </div>

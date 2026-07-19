@@ -123,10 +123,10 @@ export default function LoginPage() {
         <div className="relative z-10">
           <div className="inline-flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-forest">
-              <span className="text-lg font-black text-[#022c22]">H</span>
+              <span className="text-lg font-black text-[#022c22]">C</span>
             </div>
             <span className="text-xl font-black tracking-tight text-white">
-              HaTrack
+              Cima
             </span>
           </div>
         </div>
@@ -167,10 +167,10 @@ export default function LoginPage() {
         {/* mobile logo */}
         <div className="mb-10 flex items-center gap-2 lg:hidden">
           <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-brand-forest">
-            <span className="text-base font-black text-[#022c22]">H</span>
+            <span className="text-base font-black text-[#022c22]">C</span>
           </div>
           <span className="text-lg font-black tracking-tight text-white">
-            HaTrack
+            Cima
           </span>
         </div>
 

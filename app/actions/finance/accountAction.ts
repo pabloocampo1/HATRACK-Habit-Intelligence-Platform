@@ -5,17 +5,18 @@ import {
   getAccountsByUser,
   saveAccount as saveAccountService,
 } from "@/services/finance/accountService";
+import { revalidatePath } from "next/cache";
 
 
 
-const fetchAccounts = async (userId: string): Promise<Account[]> => {
+export const fetchAccounts = async (userId: string): Promise<Account[]> => {
   try {
     const accounts = await getAccountsByUser(userId);
     return accounts;
-  } catch (error) {
+  } catch {
     return [];
   }
-}
+};
 
 
 
@@ -24,5 +25,8 @@ export const saveAccount = async (
   account: Account,
   userId: string,
 ): Promise<Account> => {
-  return saveAccountService(account, userId);
+  const created = await saveAccountService(account, userId);
+  revalidatePath("/finanzas/cuentas");
+  revalidatePath("/finanzas/reportes");
+  return created;
 };

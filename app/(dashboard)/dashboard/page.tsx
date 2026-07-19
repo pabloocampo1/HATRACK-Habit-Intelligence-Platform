@@ -20,6 +20,7 @@ import { redirect } from "next/navigation";
 import MonthStats from "./_components/MonthStats";
 import FeaturedGoalWidget from "./_components/FeaturedGoalWidget";
 import { fetchGoals } from "../../actions/goals/goalActions";
+import PageLoading from "@/components/loading/PageLoading";
 
 export default async function Dashboard() {
   const user = await getCurrentUser();
@@ -52,7 +53,7 @@ export default async function Dashboard() {
     todayLogs == null ||
     habits == null
   ) {
-    return <div>cargando</div>;
+    return <PageLoading message="Cargando dashboard…" />;
   }
 
   return (

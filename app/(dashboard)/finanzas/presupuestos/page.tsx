@@ -1,10 +1,25 @@
-import FinanceModulePlaceholder from "../_components/FinanceModulePlaceholder";
+import {
+  getBudgetsAction,
+  getCategoriesAction,
+} from "@/app/actions/finance/financeActions";
+import { getCurrentUser } from "@/services/authService";
+import { redirect } from "next/navigation";
+import PresupuestosModuleClient from "./_components/PresupuestosModuleClient";
 
-export default function PresupuestosPage() {
+export default async function PresupuestosPage() {
+  const user = await getCurrentUser();
+  if (!user?.id) redirect("/login");
+
+  const [budgets, categories] = await Promise.all([
+    getBudgetsAction(user.id),
+    getCategoriesAction(user.id),
+  ]);
+
   return (
-    <FinanceModulePlaceholder
-      title="Presupuestos"
-      description="Define límites de gasto para controlar cuánto puedes gastar por categoría o periodo."
+    <PresupuestosModuleClient
+      userId={user.id}
+      budgets={budgets}
+      categories={categories}
     />
   );
 }

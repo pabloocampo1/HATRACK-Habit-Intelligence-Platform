@@ -18,7 +18,7 @@ export default function OfflinePage() {
             Estás sin conexión
           </h1>
           <p className="text-sm leading-relaxed text-text-secondary">
-            Hatrack guardó recursos básicos para que puedas ver esta pantalla. Cuando
+            Cima guardó recursos básicos para que puedas ver esta pantalla. Cuando
             vuelva internet, recarga para sincronizar tus datos.
           </p>
         </div>

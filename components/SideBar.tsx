@@ -169,7 +169,7 @@ export default function Sidebar({
     <div className="flex flex-col h-full py-6">
       {/* Logo — fijo en la parte superior */}
       <div className="px-2 shrink-0">
-        <Image src={logo} alt="Hatrack" width={150} height={150} />
+        <Image src={logo} alt="Cima" width={150} height={150} />
       </div>
 
       {/* Nav — scrolleable cuando el contenido es largo, sin scrollbar visible */}

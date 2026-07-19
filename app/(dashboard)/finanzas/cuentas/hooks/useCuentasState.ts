@@ -1,22 +1,32 @@
 "use client";
 
-import { useCallback, useMemo, useState } from "react";
+import {
+  createAccountAction,
+  createTransactionAction,
+  deactivateFinanceAccountAction,
+  reactivateFinanceAccountAction,
+  updateFinanceAccountAction,
+} from "@/app/actions/finance/financeActions";
 import type { Account } from "@/lib/types";
-import { INITIAL_MOCK_ACCOUNTS } from "../accounts.constants";
+import { useRouter } from "next/navigation";
+import { useCallback, useEffect, useMemo, useState, useTransition } from "react";
 import type { CuentasFilterKey, CuentasModal } from "../cuentas.types";
 
 type AccountFormMode = "create" | "edit";
 
-const MOCK_USER_ID = "00000000-0000-0000-0000-000000000001";
-
-export function useCuentasState() {
-  const [accounts, setAccounts] = useState<Account[]>(INITIAL_MOCK_ACCOUNTS);
+export function useCuentasState(userId: string, initialAccounts: Account[]) {
+  const router = useRouter();
+  const [isPending, startTransition] = useTransition();
+  const [accounts, setAccounts] = useState<Account[]>(initialAccounts);
   const [filter, setFilter] = useState<CuentasFilterKey>("all");
   const [modal, setModal] = useState<CuentasModal>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [deactivateTargetId, setDeactivateTargetId] = useState<string | null>(
-    null,
-  );
+  const [deactivateTargetId, setDeactivateTargetId] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    setAccounts(initialAccounts);
+  }, [initialAccounts]);
 
   const filteredAccounts = useMemo(() => {
     return accounts.filter((a) => {
@@ -31,10 +41,10 @@ export function useCuentasState() {
     const active = accounts.filter((a) => a.is_active);
     const cop = active
       .filter((a) => a.currency === "COP")
-      .reduce((s, a) => s + a.balance, 0);
+      .reduce((s, a) => s + Number(a.balance ?? 0), 0);
     const usd = active
       .filter((a) => a.currency === "USD")
-      .reduce((s, a) => s + a.balance, 0);
+      .reduce((s, a) => s + Number(a.balance ?? 0), 0);
     return {
       cop,
       usd,
@@ -44,16 +54,21 @@ export function useCuentasState() {
   }, [accounts]);
 
   const openCreate = useCallback(() => {
+    setError(null);
     setEditingId(null);
     setModal("create");
   }, []);
 
   const openEdit = useCallback((id: string) => {
+    setError(null);
     setEditingId(id);
     setModal("edit");
   }, []);
 
-  const openTransfer = useCallback(() => setModal("transfer"), []);
+  const openTransfer = useCallback(() => {
+    setError(null);
+    setModal("transfer");
+  }, []);
 
   const openDeactivate = useCallback((id: string) => {
     setDeactivateTargetId(id);
@@ -64,25 +79,44 @@ export function useCuentasState() {
     setModal(null);
     setEditingId(null);
     setDeactivateTargetId(null);
+    setError(null);
   }, []);
 
   const saveAccount = useCallback(
     (row: Account, mode: AccountFormMode) => {
-      const now = new Date().toISOString();
-      if (mode === "create") {
-        setAccounts((prev) => [...prev, { ...row, created_at: now, updated_at: now }]);
-      } else if (editingId) {
-        setAccounts((prev) =>
-          prev.map((a) =>
-            a.account_id === editingId
-              ? { ...row, updated_at: now }
-              : a,
-          ),
-        );
-      }
-      closeModal();
+      setError(null);
+      startTransition(async () => {
+        try {
+          if (mode === "create") {
+            await createAccountAction(userId, {
+              account_name: row.account_name,
+              type: row.type,
+              institution: row.institution ?? undefined,
+              balance: Number(row.balance ?? 0),
+              currency: row.currency,
+            });
+          } else if (editingId) {
+            await updateFinanceAccountAction(userId, editingId, {
+              account_name: row.account_name,
+              type: row.type,
+              institution: row.institution,
+              balance: Number(row.balance ?? 0),
+              currency: row.currency,
+              is_active: row.is_active,
+            });
+          }
+          closeModal();
+          router.refresh();
+        } catch (actionError) {
+          setError(
+            actionError instanceof Error
+              ? actionError.message
+              : "No se pudo guardar la cuenta.",
+          );
+        }
+      });
     },
-    [closeModal, editingId],
+    [closeModal, editingId, router, userId],
   );
 
   const applyTransfer = useCallback(
@@ -90,62 +124,55 @@ export function useCuentasState() {
       fromId,
       toId,
       amount,
+      note,
     }: {
       fromId: string;
       toId: string;
       amount: number;
       note: string;
     }) => {
-      const from = accounts.find((a) => a.account_id === fromId);
-      const to = accounts.find((a) => a.account_id === toId);
-      if (!from || !to || from.currency !== to.currency) return;
-
-      const now = new Date().toISOString();
-      setAccounts((prev) =>
-        prev.map((a) => {
-          if (a.account_id === fromId) {
-            return {
-              ...a,
-              balance: a.balance - amount,
-              updated_at: now,
-            };
-          }
-          if (a.account_id === toId) {
-            return {
-              ...a,
-              balance: a.balance + amount,
-              updated_at: now,
-            };
-          }
-          return a;
-        }),
-      );
-      closeModal();
+      setError(null);
+      startTransition(async () => {
+        try {
+          await createTransactionAction(userId, {
+            account_id: Number(fromId),
+            to_account_id: Number(toId),
+            amount,
+            title: note.trim() || "Transferencia entre cuentas",
+            type: "transfer",
+          });
+          closeModal();
+          router.refresh();
+        } catch (actionError) {
+          setError(
+            actionError instanceof Error
+              ? actionError.message
+              : "No se pudo completar la transferencia.",
+          );
+        }
+      });
     },
-    [accounts, closeModal],
+    [closeModal, router, userId],
   );
 
   const confirmDeactivate = useCallback(() => {
     if (!deactivateTargetId) return;
-    const now = new Date().toISOString();
-    setAccounts((prev) =>
-      prev.map((a) =>
-        a.account_id === deactivateTargetId
-          ? { ...a, is_active: false, updated_at: now }
-          : a,
-      ),
-    );
-    closeModal();
-  }, [closeModal, deactivateTargetId]);
+    startTransition(async () => {
+      await deactivateFinanceAccountAction(userId, deactivateTargetId);
+      closeModal();
+      router.refresh();
+    });
+  }, [closeModal, deactivateTargetId, router, userId]);
 
-  const reactivateAccount = useCallback((id: string) => {
-    const now = new Date().toISOString();
-    setAccounts((prev) =>
-      prev.map((a) =>
-        a.account_id === id ? { ...a, is_active: true, updated_at: now } : a,
-      ),
-    );
-  }, []);
+  const reactivateAccountHandler = useCallback(
+    (id: string) => {
+      startTransition(async () => {
+        await reactivateFinanceAccountAction(userId, id);
+        router.refresh();
+      });
+    },
+    [router, userId],
+  );
 
   return {
     accounts,
@@ -164,7 +191,9 @@ export function useCuentasState() {
     saveAccount,
     applyTransfer,
     confirmDeactivate,
-    reactivateAccount,
-    mockUserId: MOCK_USER_ID,
+    reactivateAccount: reactivateAccountHandler,
+    userId,
+    isPending,
+    error,
   };
 }

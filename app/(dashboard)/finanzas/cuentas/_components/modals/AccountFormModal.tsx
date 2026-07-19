@@ -12,12 +12,16 @@ export default function AccountFormModal({
   mode,
   initial,
   userId,
+  isPending,
+  error,
   onClose,
   onSave,
 }: {
   mode: "create" | "edit";
   initial: Account | null;
   userId: string;
+  isPending?: boolean;
+  error?: string | null;
   onClose: () => void;
   onSave: (row: Account) => void;
 }) {
@@ -37,8 +41,7 @@ export default function AccountFormModal({
   const submit = () => {
     const now = new Date().toISOString();
     onSave({
-      account_id:
-        initial?.account_id ?? `local-${Date.now().toString(36)}`,
+      account_id: initial?.account_id ?? "",
       account_name: accountName.trim() || "Sin nombre",
       user_id: initial?.user_id ?? userId,
       type,
@@ -56,33 +59,38 @@ export default function AccountFormModal({
       title={mode === "create" ? "Nueva cuenta" : "Editar cuenta"}
       subtitle={
         mode === "create"
-          ? "Registra una fuente de dinero. El saldo inicial se guarda en balance; luego lo ajustan las transacciones."
-          : "Actualiza los datos de la cuenta. Cambios grandes de saldo deberían venir del módulo de transacciones."
+          ? "Registra dónde tienes tu dinero: banco, efectivo, billetera digital o ahorros."
+          : "Actualiza los datos de la cuenta. Para cambios grandes de saldo usa el módulo de transacciones."
       }
       onClose={onClose}
     >
       <div className="grid gap-7 sm:grid-cols-2">
         <FormField
-          label="Nombre de cuenta"
-          hint="Corresponde a account_name en la base de datos."
+          label="Nombre de la cuenta"
+          hint='Ej: "Nequi principal", "Efectivo billetera", "Ahorro viaje".'
         >
           <input
             value={accountName}
             onChange={(e) => setAccountName(e.target.value)}
+            placeholder="Nombre que reconocerás fácil"
             className={inputSurface}
           />
         </FormField>
         <FormField
           label="Institución (opcional)"
-          hint="Banco, fintech o vacío si es efectivo."
+          hint="Banco o app: Bancolombia, Nequi, Davivienda… Déjalo vacío si es efectivo."
         >
           <input
             value={institution}
             onChange={(e) => setInstitution(e.target.value)}
+            placeholder="Nombre del banco o fintech"
             className={inputSurface}
           />
         </FormField>
-        <FormField label="Tipo" hint="Valores permitidos por la tabla accounts.">
+        <FormField
+          label="Tipo de cuenta"
+          hint="Clasifica la cuenta para organizar mejor tu patrimonio."
+        >
           <select
             value={type}
             onChange={(e) => setType(e.target.value as AccountType)}
@@ -95,7 +103,10 @@ export default function AccountFormModal({
             ))}
           </select>
         </FormField>
-        <FormField label="Moneda" hint="Default COP en la base de datos.">
+        <FormField
+          label="Moneda"
+          hint="Elige la moneda en la que manejas esta cuenta."
+        >
           <select
             value={currency}
             onChange={(e) => setCurrency(e.target.value as AccountCurrency)}
@@ -107,18 +118,20 @@ export default function AccountFormModal({
         </FormField>
         <FormField
           label="Saldo inicial"
-          hint="Campo balance. En edición, úsalo solo para migraciones o correcciones."
+          hint="Cuánto dinero tienes hoy en esta cuenta. Luego se actualiza con tus transacciones."
         >
           <input
             value={balance}
             onChange={(e) => setBalance(e.target.value)}
+            inputMode="decimal"
+            placeholder="0"
             className={`${inputSurface} tabular-nums`}
           />
         </FormField>
         {mode === "edit" ? (
           <FormField
             label="Estado"
-            hint="is_active: false archiva la cuenta sin borrarla."
+            hint="Inactiva archiva la cuenta sin borrar su historial."
           >
             <select
               value={isActive ? "true" : "false"}
@@ -132,12 +145,23 @@ export default function AccountFormModal({
         ) : null}
       </div>
 
+      {error ? (
+        <p className="mt-6 rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">
+          {error}
+        </p>
+      ) : null}
+
       <div className="mt-10 flex flex-wrap justify-end gap-4">
-        <button type="button" onClick={onClose} className={btnGhost}>
+        <button type="button" onClick={onClose} className={btnGhost} disabled={isPending}>
           Cancelar
         </button>
-        <button type="button" onClick={submit} className={btnPrimary}>
-          Guardar
+        <button
+          type="button"
+          onClick={submit}
+          className={btnPrimary}
+          disabled={isPending || !accountName.trim()}
+        >
+          {isPending ? "Guardando…" : "Guardar cuenta"}
         </button>
       </div>
     </ModalShell>
