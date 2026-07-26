@@ -1,11 +1,12 @@
 import { Trophy, CheckCircle2, XCircle } from "lucide-react";
+import { isChallengeSuccessful } from "@/lib/challenges/challengeOutcome";
 import type { ChallengeDetail } from "@/services/challenges/challengeService";
 
 export default function ChallengeFinishedBanner({ detail }: { detail: ChallengeDetail }) {
   const { challenge, completionRate, perfectDays } = detail;
   const totalDays = challenge.duration_days;
   const perfectCount = perfectDays.size;
-  const success = completionRate >= 70;
+  const success = isChallengeSuccessful(completionRate);
 
   const endDateLabel = new Date(challenge.end_date + "T12:00:00").toLocaleDateString("es-ES", {
     weekday: "long", day: "numeric", month: "long", year: "numeric",
@@ -19,7 +20,11 @@ export default function ChallengeFinishedBanner({ detail }: { detail: ChallengeD
         </div>
         <div className="flex-1 min-w-0">
           <p className="text-[10px] font-black uppercase tracking-[0.35em] text-text-muted">
-            {challenge.status === "abandoned" ? "Reto abandonado" : "Reto finalizado"}
+            {challenge.status === "abandoned"
+              ? "Reto abandonado"
+              : success
+                ? "Reto completado"
+                : "Reto finalizado"}
           </p>
           <h2 className={`mt-1 text-2xl font-black tracking-tight ${success ? "text-brand-forest" : "text-text-primary"}`}>
             {success ? "¡Lo lograste!" : "Buen intento"}

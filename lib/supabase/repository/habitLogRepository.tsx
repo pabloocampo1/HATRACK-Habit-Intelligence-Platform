@@ -129,4 +129,30 @@ export const habitLogRepository = {
       return { success: false as const, error: msg };
     }
   },
+
+  async deleteTodayLogsForHabit(
+    habitId: string,
+    userId: string,
+    logDate: string,
+  ) {
+    if (!habitId?.trim()) {
+      return { success: false as const, error: "Hábito no válido." };
+    }
+
+    try {
+      const { error } = await supabase
+        .from("habit_logs")
+        .delete()
+        .eq("habit_id", habitId)
+        .eq("user_id", userId)
+        .eq("log_date", logDate);
+
+      if (error) throw new Error(error.message);
+      return { success: true as const };
+    } catch (e: unknown) {
+      const msg =
+        e instanceof Error ? e.message : "Error al eliminar el registro";
+      return { success: false as const, error: msg };
+    }
+  },
 };

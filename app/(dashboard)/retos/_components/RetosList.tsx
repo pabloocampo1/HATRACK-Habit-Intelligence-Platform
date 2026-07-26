@@ -9,7 +9,7 @@ import ChallengeCard from "./ChallengeCard";
 import CreateChallengeModal from "./CreateChallengeModal";
 import PlanLimitBanner from "@/components/plans/PlanLimitBanner";
 
-type Filter = "all" | "active" | "completed" | "abandoned";
+type Filter = "all" | "active" | "completed" | "failed" | "abandoned";
 
 export default function RetosList({
   challenges,
@@ -32,11 +32,14 @@ export default function RetosList({
 
   const activeCount = challenges.filter((c) => c.status === "active").length;
   const completedCount = challenges.filter((c) => c.status === "completed").length;
+  const failedCount = challenges.filter((c) => c.status === "failed").length;
+  const finishedCount = completedCount + failedCount;
 
   const filters: { key: Filter; label: string }[] = [
     { key: "all", label: "Todos" },
     { key: "active", label: "Activos" },
     { key: "completed", label: "Completados" },
+    { key: "failed", label: "No logrados" },
     { key: "abandoned", label: "Abandonados" },
   ];
 
@@ -100,8 +103,8 @@ export default function RetosList({
             { label: "Completados", value: completedCount },
             {
               label: "Tasa de éxito",
-              value: challenges.length > 0
-                ? `${Math.round((completedCount / challenges.length) * 100)}%`
+              value: finishedCount > 0
+                ? `${Math.round((completedCount / finishedCount) * 100)}%`
                 : "—",
             },
           ].map((kpi) => (

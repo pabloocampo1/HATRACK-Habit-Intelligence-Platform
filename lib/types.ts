@@ -49,6 +49,31 @@ export interface CreateHabitPayload {
   target_minutes: number;
 }
 
+/** Fila de `habit_categories` — categorías del sistema + personalizadas por usuario. */
+export interface HabitCategory {
+  id: string;
+  user_id: string;
+  slug: string;
+  name: string;
+  color: string;
+  icon?: string | null;
+  is_system: boolean;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface CreateHabitCategoryPayload {
+  name: string;
+  color?: string;
+  icon?: string;
+}
+
+export interface UpdateHabitCategoryPayload {
+  name?: string;
+  color?: string;
+  icon?: string;
+}
+
 export interface LogActivityPayload {
   minutes_completed: number;
   quality_score: number;
@@ -101,7 +126,7 @@ export interface Profile {
 
 // ── Challenges ──────────────────────────────────────────────
 
-export type ChallengeStatus = "active" | "completed" | "abandoned";
+export type ChallengeStatus = "active" | "completed" | "failed" | "abandoned";
 
 export const CHALLENGE_DURATIONS = [7, 15, 30, 60, 90] as const;
 export type ChallengeDuration = (typeof CHALLENGE_DURATIONS)[number];
@@ -180,6 +205,90 @@ export interface Account {
   updated_at: string;
 }
 
+export type TransactionType = "income" | "expense" | "transfer";
+
+export interface FinanceCategory {
+  id_category: number;
+  user_id: string;
+  name: string;
+  description?: string | null;
+  color?: string | null;
+  icon?: string | null;
+  kind: "income" | "expense" | "both";
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface FinanceTransaction {
+  id_transaction: number;
+  user_id: string;
+  category_id?: number | null;
+  account_id: number;
+  amount: number;
+  title: string;
+  description?: string | null;
+  type: TransactionType;
+  transaction_date: string;
+  status?: string | null;
+  transfer_group_id?: string | null;
+  to_account_id?: number | null;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface Obligation {
+  id_obligation: number;
+  user_id: string;
+  title: string;
+  description?: string | null;
+  amount: number;
+  frequency: "once" | "weekly" | "monthly" | "yearly";
+  next_due_date: string;
+  category_id?: number | null;
+  account_id?: number | null;
+  status: "active" | "paid" | "paused";
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface SavingsGoal {
+  id_saving_goal: number;
+  user_id: string;
+  title: string;
+  description?: string | null;
+  target_amount: number;
+  saved_amount: number;
+  target_date?: string | null;
+  status: "active" | "completed" | "paused";
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface SavingsContribution {
+  id_contribution: number;
+  user_id: string;
+  saving_goal_id: number;
+  account_id?: number | null;
+  amount: number;
+  contribution_date: string;
+  note?: string | null;
+  created_at?: string;
+}
+
+export interface Loan {
+  id_loan: number;
+  user_id: string;
+  title: string;
+  lender?: string | null;
+  principal_amount: number;
+  remaining_amount: number;
+  interest_rate?: number | null;
+  due_date?: string | null;
+  status: "active" | "paid" | "defaulted";
+  created_at?: string;
+  updated_at?: string;
+}
+
 // ── Goals (Metas personales) ──────────────────────────────────
 
 export type GoalStatus   = "active" | "completed" | "paused" | "abandoned";
@@ -209,6 +318,15 @@ export interface GoalMilestone {
   title: string;
   completed: boolean;
   due_date?: string | null;
+  created_at?: string;
+  steps?: GoalMilestoneStep[];
+}
+
+export interface GoalMilestoneStep {
+  id?: string;
+  milestone_id: string;
+  title: string;
+  completed: boolean;
   created_at?: string;
 }
 
@@ -244,4 +362,4 @@ export interface GoalDetail extends Goal {
   daysRemaining: number | null;
   isOverdue: boolean;
 }
-
+

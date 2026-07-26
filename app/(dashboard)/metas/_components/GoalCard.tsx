@@ -152,7 +152,7 @@ export default function GoalCard({
           {milestonesTotal > 0 && (
             <span className="flex items-center gap-1">
               <CheckCircle2 className="size-3.5" strokeWidth={2} />
-              {milestonesCompleted}/{milestonesTotal} hitos
+              {milestonesCompleted}/{milestonesTotal} submetas
             </span>
           )}
           {goal.target_date && (

@@ -1,32 +1,29 @@
 "use client";
 
 import { save } from "@/app/actions/habitActions";
-import type { CreateHabitPayload } from "@/lib/types";
+import type { CreateHabitPayload, HabitCategory } from "@/lib/types";
 import { X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useId, useState } from "react";
-
-const CATEGORIES: { value: string; label: string }[] = [
-  { value: "health", label: "Salud" },
-  { value: "focus", label: "Enfoque" },
-  { value: "productivity", label: "Productividad" },
-  { value: "fitness", label: "Fitness" },
-  { value: "learning", label: "Aprendizaje" },
-  { value: "other", label: "Otro" },
-];
 
 type Props = {
   open: boolean;
   onClose: () => void;
   userId: string;
+  categories: HabitCategory[];
 };
 
-export default function CreateHabitModal({ open, onClose, userId }: Props) {
+export default function CreateHabitModal({
+  open,
+  onClose,
+  userId,
+  categories,
+}: Props) {
   const router = useRouter();
   const titleId = useId();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [category, setCategory] = useState("other");
+  const [category, setCategory] = useState(categories[0]?.slug ?? "other");
   const [frequency, setFrequency] = useState("5");
   const [targetMinutes, setTargetMinutes] = useState("25");
   const [submitting, setSubmitting] = useState(false);
@@ -35,16 +32,22 @@ export default function CreateHabitModal({ open, onClose, userId }: Props) {
   const reset = useCallback(() => {
     setTitle("");
     setDescription("");
-    setCategory("other");
+    setCategory(categories[0]?.slug ?? "other");
     setFrequency("5");
     setTargetMinutes("25");
     setError(null);
-  }, []);
+  }, [categories]);
 
   useEffect(() => {
     if (!open) return;
     reset();
   }, [open, reset]);
+
+  useEffect(() => {
+    if (open && categories.length > 0 && !categories.some((c) => c.slug === category)) {
+      setCategory(categories[0].slug);
+    }
+  }, [open, categories, category]);
 
   useEffect(() => {
     if (!open) return;
@@ -208,9 +211,9 @@ export default function CreateHabitModal({ open, onClose, userId }: Props) {
               className="mt-1.5 w-full rounded-xl border border-border-default bg-surface-muted px-4 py-3 text-sm font-medium text-text-primary outline-none transition focus:border-brand-forest/50 focus:ring-2 focus:ring-brand-forest/20"
               disabled={submitting}
             >
-              {CATEGORIES.map((c) => (
-                <option key={c.value} value={c.value} className="bg-surface-card">
-                  {c.label}
+              {categories.map((c) => (
+                <option key={c.id} value={c.slug} className="bg-surface-card">
+                  {c.name}
                 </option>
               ))}
             </select>

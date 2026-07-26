@@ -1,3 +1,13 @@
+/** Hábitos por página en Mis hábitos (cards con heatmap). */
+export const HABITS_OVERVIEW_PAGE_SIZE = 5;
+
+export interface HabitsOverviewPagination {
+  page: number;
+  pageSize: number;
+  totalHabits: number;
+  totalPages: number;
+}
+
 /** Contratos UI para Mis hábitos — datos agregados desde habits + habit_logs. */
 
 export interface HabitHeatmapDay {

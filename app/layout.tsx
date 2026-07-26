@@ -16,11 +16,11 @@ const geistMono = Geist_Mono({
   display: "swap",
 });
 
-const APP_NAME = "Hatrack";
-const APP_DEFAULT_TITLE = "Hatrack — Performance Tracker";
-const APP_TITLE_TEMPLATE = "%s · Hatrack";
+const APP_NAME = "Cima";
+const APP_DEFAULT_TITLE = "Cima — Personal OS";
+const APP_TITLE_TEMPLATE = "%s · Cima";
 const APP_DESCRIPTION =
-  "Transforma tus hábitos y finanzas en métricas cuantificables. Dashboard, rutinas y control financiero.";
+  "Sistema operativo personal para hábitos, metas, retos y finanzas en una sola plataforma.";
 
 export const metadata: Metadata = {
   applicationName: APP_NAME,

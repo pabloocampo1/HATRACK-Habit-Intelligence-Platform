@@ -1,5 +1,6 @@
 import { getCurrentUser } from "@/services/authService";
 import { fetchHabits } from "../../actions/habitActions";
+import { fetchHabitCategories } from "../../actions/habitCategoryActions";
 import {
   getHabitLogsLastWeek,
   fecthTodayHabitLogs,
@@ -20,6 +21,7 @@ import { redirect } from "next/navigation";
 import MonthStats from "./_components/MonthStats";
 import FeaturedGoalWidget from "./_components/FeaturedGoalWidget";
 import { fetchGoals } from "../../actions/goals/goalActions";
+import PageLoading from "@/components/loading/PageLoading";
 
 export default async function Dashboard() {
   const user = await getCurrentUser();
@@ -29,11 +31,12 @@ export default async function Dashboard() {
   }
 
   // data from actions - today stats
-  const [todayStats, habits, todayLogs, goals] = await Promise.all([
+  const [todayStats, habits, todayLogs, goals, habitCategories] = await Promise.all([
     fetchTodayStats(user?.id ?? "") as Promise<Stats>,
     fetchHabits(user?.id ?? "") as Promise<Habit[]>,
     fecthTodayHabitLogs(user?.id ?? "") as Promise<HabitLog[]>,
     fetchGoals(user?.id ?? ""),
+    fetchHabitCategories(user?.id ?? ""),
   ]);
 
   // week stats
@@ -52,7 +55,7 @@ export default async function Dashboard() {
     todayLogs == null ||
     habits == null
   ) {
-    return <div>cargando</div>;
+    return <PageLoading message="Cargando dashboard…" />;
   }
 
   return (
@@ -67,6 +70,7 @@ export default async function Dashboard() {
           habitsProp={habits}
           todayLogsProps={todayLogs}
           userId={user.id}
+          categories={habitCategories}
         />
         <FeaturedGoalWidget goals={goals} />
         <WeekStats

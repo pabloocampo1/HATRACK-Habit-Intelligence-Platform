@@ -1,7 +1,6 @@
 "use client";
 import { supabase } from "@/lib/supabase/config/supabaseClient";
-import { Menu, Moon, Sun } from "lucide-react";
-import { useTheme } from "@/components/providers/ThemeProvider";
+import { Menu } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
@@ -13,7 +12,6 @@ export default function Header({
   userName: string;
 }) {
   const router = useRouter();
-  const { theme, toggleTheme } = useTheme();
 
   const handleLogout = async () => {
     // Sign out on both server (clears HttpOnly cookies) and client (clears browser state)
@@ -56,19 +54,6 @@ export default function Header({
       </div>
 
       <div className="flex items-center gap-2">
-        <button
-          type="button"
-          aria-label={theme === "dark" ? "Modo claro" : "Modo oscuro"}
-          className="flex min-h-11 min-w-11 items-center justify-center rounded-lg border border-border-default text-text-muted hover:bg-surface-muted hover:text-text-secondary hover:border-border-strong transition-all"
-          onClick={toggleTheme}
-        >
-          {theme === "dark" ? (
-            <Sun size={13} strokeWidth={1.75} />
-          ) : (
-            <Moon size={13} strokeWidth={1.75} />
-          )}
-        </button>
-
         {/* Avatar — navega a /profile */}
         <Link
           href="/profile"

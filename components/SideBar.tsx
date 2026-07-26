@@ -12,7 +12,6 @@ import {
   ArrowLeftRight,
   Tags,
   CalendarClock,
-  Gauge,
   Target,
   LineChart,
   ChevronDown,
@@ -22,7 +21,7 @@ import {
 import { usePathname, useRouter } from "next/navigation";
 import Image from "next/image";
 
-import logo from "../public/images/hatrack_logo.png";
+import logo from "../public/images/cima_logo.png";
 
 const personalNav = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutGrid },
@@ -36,8 +35,7 @@ const financeNav = [
   { href: "/finanzas/cuentas", label: "Cuentas", icon: Landmark },
   { href: "/finanzas/transacciones", label: "Transacciones", icon: ArrowLeftRight },
   { href: "/finanzas/categorias", label: "Categorías", icon: Tags },
-  { href: "/finanzas/obligaciones", label: "Obligaciones", icon: CalendarClock },
-  { href: "/finanzas/presupuestos", label: "Presupuestos", icon: Gauge },
+  { href: "/finanzas/obligaciones", label: "Obligaciones de pago", icon: CalendarClock },
   { href: "/finanzas/metas", label: "Metas de ahorro", icon: Target },
   { href: "/finanzas/reportes", label: "Reportes", icon: LineChart },
 ] as const;
@@ -169,7 +167,13 @@ export default function Sidebar({
     <div className="flex flex-col h-full py-6">
       {/* Logo — fijo en la parte superior */}
       <div className="px-2 shrink-0">
-        <Image src={logo} alt="Hatrack" width={150} height={150} />
+        <Image
+          src={logo}
+          alt="Cima"
+          width={120}
+          height={120}
+          className="mx-auto h-auto w-[120px] object-contain"
+        />
       </div>
 
       {/* Nav — scrolleable cuando el contenido es largo, sin scrollbar visible */}
@@ -179,15 +183,14 @@ export default function Sidebar({
           items={personalNav}
           onClose={onClose}
           pathname={pathName}
-          defaultOpen={true}
+          defaultOpen
         />
-        {/* Finanzas cerrado por defecto para que no empuje el perfil fuera de vista */}
         <NavSection
           title="Vida financiera"
           items={financeNav}
           onClose={onClose}
           pathname={pathName}
-          defaultOpen={false}
+          defaultOpen
         />
       </div>
 

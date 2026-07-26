@@ -26,18 +26,15 @@ function isIosSafari(): boolean {
 export default function InstallPWA() {
   const [deferredPrompt, setDeferredPrompt] =
     useState<BeforeInstallPromptEvent | null>(null);
-  const [isInstalled, setIsInstalled] = useState(false);
-  const [isIOS, setIsIOS] = useState(false);
+  const [isInstalled, setIsInstalled] = useState(() => isStandaloneDisplay());
+  const [isIOS] = useState(() => isIosSafari());
   const [showIOSHint, setShowIOSHint] = useState(false);
   const [dismissed, setDismissed] = useState(false);
 
   useEffect(() => {
-    if (isStandaloneDisplay()) {
-      setIsInstalled(true);
+    if (isInstalled) {
       return;
     }
-
-    setIsIOS(isIosSafari());
 
     const onBeforeInstall = (event: Event) => {
       event.preventDefault();
@@ -57,7 +54,7 @@ export default function InstallPWA() {
       window.removeEventListener("beforeinstallprompt", onBeforeInstall);
       window.removeEventListener("appinstalled", onInstalled);
     };
-  }, []);
+  }, [isInstalled]);
 
   const handleInstall = useCallback(async () => {
     if (deferredPrompt) {
@@ -86,7 +83,7 @@ export default function InstallPWA() {
           type="button"
           onClick={handleInstall}
           className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-2xl border border-brand-forest/40 bg-brand-forest px-5 py-3 text-sm font-bold text-brand-forest-fg shadow-lg shadow-black/30 transition hover:brightness-110 active:scale-[0.98] sm:w-auto"
-          aria-label="Instalar aplicación Hatrack"
+          aria-label="Instalar aplicación Cima"
         >
           <Download className="size-4 shrink-0" strokeWidth={2.25} />
           Instalar aplicación

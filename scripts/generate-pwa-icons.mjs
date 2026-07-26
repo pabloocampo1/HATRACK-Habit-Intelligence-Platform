@@ -3,7 +3,7 @@ import path from "node:path";
 import sharp from "sharp";
 
 const root = process.cwd();
-const source = path.join(root, "public/images/hatrack_logo.png");
+const source = path.join(root, "public/images/cima_logo.png");
 const outDir = path.join(root, "public/icons");
 
 const sizes = [
