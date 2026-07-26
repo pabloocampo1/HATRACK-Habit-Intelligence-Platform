@@ -182,7 +182,7 @@ function CreateCategoryForm({
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [name, setName] = useState("");
-  const [color, setColor] = useState(HABIT_CATEGORY_COLOR_PRESETS[0]);
+  const [color, setColor] = useState<string>(HABIT_CATEGORY_COLOR_PRESETS[0]);
   const [error, setError] = useState<string | null>(null);
 
   function handleCreate() {
