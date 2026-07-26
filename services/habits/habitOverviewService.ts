@@ -3,6 +3,7 @@ import {
   densifyHeatmapValues,
   threeMonthWindow,
 } from "@/lib/heatmapMonth";
+import { DEFAULT_HABIT_CATEGORIES } from "@/lib/habits/defaultHabitCategories";
 import { habitRepository } from "@/lib/supabase/repository/habitRepository";
 import { habitLogRepository } from "@/lib/supabase/repository/habitLogRepository";
 import type { Habit, HabitLog } from "@/lib/types";
@@ -12,14 +13,9 @@ import type {
   HabitsGlobalInsights,
 } from "@/app/(dashboard)/habits/types";
 
-const CATEGORY_LABELS: Record<string, string> = {
-  health: "Salud",
-  focus: "Enfoque",
-  productivity: "Productividad",
-  fitness: "Fitness",
-  learning: "Aprendizaje",
-  other: "Otro",
-};
+const CATEGORY_LABELS: Record<string, string> = Object.fromEntries(
+  DEFAULT_HABIT_CATEGORIES.map((c) => [c.slug, c.name]),
+);
 
 const EMPTY_INSIGHTS: HabitsGlobalInsights = {
   totalMinutesDedicated: 0,

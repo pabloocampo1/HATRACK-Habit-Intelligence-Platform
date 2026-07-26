@@ -85,7 +85,7 @@ export default function ObligacionesModuleClient({ userId, obligations }: Props)
           className="inline-flex items-center gap-2 rounded-xl bg-emerald-500 px-4 py-2.5 text-sm font-semibold text-black"
         >
           <Plus className="size-4" />
-          Nueva obligación
+          Nueva obligación de pago
         </button>
       </div>
 

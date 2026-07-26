@@ -62,7 +62,6 @@ Seguimiento de ingresos, gastos y flujo de dinero con:
 - Cuentas (Nequi, efectivo, bancaria, tarjeta)
 - Transacciones categorizadas
 - Obligaciones periódicas
-- Presupuestos por categoría
 - Metas de ahorro
 - Reportes
 

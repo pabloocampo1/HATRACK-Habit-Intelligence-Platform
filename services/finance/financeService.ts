@@ -1,13 +1,11 @@
 import {
   Account,
-  Budget,
   FinanceCategory,
   FinanceTransaction,
   Obligation,
   SavingsGoal,
 } from "@/lib/types";
 import { accountRepository } from "@/lib/supabase/repository/finance/accountRepository";
-import { budgetRepository } from "@/lib/supabase/repository/finance/budgetRepository";
 import { categoryRepository } from "@/lib/supabase/repository/finance/categoryRepository";
 import { obligationRepository } from "@/lib/supabase/repository/finance/obligationRepository";
 import { savingsGoalRepository } from "@/lib/supabase/repository/finance/savingsGoalRepository";
@@ -166,24 +164,6 @@ export async function deleteTransaction(userId: string, transactionId: number) {
     await accountRepository.applyBalanceDelta(userId, String(deleted.account_id), amount);
     await accountRepository.applyBalanceDelta(userId, String(deleted.to_account_id), -amount);
   }
-}
-
-export async function getBudgetsByUser(userId: string): Promise<Budget[]> {
-  return budgetRepository.getByUser(userId);
-}
-
-export async function createBudget(
-  userId: string,
-  payload: { category_id: number; month_date: string; limit_amount: number },
-) {
-  if (payload.limit_amount <= 0) {
-    throw new Error("El límite del presupuesto debe ser mayor a cero.");
-  }
-  return budgetRepository.create(userId, payload);
-}
-
-export async function deleteBudget(userId: string, budgetId: number) {
-  await budgetRepository.remove(userId, budgetId);
 }
 
 export async function getObligationsByUser(userId: string): Promise<Obligation[]> {

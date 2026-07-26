@@ -1,7 +1,14 @@
 "use client";
 
 import { saveHabitLog } from "@/app/actions/habitLogsActions";
-import { Habit, HabitLog } from "@/lib/types";
+import { Habit, HabitCategory, HabitLog } from "@/lib/types";
+import {
+  buildCategoryMaps,
+  CATEGORY_TEXT_CLASSES,
+  getCategoryLabel,
+} from "@/lib/habits/habitCategoryUtils";
+import { formatHoursFromMinutes } from "@/lib/habits/formatMinutes";
+import HabitCategorySummary from "./HabitCategorySummary";
 import {
   CheckCircle2,
   Circle,
@@ -15,7 +22,9 @@ import {
   BarChart2,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useState, useTransition } from "react";
+import { useMemo, useState, useTransition } from "react";
+
+const INITIAL_VISIBLE_HABITS = 5;
 
 // ── helpers ─────────────────────────────────────────────────
 
@@ -26,20 +35,6 @@ const MENTAL_STATES = [
   { value: "tired", label: "Cansado" },
   { value: "stressed", label: "Estresado" },
 ];
-
-const CATEGORY_COLORS: Record<string, string> = {
-  fitness: "text-orange-400",
-  programming: "text-blue-400",
-  reading: "text-purple-400",
-  learning: "text-yellow-400",
-  languages: "text-pink-400",
-  health: "text-emerald-400",
-  productivity: "text-cyan-400",
-  meditation: "text-indigo-400",
-  finance: "text-lime-400",
-  social: "text-rose-400",
-  other: "text-text-muted",
-};
 
 function ScoreButtons({
   value,
@@ -243,10 +238,12 @@ function HabitCard({
   habit,
   logs,
   userId,
+  categoryLabel,
 }: {
   habit: Habit;
   logs: HabitLog[];
   userId: string;
+  categoryLabel: string;
 }) {
   const [open, setOpen] = useState(false);
 
@@ -257,7 +254,8 @@ function HabitCard({
     0,
   );
   const isDone = completedCount > 0;
-  const catColor = CATEGORY_COLORS[habit.category] ?? "text-text-muted";
+  const catColor =
+    CATEGORY_TEXT_CLASSES[habit.category] ?? "text-text-muted";
 
   return (
     <article
@@ -284,11 +282,14 @@ function HabitCard({
         <div className="flex-1 min-w-0">
           <div className="flex flex-wrap items-center gap-2">
             <span className={`text-[9px] font-bold uppercase tracking-widest ${catColor}`}>
-              {habit.category}
+              {categoryLabel}
             </span>
             {isDone && (
-              <span className="rounded-full border border-brand-forest/20 bg-brand-forest/10 px-2 py-0.5 text-[9px] font-black text-brand-forest">
-                {totalMinutes} min · ×{completedCount}
+              <span className="inline-flex flex-col items-start gap-0.5 rounded-full border border-brand-forest/20 bg-brand-forest/10 px-2 py-1 text-[9px] font-black text-brand-forest">
+                <span>{totalMinutes} min · ×{completedCount}</span>
+                <span className="text-[8px] font-semibold opacity-80">
+                  {formatHoursFromMinutes(totalMinutes)}
+                </span>
               </span>
             )}
           </div>
@@ -422,11 +423,25 @@ export default function HabitRegister({
   habitsProp = [],
   todayLogsProps = [],
   userId,
+  categories = [],
 }: {
   habitsProp: Habit[];
   todayLogsProps: HabitLog[];
   userId: string;
+  categories?: HabitCategory[];
 }) {
+  const [showAllHabits, setShowAllHabits] = useState(false);
+
+  const { labelBySlug } = useMemo(
+    () => buildCategoryMaps(categories),
+    [categories],
+  );
+
+  const visibleHabits = showAllHabits
+    ? habitsProp
+    : habitsProp.slice(0, INITIAL_VISIBLE_HABITS);
+  const hiddenCount = Math.max(0, habitsProp.length - INITIAL_VISIBLE_HABITS);
+
   const completedCount = habitsProp.filter((h) =>
     todayLogsProps.some((l) => l.habit_id === h.id && l.completed),
   ).length;
@@ -506,16 +521,47 @@ export default function HabitRegister({
           </p>
         </div>
       ) : (
-        <div className="space-y-3">
-          {habitsProp.map((habit) => (
-            <HabitCard
-              key={habit.id}
-              habit={habit}
-              logs={todayLogsProps}
-              userId={userId}
-            />
-          ))}
-        </div>
+        <>
+          <HabitCategorySummary habits={habitsProp} categories={categories} />
+
+          <div className="space-y-3">
+            {visibleHabits.map((habit) => (
+              <HabitCard
+                key={habit.id}
+                habit={habit}
+                logs={todayLogsProps}
+                userId={userId}
+                categoryLabel={getCategoryLabel(habit.category, labelBySlug)}
+              />
+            ))}
+          </div>
+
+          {hiddenCount > 0 && !showAllHabits ? (
+            <div className="mt-4 flex justify-center">
+              <button
+                type="button"
+                onClick={() => setShowAllHabits(true)}
+                className="group inline-flex items-center gap-2 rounded-2xl border border-brand-forest/30 bg-gradient-to-b from-accent-subtle to-surface-card px-6 py-3 text-[11px] font-black uppercase tracking-[0.16em] text-brand-forest shadow-sm transition hover:border-brand-forest/50 hover:shadow-md"
+              >
+                <ChevronDown className="size-4 transition group-hover:translate-y-0.5" />
+                Mostrar más ({hiddenCount})
+              </button>
+            </div>
+          ) : null}
+
+          {showAllHabits && habitsProp.length > INITIAL_VISIBLE_HABITS ? (
+            <div className="mt-4 flex justify-center">
+              <button
+                type="button"
+                onClick={() => setShowAllHabits(false)}
+                className="inline-flex items-center gap-2 rounded-2xl border border-border-default bg-surface-muted px-5 py-2.5 text-[11px] font-bold uppercase tracking-[0.14em] text-text-secondary transition hover:border-border-strong hover:text-text-primary"
+              >
+                <ChevronUp className="size-4" />
+                Mostrar menos
+              </button>
+            </div>
+          ) : null}
+        </>
       )}
 
       {/* Daily summary */}

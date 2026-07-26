@@ -12,7 +12,6 @@ import {
   ArrowLeftRight,
   Tags,
   CalendarClock,
-  Gauge,
   Target,
   LineChart,
   ChevronDown,
@@ -36,8 +35,7 @@ const financeNav = [
   { href: "/finanzas/cuentas", label: "Cuentas", icon: Landmark },
   { href: "/finanzas/transacciones", label: "Transacciones", icon: ArrowLeftRight },
   { href: "/finanzas/categorias", label: "Categorías", icon: Tags },
-  { href: "/finanzas/obligaciones", label: "Obligaciones", icon: CalendarClock },
-  { href: "/finanzas/presupuestos", label: "Presupuestos", icon: Gauge },
+  { href: "/finanzas/obligaciones", label: "Obligaciones de pago", icon: CalendarClock },
   { href: "/finanzas/metas", label: "Metas de ahorro", icon: Target },
   { href: "/finanzas/reportes", label: "Reportes", icon: LineChart },
 ] as const;
@@ -179,15 +177,14 @@ export default function Sidebar({
           items={personalNav}
           onClose={onClose}
           pathname={pathName}
-          defaultOpen={true}
+          defaultOpen
         />
-        {/* Finanzas cerrado por defecto para que no empuje el perfil fuera de vista */}
         <NavSection
           title="Vida financiera"
           items={financeNav}
           onClose={onClose}
           pathname={pathName}
-          defaultOpen={false}
+          defaultOpen
         />
       </div>
 

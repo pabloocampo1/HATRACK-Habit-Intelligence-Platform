@@ -1,7 +1,7 @@
 "use client";
 
 import deleteHabit, { updateHabit } from "@/app/actions/habitActions";
-import type { Habit } from "@/lib/types";
+import type { Habit, HabitCategory } from "@/lib/types";
 import {
   X,
   Pencil,
@@ -16,21 +16,6 @@ import { useEffect, useId, useState, useTransition } from "react";
 import CreateHabitModal from "./CreateHabitModal";
 
 // ── constants ────────────────────────────────────────────────
-
-const CATEGORIES = [
-  { value: "health", label: "Salud" },
-  { value: "focus", label: "Enfoque" },
-  { value: "productivity", label: "Productividad" },
-  { value: "fitness", label: "Fitness" },
-  { value: "learning", label: "Aprendizaje" },
-  { value: "programming", label: "Programación" },
-  { value: "reading", label: "Lectura" },
-  { value: "languages", label: "Idiomas" },
-  { value: "meditation", label: "Meditación" },
-  { value: "finance", label: "Finanzas" },
-  { value: "social", label: "Social" },
-  { value: "other", label: "Otro" },
-];
 
 // ── types ────────────────────────────────────────────────────
 
@@ -49,11 +34,13 @@ function EditRow({
   onSave,
   onCancel,
   isSaving,
+  categories,
 }: {
   habit: Habit;
   onSave: (state: EditState) => void;
   onCancel: () => void;
   isSaving: boolean;
+  categories: HabitCategory[];
 }) {
   const [state, setState] = useState<EditState>({
     title: habit.title,
@@ -97,9 +84,9 @@ function EditRow({
           onChange={(e) => set("category", e.target.value)}
           disabled={isSaving}
         >
-          {CATEGORIES.map((c) => (
-            <option key={c.value} value={c.value} className="bg-surface-card">
-              {c.label}
+          {categories.map((c) => (
+            <option key={c.id} value={c.slug} className="bg-surface-card">
+              {c.name}
             </option>
           ))}
         </select>
@@ -205,11 +192,13 @@ export default function HabitAdminModal({
   onClose,
   habits,
   userId,
+  categories,
 }: {
   open: boolean;
   onClose: () => void;
   habits: Habit[];
   userId: string;
+  categories: HabitCategory[];
 }) {
   const router = useRouter();
   const titleId = useId();
@@ -386,6 +375,7 @@ export default function HabitAdminModal({
                           onSave={(state) => handleSave(habit, state)}
                           onCancel={() => { setEditingId(null); setRowError(null); }}
                           isSaving={isPending}
+                          categories={categories}
                         />
                       );
                     }
@@ -475,6 +465,7 @@ export default function HabitAdminModal({
         open={createOpen}
         onClose={() => setCreateOpen(false)}
         userId={userId}
+        categories={categories}
       />
     </>
   );

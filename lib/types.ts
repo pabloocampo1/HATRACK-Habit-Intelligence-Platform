@@ -49,6 +49,31 @@ export interface CreateHabitPayload {
   target_minutes: number;
 }
 
+/** Fila de `habit_categories` — categorías del sistema + personalizadas por usuario. */
+export interface HabitCategory {
+  id: string;
+  user_id: string;
+  slug: string;
+  name: string;
+  color: string;
+  icon?: string | null;
+  is_system: boolean;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface CreateHabitCategoryPayload {
+  name: string;
+  color?: string;
+  icon?: string;
+}
+
+export interface UpdateHabitCategoryPayload {
+  name?: string;
+  color?: string;
+  icon?: string;
+}
+
 export interface LogActivityPayload {
   minutes_completed: number;
   quality_score: number;
@@ -101,7 +126,7 @@ export interface Profile {
 
 // ── Challenges ──────────────────────────────────────────────
 
-export type ChallengeStatus = "active" | "completed" | "abandoned";
+export type ChallengeStatus = "active" | "completed" | "failed" | "abandoned";
 
 export const CHALLENGE_DURATIONS = [7, 15, 30, 60, 90] as const;
 export type ChallengeDuration = (typeof CHALLENGE_DURATIONS)[number];
@@ -207,17 +232,6 @@ export interface FinanceTransaction {
   status?: string | null;
   transfer_group_id?: string | null;
   to_account_id?: number | null;
-  created_at?: string;
-  updated_at?: string;
-}
-
-export interface Budget {
-  id_budget: number;
-  user_id: string;
-  category_id: number;
-  month_date: string;
-  limit_amount: number;
-  spent_amount: number;
   created_at?: string;
   updated_at?: string;
 }

@@ -1,4 +1,5 @@
 import { CalendarDays, Zap } from "lucide-react";
+import { formatHoursFromMinutes } from "@/lib/habits/formatMinutes";
 import type { HabitOverview } from "../types";
 import HabitHeatmap from "./HabitHeatmap";
 
@@ -98,6 +99,7 @@ export default function HabitOverviewCard({ habit }: { habit: HabitOverview }) {
           <StatPill
             label="Tiempo dedicado"
             value={`${habit.totalMinutesDedicated}m`}
+            hint={formatHoursFromMinutes(habit.totalMinutesDedicated)}
           />
         </div>
       </div>

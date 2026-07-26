@@ -1,5 +1,6 @@
 "use client";
 
+import type { HabitCategory } from "@/lib/types";
 import { Plus, Lock } from "lucide-react";
 import { useState } from "react";
 import CreateHabitModal from "./CreateHabitModal";
@@ -7,9 +8,11 @@ import CreateHabitModal from "./CreateHabitModal";
 export default function CreateHabitCta({
   userId,
   disabled = false,
+  categories,
 }: {
   userId: string;
   disabled?: boolean;
+  categories: HabitCategory[];
 }) {
   const [open, setOpen] = useState(false);
 
@@ -34,7 +37,12 @@ export default function CreateHabitCta({
         Nuevo hábito
       </button>
       {!disabled && (
-        <CreateHabitModal open={open} onClose={() => setOpen(false)} userId={userId} />
+        <CreateHabitModal
+          open={open}
+          onClose={() => setOpen(false)}
+          userId={userId}
+          categories={categories}
+        />
       )}
     </>
   );

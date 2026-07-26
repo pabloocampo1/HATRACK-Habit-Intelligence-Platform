@@ -1,7 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
 import {
-  ArrowRight,
   BarChart3,
   Brain,
   CreditCard,
@@ -13,6 +12,11 @@ import {
   TrendingUp,
 } from "lucide-react";
 import logo from "../public/images/hatrack_logo.png";
+import {
+  HomeCtaAuthActions,
+  HomeHeroAuthActions,
+  HomeNavAuthActions,
+} from "./_components/HomeAuthActions";
 
 const modules = [
   {
@@ -37,7 +41,7 @@ const modules = [
     title: "Finanzas",
     icon: CreditCard,
     description:
-      "Control de cuentas, ingresos, gastos, presupuestos y reportes para que tu dinero siga tu estrategia.",
+      "Control de cuentas, ingresos, gastos y reportes para que tu dinero siga tu estrategia.",
   },
   {
     title: "Analitica",
@@ -77,20 +81,7 @@ export default function HomePage() {
             </div>
           </Link>
 
-          <div className="flex items-center gap-2">
-            <Link
-              href="/login"
-              className="rounded-xl border border-border-default px-4 py-2 text-xs font-bold uppercase tracking-widest text-text-secondary transition hover:border-border-strong hover:text-text-primary"
-            >
-              Entrar
-            </Link>
-            <Link
-              href="/signup"
-              className="rounded-xl bg-brand-forest px-4 py-2 text-xs font-bold uppercase tracking-widest text-brand-forest-fg transition hover:brightness-110"
-            >
-              Comenzar gratis
-            </Link>
-          </div>
+          <HomeNavAuthActions />
         </div>
       </nav>
 
@@ -129,21 +120,7 @@ export default function HomePage() {
               interpreta tus patrones y construye una version mas fuerte de ti.
             </p>
 
-            <div className="flex flex-col gap-3 sm:flex-row">
-              <Link
-                href="/signup"
-                className="inline-flex items-center justify-center gap-2 rounded-xl bg-brand-forest px-6 py-3 text-xs font-black uppercase tracking-[0.18em] text-brand-forest-fg transition hover:brightness-110"
-              >
-                Crear cuenta gratis
-                <ArrowRight className="size-4" strokeWidth={2.5} />
-              </Link>
-              <Link
-                href="/login"
-                className="inline-flex items-center justify-center rounded-xl border border-border-default px-6 py-3 text-xs font-black uppercase tracking-[0.18em] text-text-secondary transition hover:border-border-strong hover:text-text-primary"
-              >
-                Ya tengo cuenta
-              </Link>
-            </div>
+            <HomeHeroAuthActions />
 
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
               {highlights.map((item) => (
@@ -257,21 +234,7 @@ export default function HomePage() {
             Crea tu cuenta, define tus primeras metas y convierte tu progreso en un sistema sostenible.
           </p>
 
-          <div className="mt-6 flex flex-col items-center justify-center gap-3 sm:flex-row">
-            <Link
-              href="/signup"
-              className="inline-flex items-center gap-2 rounded-xl bg-brand-forest px-6 py-3 text-xs font-black uppercase tracking-[0.18em] text-brand-forest-fg transition hover:brightness-110"
-            >
-              Comenzar gratis
-              <ArrowRight className="size-4" strokeWidth={2.5} />
-            </Link>
-            <Link
-              href="/login"
-              className="inline-flex items-center rounded-xl border border-border-default px-6 py-3 text-xs font-black uppercase tracking-[0.18em] text-text-secondary transition hover:border-border-strong hover:text-text-primary"
-            >
-              Iniciar sesion
-            </Link>
-          </div>
+          <HomeCtaAuthActions />
         </div>
       </section>
 

@@ -1,8 +1,10 @@
 import { fetchHabits } from "@/app/actions/habitActions";
+import { fetchHabitCategories } from "@/app/actions/habitCategoryActions";
 import { fetchHabitsPageData } from "@/app/actions/habits/habitOverviewAction";
 import { fetchPlanInfo } from "@/app/actions/plans/subscriptionActions";
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/services/authService";
+import HabitCategoriesSection from "./_components/HabitCategoriesSection";
 import HabitsGlobalInsightsPanel from "./_components/HabitsGlobalInsights";
 import HabitsListSection from "./_components/HabitsListSection";
 import HabitsPageHeader from "./_components/HabitsPageHeader";
@@ -14,15 +16,27 @@ export default async function HabitsPage() {
     redirect("/login");
   }
 
-  const [habits, { overviews, insights }, planInfo] = await Promise.all([
+  const [habits, { overviews, insights }, planInfo, habitCategories] =
+    await Promise.all([
     fetchHabits(user.id),
     fetchHabitsPageData(user.id),
     fetchPlanInfo(user.id),
+    fetchHabitCategories(user.id),
   ]);
 
   return (
     <div className="dark mx-auto max-w-7xl space-y-12 px-6 py-10">
-      <HabitsPageHeader userId={user.id} habits={habits} planInfo={planInfo} />
+      <HabitsPageHeader
+        userId={user.id}
+        habits={habits}
+        planInfo={planInfo}
+        categories={habitCategories}
+      />
+      <HabitCategoriesSection
+        userId={user.id}
+        categories={habitCategories}
+        habits={habits}
+      />
       <HabitsGlobalInsightsPanel insights={insights} />
       <HabitsListSection habits={overviews} />
     </div>

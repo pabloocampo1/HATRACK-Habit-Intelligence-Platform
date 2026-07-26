@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { CalendarDays, CheckCircle2, Clock, Flame, Trophy } from "lucide-react";
+import { CalendarDays, CheckCircle2, Clock, Flame, Trophy, XCircle } from "lucide-react";
+import { challengeStatusLabel } from "@/lib/challenges/challengeOutcome";
 import type { Challenge } from "@/lib/types";
 
 function statusBadge(status: Challenge["status"]) {
@@ -7,19 +8,25 @@ function statusBadge(status: Challenge["status"]) {
     case "active":
       return (
         <span className="flex items-center gap-1 rounded-full border border-brand-forest/30 bg-accent-subtle px-2.5 py-1 text-[10px] font-black uppercase tracking-widest text-brand-forest">
-          <Flame className="size-3" strokeWidth={2.5} /> Activo
+          <Flame className="size-3" strokeWidth={2.5} /> {challengeStatusLabel(status)}
         </span>
       );
     case "completed":
       return (
         <span className="flex items-center gap-1 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-2.5 py-1 text-[10px] font-black uppercase tracking-widest text-emerald-400">
-          <Trophy className="size-3" strokeWidth={2.5} /> Completado
+          <Trophy className="size-3" strokeWidth={2.5} /> {challengeStatusLabel(status)}
+        </span>
+      );
+    case "failed":
+      return (
+        <span className="flex items-center gap-1 rounded-full border border-amber-500/25 bg-amber-500/10 px-2.5 py-1 text-[10px] font-black uppercase tracking-widest text-amber-400">
+          <XCircle className="size-3" strokeWidth={2.5} /> {challengeStatusLabel(status)}
         </span>
       );
     case "abandoned":
       return (
         <span className="rounded-full border border-border-default bg-surface-muted px-2.5 py-1 text-[10px] font-black uppercase tracking-widest text-text-muted">
-          Abandonado
+          {challengeStatusLabel(status)}
         </span>
       );
   }

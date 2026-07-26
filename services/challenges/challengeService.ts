@@ -1,6 +1,9 @@
 import { challengeRepository } from "@/lib/supabase/repository/challengeRepository";
 import { habitLogRepository } from "@/lib/supabase/repository/habitLogRepository";
 import {
+  challengeOutcomeStatus,
+} from "@/lib/challenges/challengeOutcome";
+import {
   canCreateChallenge,
   canAddChallengeHabit,
 } from "@/services/plans/subscriptionService";
@@ -14,6 +17,46 @@ import type {
 function todayISO(): string {
   const d = new Date();
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
+
+function computeCompletionRate(
+  challenge: Challenge,
+  habits: ChallengeHabit[],
+  logs: ChallengeLog[],
+): number {
+  const today = todayISO();
+  const startMs = new Date(challenge.start_date + "T00:00:00").getTime();
+  const nowMs = new Date(today + "T00:00:00").getTime();
+  const daysElapsed = Math.min(
+    challenge.duration_days,
+    Math.max(0, Math.floor((nowMs - startMs) / 86_400_000) + 1),
+  );
+
+  const totalPossible = daysElapsed * Math.max(habits.length, 1);
+  const totalDone = logs.filter((l) => l.completed).length;
+
+  return totalPossible > 0 ? Math.round((totalDone / totalPossible) * 100) : 0;
+}
+
+async function reconcileChallengeStatus(
+  challenge: Challenge,
+  habits: ChallengeHabit[],
+  logs: ChallengeLog[],
+): Promise<Challenge> {
+  const today = todayISO();
+  if (challenge.status === "abandoned" || challenge.end_date >= today) {
+    return challenge;
+  }
+
+  const completionRate = computeCompletionRate(challenge, habits, logs);
+  const targetStatus = challengeOutcomeStatus(completionRate);
+
+  if (challenge.status !== targetStatus) {
+    await challengeRepository.updateStatus(challenge.id, targetStatus);
+    return { ...challenge, status: targetStatus };
+  }
+
+  return challenge;
 }
 
 export interface ChallengeDetail {
@@ -31,14 +74,19 @@ export interface ChallengeDetail {
 
 export async function getChallengesByUser(userId: string): Promise<Challenge[]> {
   const challenges = await challengeRepository.findAllByUser(userId);
-  // Auto-complete challenges whose end_date has passed
   const today = todayISO();
-  for (const c of challenges) {
-    if (c.status === "active" && c.end_date < today) {
-      await challengeRepository.updateStatus(c.id, "completed");
-      c.status = "completed";
-    }
+
+  for (let i = 0; i < challenges.length; i += 1) {
+    const c = challenges[i];
+    if (c.status === "abandoned" || c.end_date >= today) continue;
+
+    const [habits, logs] = await Promise.all([
+      challengeRepository.findHabitsByChallenge(c.id),
+      challengeRepository.findLogsByChallenge(c.id),
+    ]);
+    challenges[i] = await reconcileChallengeStatus(c, habits, logs);
   }
+
   return challenges;
 }
 
@@ -53,9 +101,16 @@ export async function getChallengeDetail(
     challengeRepository.findLogsByChallenge(challengeId),
   ]);
 
+  const reconciledChallenge = await reconcileChallengeStatus(
+    challenge,
+    habits,
+    logs,
+  );
+
   const today = todayISO();
   const isFinished =
-    challenge.status !== "active" || challenge.end_date < today;
+    reconciledChallenge.status !== "active" ||
+    reconciledChallenge.end_date < today;
 
   // Build perfect days
   const logsByDate = new Map<string, Set<string>>();
@@ -72,20 +127,25 @@ export async function getChallengeDetail(
     }
   }
 
+  const completionRate = computeCompletionRate(reconciledChallenge, habits, logs);
+
   // Days elapsed
-  const startMs = new Date(challenge.start_date + "T00:00:00").getTime();
+  const startMs = new Date(reconciledChallenge.start_date + "T00:00:00").getTime();
   const nowMs = new Date(today + "T00:00:00").getTime();
   const daysElapsed = Math.min(
-    challenge.duration_days,
+    reconciledChallenge.duration_days,
     Math.max(0, Math.floor((nowMs - startMs) / 86_400_000) + 1),
   );
 
-  const totalPossible = daysElapsed * Math.max(habits.length, 1);
-  const totalDone = logs.filter((l) => l.completed).length;
-  const completionRate =
-    totalPossible > 0 ? Math.round((totalDone / totalPossible) * 100) : 0;
-
-  return { challenge, habits, logs, perfectDays, completionRate, daysElapsed, isFinished };
+  return {
+    challenge: reconciledChallenge,
+    habits,
+    logs,
+    perfectDays,
+    completionRate,
+    daysElapsed,
+    isFinished,
+  };
 }
 
 export async function createChallenge(

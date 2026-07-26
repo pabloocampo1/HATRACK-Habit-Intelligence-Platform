@@ -4,7 +4,6 @@ import {
   ArrowLeftRight,
   Tags,
   CalendarClock,
-  Gauge,
   Target,
   LineChart,
 } from "lucide-react";
@@ -42,13 +41,6 @@ const modules = [
     icon: CalendarClock,
   },
   {
-    href: "/finanzas/presupuestos",
-    title: "Presupuestos",
-    subtitle: "Budget",
-    body: "Límites de gasto por categoría o periodo.",
-    icon: Gauge,
-  },
-  {
     href: "/finanzas/metas",
     title: "Metas de ahorro",
     subtitle: "Savings / Goals",
@@ -78,7 +70,7 @@ export default async function FinanzasInicioPage() {
         </h1>
         <p className="mt-1 max-w-2xl text-sm text-text-secondary leading-relaxed">
           Flujo modular: cuentas → transacciones (núcleo) → categorías,
-          obligaciones, presupuestos, metas y reportes. Entra a cada bloque
+          obligaciones, metas y reportes. Entra a cada bloque
           desde aquí o desde el menú lateral.
         </p>
       </div>

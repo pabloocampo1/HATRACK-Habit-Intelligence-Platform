@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { ArrowLeft, AlertTriangle } from "lucide-react";
 import Link from "next/link";
 import { abandonChallengeAction } from "@/app/actions/challenges/challengeActions";
+import { challengeStatusLabel } from "@/lib/challenges/challengeOutcome";
 import type { ChallengeDetail } from "@/services/challenges/challengeService";
 import type { ChallengeHabit, ChallengeLog } from "@/lib/types";
 import ChallengeStats from "./ChallengeStats";
@@ -29,7 +30,7 @@ export default function ChallengeDetailClient({
   const [showAbandon, setShowAbandon] = useState(false);
 
   const today = todayISO();
-  const { challenge, habits, logs, perfectDays, isFinished } = detail;
+  const { challenge, habits, logs, perfectDays, isFinished, completionRate } = detail;
 
   const logsByHabit = new Map<string, ChallengeLog>();
   for (const log of logs) {
@@ -66,10 +67,17 @@ export default function ChallengeDetailClient({
               ? "border-brand-forest/30 bg-accent-subtle text-brand-forest"
               : challenge.status === "completed"
               ? "border-emerald-500/20 bg-emerald-500/10 text-emerald-400"
+              : challenge.status === "failed"
+              ? "border-amber-500/25 bg-amber-500/10 text-amber-400"
               : "border-border-default bg-surface-muted text-text-muted"
           }`}>
-            {challenge.status === "active" ? "Activo" : challenge.status === "completed" ? "Completado" : "Abandonado"}
+            {challengeStatusLabel(challenge.status)}
           </span>
+          {isFinished && challenge.status !== "abandoned" ? (
+            <span className="rounded-full border border-border-subtle bg-surface-muted px-3 py-1 text-[10px] font-bold tabular-nums text-text-muted">
+              {completionRate}% cumplimiento
+            </span>
+          ) : null}
           <span className="rounded-full border border-border-subtle bg-surface-muted px-3 py-1 text-[10px] font-bold text-text-muted">
             {challenge.duration_days} días
           </span>

@@ -2,18 +2,15 @@
 
 import {
   addSavingsContribution,
-  createBudget,
   createAccount,
   createCategory,
   createObligation,
   createSavingsGoal,
   createTransaction,
   deactivateAccount,
-  deleteBudget,
   deleteCategory,
   deleteTransaction,
   getAccountsByUser,
-  getBudgetsByUser,
   getCategoriesByUser,
   getFinanceDashboardData,
   getObligationsByUser,
@@ -80,7 +77,6 @@ export async function createCategoryAction(
   const created = await createCategory(userId, payload);
   revalidatePath("/finanzas/categorias");
   revalidatePath("/finanzas/transacciones");
-  revalidatePath("/finanzas/presupuestos");
   return created;
 }
 
@@ -118,25 +114,6 @@ export async function deleteTransactionAction(userId: string, transactionId: num
   await deleteTransaction(userId, transactionId);
   revalidatePath("/finanzas/transacciones");
   revalidatePath("/finanzas/reportes");
-}
-
-export async function getBudgetsAction(userId: string) {
-  return getBudgetsByUser(userId);
-}
-
-export async function createBudgetAction(
-  userId: string,
-  payload: { category_id: number; month_date: string; limit_amount: number },
-) {
-  const created = await createBudget(userId, payload);
-  revalidatePath("/finanzas/presupuestos");
-  revalidatePath("/finanzas/reportes");
-  return created;
-}
-
-export async function deleteBudgetAction(userId: string, budgetId: number) {
-  await deleteBudget(userId, budgetId);
-  revalidatePath("/finanzas/presupuestos");
 }
 
 export async function getObligationsAction(userId: string) {
