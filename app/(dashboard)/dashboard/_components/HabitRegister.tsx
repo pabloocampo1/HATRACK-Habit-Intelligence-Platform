@@ -1,6 +1,6 @@
 "use client";
 
-import { saveHabitLog } from "@/app/actions/habitLogsActions";
+import { deleteTodayHabitLogs, saveHabitLog } from "@/app/actions/habitLogsActions";
 import { Habit, HabitCategory, HabitLog } from "@/lib/types";
 import {
   buildCategoryMaps,
@@ -8,7 +8,6 @@ import {
   getCategoryLabel,
 } from "@/lib/habits/habitCategoryUtils";
 import { formatHoursFromMinutes } from "@/lib/habits/formatMinutes";
-import HabitCategorySummary from "./HabitCategorySummary";
 import {
   CheckCircle2,
   Circle,
@@ -245,7 +244,10 @@ function HabitCard({
   userId: string;
   categoryLabel: string;
 }) {
+  const router = useRouter();
   const [open, setOpen] = useState(false);
+  const [isPending, startTransition] = useTransition();
+  const [error, setError] = useState<string | null>(null);
 
   const todayLogs = logs.filter((l) => l.habit_id === habit.id);
   const completedCount = todayLogs.filter((l) => l.completed).length;
@@ -257,26 +259,85 @@ function HabitCard({
   const catColor =
     CATEGORY_TEXT_CLASSES[habit.category] ?? "text-text-muted";
 
+  function handleQuickToggle() {
+    if (isPending) return;
+    setError(null);
+
+    startTransition(async () => {
+      if (isDone) {
+        const res = await deleteTodayHabitLogs(habit.id ?? "", userId);
+
+        if (!res.success) {
+          setError(res.error ?? "Error al eliminar la sesión.");
+          return;
+        }
+
+        router.refresh();
+        return;
+      }
+
+      const minutes = Math.max(1, habit.target_minutes ?? 1);
+
+      const res = await saveHabitLog(
+        habit.id ?? "",
+        {
+          minutes_completed: minutes,
+          quality_score: 4,
+          completed: true,
+          energy_level: 3,
+          mental_state: "focused",
+        },
+        userId,
+      );
+
+      if (!res.success) {
+        setError(res.error ?? "Error al registrar.");
+        return;
+      }
+
+      router.refresh();
+    });
+  }
+
   return (
     <article
       className={`rounded-2xl border transition-all ${
         isDone
           ? "border-brand-forest/30 bg-accent-subtle/40"
           : "border-border-subtle bg-surface-card"
-      }`}
+      } ${isPending ? "opacity-80" : ""}`}
     >
       {/* Main row */}
       <div className="flex items-start gap-4 p-4">
-        {/* Done indicator */}
-        <div
-          className={`mt-0.5 shrink-0 ${isDone ? "text-brand-forest" : "text-text-muted"}`}
+        {/* Completar rápido */}
+        <button
+          type="button"
+          onClick={handleQuickToggle}
+          disabled={isPending}
+          title={
+            isDone
+              ? "Eliminar sesiones de hoy"
+              : "Completar con datos básicos"
+          }
+          aria-label={
+            isDone
+              ? `Eliminar sesiones de hoy de ${habit.title}`
+              : `Completar ${habit.title} con registro rápido`
+          }
+          className={`mt-0.5 shrink-0 rounded-full transition hover:scale-105 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-forest/50 disabled:cursor-wait ${
+            isDone ? "text-brand-forest" : "text-text-muted hover:text-brand-forest"
+          }`}
         >
-          {isDone ? (
+          {isPending ? (
+            <span className="flex size-5 items-center justify-center">
+              <span className="size-4 animate-spin rounded-full border-2 border-brand-forest/30 border-t-brand-forest" />
+            </span>
+          ) : isDone ? (
             <CheckCircle2 className="size-5" strokeWidth={2.5} />
           ) : (
             <Circle className="size-5" strokeWidth={1.75} />
           )}
-        </div>
+        </button>
 
         {/* Info */}
         <div className="flex-1 min-w-0">
@@ -328,6 +389,12 @@ function HabitCard({
         </div>
       </div>
 
+      {error ? (
+        <p className="mx-4 mb-3 rounded-lg border border-red-500/20 bg-red-500/10 px-3 py-2 text-xs text-red-400">
+          {error}
+        </p>
+      ) : null}
+
       {/* Inline log form */}
       {open && (
         <div className="px-4 pb-4">
@@ -352,7 +419,7 @@ function DailySummary({
   habits: Habit[];
   logs: HabitLog[];
 }) {
-  if (logs.length === 0) return null;
+  if (habits.length === 0) return null;
 
   const completedHabits = habits.filter((h) =>
     logs.some((l) => l.habit_id === h.id && l.completed),
@@ -364,7 +431,7 @@ function DailySummary({
       : "—";
 
   return (
-    <div className="mt-4 rounded-2xl border border-border-subtle bg-surface-muted p-5">
+    <div className="mb-6 rounded-2xl border border-border-subtle bg-surface-muted p-5">
       <p className="mb-3 text-[10px] font-black uppercase tracking-[0.3em] text-text-muted">
         Resumen del día
       </p>
@@ -382,37 +449,43 @@ function DailySummary({
       </div>
 
       {/* Log rows */}
-      <div className="mt-3 space-y-1.5">
-        {logs.map((log, i) => {
-          const habit = habits.find((h) => h.id === log.habit_id);
-          if (!habit) return null;
-          return (
-            <div
-              key={i}
-              className="flex items-center gap-3 rounded-xl border border-border-subtle bg-surface-card px-4 py-2.5"
-            >
-              <CheckCircle2
-                className={`size-4 shrink-0 ${log.completed ? "text-brand-forest" : "text-text-muted"}`}
-                strokeWidth={2.5}
-              />
-              <span className="flex-1 text-sm font-medium text-text-primary truncate">
-                {habit.title}
-              </span>
-              <span className="text-xs font-bold tabular-nums text-text-muted">
-                {log.minutes_completed}m
-              </span>
-              <span className="text-xs font-bold text-text-muted">
-                ★ {log.quality_score}/5
-              </span>
-              {log.mental_state && (
-                <span className="hidden sm:block rounded-full border border-border-subtle bg-surface-muted px-2 py-0.5 text-[9px] font-bold text-text-muted capitalize">
-                  {log.mental_state}
+      {logs.length > 0 ? (
+        <div className="mt-3 space-y-1.5">
+          {logs.map((log) => {
+            const habit = habits.find((h) => h.id === log.habit_id);
+            if (!habit) return null;
+            return (
+              <div
+                key={log.id ?? `${log.habit_id}-${log.log_date}`}
+                className="flex items-center gap-3 rounded-xl border border-border-subtle bg-surface-card px-4 py-2.5"
+              >
+                <CheckCircle2
+                  className={`size-4 shrink-0 ${log.completed ? "text-brand-forest" : "text-text-muted"}`}
+                  strokeWidth={2.5}
+                />
+                <span className="flex-1 text-sm font-medium text-text-primary truncate">
+                  {habit.title}
                 </span>
-              )}
-            </div>
-          );
-        })}
-      </div>
+                <span className="text-xs font-bold tabular-nums text-text-muted">
+                  {log.minutes_completed}m
+                </span>
+                <span className="text-xs font-bold text-text-muted">
+                  ★ {log.quality_score}/5
+                </span>
+                {log.mental_state && (
+                  <span className="hidden sm:block rounded-full border border-border-subtle bg-surface-muted px-2 py-0.5 text-[9px] font-bold text-text-muted capitalize">
+                    {log.mental_state}
+                  </span>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      ) : (
+        <p className="mt-3 text-center text-xs text-text-muted">
+          Aún no hay sesiones registradas hoy.
+        </p>
+      )}
     </div>
   );
 }
@@ -522,7 +595,7 @@ export default function HabitRegister({
         </div>
       ) : (
         <>
-          <HabitCategorySummary habits={habitsProp} categories={categories} />
+          <DailySummary habits={habitsProp} logs={todayLogsProps} />
 
           <div className="space-y-3">
             {visibleHabits.map((habit) => (
@@ -563,9 +636,6 @@ export default function HabitRegister({
           ) : null}
         </>
       )}
-
-      {/* Daily summary */}
-      <DailySummary habits={habitsProp} logs={todayLogsProps} />
 
     </section>
   );

@@ -16,10 +16,10 @@ export default async function HabitsPage() {
     redirect("/login");
   }
 
-  const [habits, { overviews, insights }, planInfo, habitCategories] =
+  const [habits, { overviews, insights, pagination }, planInfo, habitCategories] =
     await Promise.all([
     fetchHabits(user.id),
-    fetchHabitsPageData(user.id),
+    fetchHabitsPageData(user.id, 1),
     fetchPlanInfo(user.id),
     fetchHabitCategories(user.id),
   ]);
@@ -38,7 +38,11 @@ export default async function HabitsPage() {
         habits={habits}
       />
       <HabitsGlobalInsightsPanel insights={insights} />
-      <HabitsListSection habits={overviews} />
+      <HabitsListSection
+        userId={user.id}
+        initialHabits={overviews}
+        initialPagination={pagination}
+      />
     </div>
   );
 }

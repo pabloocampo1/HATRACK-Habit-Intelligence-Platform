@@ -12,7 +12,7 @@ import {
   AlertTriangle,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useEffect, useId, useState, useTransition } from "react";
+import { Fragment, useEffect, useId, useState, useTransition } from "react";
 import CreateHabitModal from "./CreateHabitModal";
 
 // ── constants ────────────────────────────────────────────────
@@ -383,9 +383,8 @@ export default function HabitAdminModal({
                     const errMsg = rowError !== null && rowError.id === habit.id ? rowError.msg : null;
 
                     return (
-                      <>
+                      <Fragment key={habit.id}>
                         <tr
-                          key={habit.id}
                           className="border-b border-border-subtle transition hover:bg-surface-muted/40"
                         >
                           <td className="px-4 py-3">
@@ -443,7 +442,7 @@ export default function HabitAdminModal({
                             </td>
                           </tr>
                         )}
-                      </>
+                      </Fragment>
                     );
                   })}
                 </tbody>

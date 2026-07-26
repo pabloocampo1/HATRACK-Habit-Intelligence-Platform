@@ -21,7 +21,7 @@ import {
 import { usePathname, useRouter } from "next/navigation";
 import Image from "next/image";
 
-import logo from "../public/images/hatrack_logo.png";
+import logo from "../public/images/cima_logo.png";
 
 const personalNav = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutGrid },
@@ -167,7 +167,13 @@ export default function Sidebar({
     <div className="flex flex-col h-full py-6">
       {/* Logo — fijo en la parte superior */}
       <div className="px-2 shrink-0">
-        <Image src={logo} alt="Cima" width={150} height={150} />
+        <Image
+          src={logo}
+          alt="Cima"
+          width={120}
+          height={120}
+          className="mx-auto h-auto w-[120px] object-contain"
+        />
       </div>
 
       {/* Nav — scrolleable cuando el contenido es largo, sin scrollbar visible */}

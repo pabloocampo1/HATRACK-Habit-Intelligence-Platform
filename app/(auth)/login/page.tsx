@@ -3,8 +3,10 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { supabase } from "@/lib/supabase/config/supabaseClient";
 import { Eye, EyeOff, ArrowRight, AlertCircle } from "lucide-react";
+import logo from "@/public/images/cima_logo.png";
 
 // ── decorative ring ──────────────────────────────────────────
 
@@ -122,9 +124,7 @@ export default function LoginPage() {
         {/* logo */}
         <div className="relative z-10">
           <div className="inline-flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-forest">
-              <span className="text-lg font-black text-[#022c22]">C</span>
-            </div>
+            <Image src={logo} alt="Cima" width={40} height={40} className="rounded-xl" />
             <span className="text-xl font-black tracking-tight text-white">
               Cima
             </span>
@@ -132,32 +132,48 @@ export default function LoginPage() {
         </div>
 
         {/* center content */}
-        <div className="relative z-10 space-y-6">
+        <div className="relative z-10 space-y-8">
           <div>
             <p className="text-[10px] font-black uppercase tracking-[0.4em] text-brand-forest/80">
-              Sistema de hábitos
+              Tu sistema operativo personal
             </p>
-            <h2 className="mt-3 text-5xl font-black leading-[1.1] tracking-tight text-white">
-              Construye hábitos{" "}
-              <span className="text-brand-forest">que duran.</span>
+            <h2 className="mt-3 text-5xl font-black leading-[1.05] tracking-tight text-white">
+              Hábitos, finanzas<br />
+              y metas.{" "}
+              <span className="text-brand-forest">Juntos.</span>
             </h2>
             <p className="mt-4 max-w-xs text-sm leading-relaxed text-white/40">
-              Registra tus sesiones, mide tu progreso real y supera retos
-              personales. Todo en un solo lugar.
+              Cima unifica en un solo lugar todo lo que necesitas para crecer:
+              rutinas diarias, control del dinero, objetivos grandes y retos que te transforman.
             </p>
           </div>
 
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-2 gap-3">
             <StatBadge label="Hábitos" value="∞" />
+            <StatBadge label="Finanzas" value="✓" />
             <StatBadge label="Retos" value="×4" />
-            <StatBadge label="Analytics" value="↑" />
+            <StatBadge label="KPIs" value="5" />
           </div>
+
+          {/* mini feature list */}
+          <ul className="space-y-2">
+            {[
+              "Check-in diario con datos reales",
+              "Control de ingresos, gastos y cuentas",
+              "Analítica semanal y mensual",
+            ].map((feat) => (
+              <li key={feat} className="flex items-center gap-2 text-xs text-white/50">
+                <span className="size-1.5 shrink-0 rounded-full bg-brand-forest" />
+                {feat}
+              </li>
+            ))}
+          </ul>
         </div>
 
         {/* bottom */}
         <div className="relative z-10">
           <p className="text-[9px] font-mono uppercase tracking-[0.5em] text-white/20">
-            Sistema de productividad
+            Hábitos · Finanzas · Metas · Retos
           </p>
         </div>
       </div>
@@ -166,9 +182,7 @@ export default function LoginPage() {
       <div className="flex flex-1 flex-col items-center justify-center px-6 py-12">
         {/* mobile logo */}
         <div className="mb-10 flex items-center gap-2 lg:hidden">
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-brand-forest">
-            <span className="text-base font-black text-[#022c22]">C</span>
-          </div>
+          <Image src={logo} alt="Cima" width={36} height={36} className="rounded-xl" />
           <span className="text-lg font-black tracking-tight text-white">
             Cima
           </span>

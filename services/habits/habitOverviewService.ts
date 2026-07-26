@@ -11,7 +11,9 @@ import type {
   HabitHeatmapDay,
   HabitOverview,
   HabitsGlobalInsights,
+  HabitsOverviewPagination,
 } from "@/app/(dashboard)/habits/types";
+import { HABITS_OVERVIEW_PAGE_SIZE } from "@/app/(dashboard)/habits/types";
 
 const CATEGORY_LABELS: Record<string, string> = Object.fromEntries(
   DEFAULT_HABIT_CATEGORIES.map((c) => [c.slug, c.name]),
@@ -95,7 +97,9 @@ function buildOverview(
   allLogs: HabitLog[],
   windowLogs: HabitLog[],
   reference: Date,
+  options?: { includeHeatmap?: boolean },
 ): Omit<HabitOverview, "rank"> {
+  const includeHeatmap = options?.includeHeatmap ?? true;
   const habitId = habit.id!;
   const habitAllLogs = allLogs.filter((log) => log.habit_id === habitId);
   const habitWindowLogs = windowLogs.filter((log) => log.habit_id === habitId);
@@ -130,7 +134,9 @@ function buildOverview(
     currentStreakDays: streakFromEnd(completedDates, reference),
     heatmapStart: dateLocalYMD(start),
     heatmapEnd: dateLocalYMD(end),
-    heatmapDays: buildHeatmapDays(habitWindowLogs, start, end),
+    heatmapDays: includeHeatmap
+      ? buildHeatmapDays(habitWindowLogs, start, end)
+      : [],
   };
 }
 
@@ -220,9 +226,18 @@ function sortOverviewsByCompletions(
     .map((overview, index) => ({ ...overview, rank: index + 1 }));
 }
 
-export async function getHabitOverviews(userId: string): Promise<HabitOverview[]> {
+type HabitsOverviewBase = {
+  habits: Array<Habit & { id: string }>;
+  allLogs: HabitLog[];
+  windowLogs: HabitLog[];
+  reference: Date;
+  rankedSummaries: HabitOverview[];
+};
+
+async function loadHabitsOverviewBase(userId: string): Promise<HabitsOverviewBase | null> {
   const habits = await habitRepository.getAllHabitsUser(userId);
-  if (!habits.length) return [];
+  const withIds = habits.filter((h): h is Habit & { id: string } => Boolean(h.id));
+  if (!withIds.length) return null;
 
   const reference = new Date();
   const { start } = threeMonthWindow(reference);
@@ -233,49 +248,125 @@ export async function getHabitOverviews(userId: string): Promise<HabitOverview[]
     habitLogRepository.findSinceDate(userId, windowStart),
   ]);
 
-  return sortOverviewsByCompletions(
-    habits
-      .filter((h): h is Habit & { id: string } => Boolean(h.id))
-      .map((habit) => buildOverview(habit, allLogs, windowLogs, reference)),
+  const rankedSummaries = sortOverviewsByCompletions(
+    withIds.map((habit) =>
+      buildOverview(habit, allLogs, windowLogs, reference, {
+        includeHeatmap: false,
+      }),
+    ),
   );
+
+  return { habits: withIds, allLogs, windowLogs, reference, rankedSummaries };
+}
+
+function buildPaginatedOverviews(
+  base: HabitsOverviewBase,
+  page: number,
+  pageSize: number,
+): { overviews: HabitOverview[]; pagination: HabitsOverviewPagination } {
+  const totalHabits = base.rankedSummaries.length;
+  const totalPages = Math.max(1, Math.ceil(totalHabits / pageSize));
+  const safePage = Math.min(Math.max(1, page), totalPages);
+  const slice = base.rankedSummaries.slice(
+    (safePage - 1) * pageSize,
+    safePage * pageSize,
+  );
+
+  const overviews = slice.map((summary) => {
+    const habit = base.habits.find((h) => h.id === summary.id)!;
+    const full = buildOverview(
+      habit,
+      base.allLogs,
+      base.windowLogs,
+      base.reference,
+      { includeHeatmap: true },
+    );
+    return { ...full, rank: summary.rank };
+  });
+
+  return {
+    overviews,
+    pagination: {
+      page: safePage,
+      pageSize,
+      totalHabits,
+      totalPages,
+    },
+  };
+}
+
+export async function getHabitOverviewsPage(
+  userId: string,
+  page = 1,
+  pageSize = HABITS_OVERVIEW_PAGE_SIZE,
+): Promise<{
+  overviews: HabitOverview[];
+  pagination: HabitsOverviewPagination;
+}> {
+  const base = await loadHabitsOverviewBase(userId);
+  if (!base) {
+    return {
+      overviews: [],
+      pagination: {
+        page: 1,
+        pageSize,
+        totalHabits: 0,
+        totalPages: 1,
+      },
+    };
+  }
+
+  return buildPaginatedOverviews(base, page, pageSize);
+}
+
+export async function getHabitOverviews(userId: string): Promise<HabitOverview[]> {
+  const base = await loadHabitsOverviewBase(userId);
+  if (!base) return [];
+
+  return buildPaginatedOverviews(
+    base,
+    1,
+    base.rankedSummaries.length,
+  ).overviews;
 }
 
 export async function getGlobalInsights(
   userId: string,
 ): Promise<HabitsGlobalInsights> {
-  const overviews = await getHabitOverviews(userId);
-  if (!overviews.length) return EMPTY_INSIGHTS;
+  const base = await loadHabitsOverviewBase(userId);
+  if (!base) return EMPTY_INSIGHTS;
 
-  const allLogs = await habitLogRepository.findAllByUser(userId);
-  return buildInsightsFromOverviews(overviews, allLogs);
+  return buildInsightsFromOverviews(base.rankedSummaries, base.allLogs);
 }
 
-export async function getHabitsPageData(userId: string): Promise<{
+export async function getHabitsPageData(
+  userId: string,
+  page = 1,
+  pageSize = HABITS_OVERVIEW_PAGE_SIZE,
+): Promise<{
   overviews: HabitOverview[];
   insights: HabitsGlobalInsights;
+  pagination: HabitsOverviewPagination;
 }> {
-  const habits = await habitRepository.getAllHabitsUser(userId);
-  if (!habits.length) {
-    return { overviews: [], insights: EMPTY_INSIGHTS };
+  const base = await loadHabitsOverviewBase(userId);
+  if (!base) {
+    return {
+      overviews: [],
+      insights: EMPTY_INSIGHTS,
+      pagination: {
+        page: 1,
+        pageSize,
+        totalHabits: 0,
+        totalPages: 1,
+      },
+    };
   }
 
-  const reference = new Date();
-  const { start } = threeMonthWindow(reference);
-  const windowStart = dateLocalYMD(start);
-
-  const [allLogs, windowLogs] = await Promise.all([
-    habitLogRepository.findAllByUser(userId),
-    habitLogRepository.findSinceDate(userId, windowStart),
-  ]);
-
-  const overviews = sortOverviewsByCompletions(
-    habits
-      .filter((h): h is Habit & { id: string } => Boolean(h.id))
-      .map((habit) => buildOverview(habit, allLogs, windowLogs, reference)),
-  );
+  const { overviews, pagination } = buildPaginatedOverviews(base, page, pageSize);
 
   return {
     overviews,
-    insights: buildInsightsFromOverviews(overviews, allLogs),
+    insights: buildInsightsFromOverviews(base.rankedSummaries, base.allLogs),
+    pagination,
   };
 }

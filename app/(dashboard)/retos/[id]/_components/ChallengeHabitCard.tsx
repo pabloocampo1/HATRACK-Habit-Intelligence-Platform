@@ -67,6 +67,14 @@ export default function ChallengeHabitCard({
       onClick={handleToggle}
       disabled={isFinished || isPending}
       aria-pressed={isDone}
+      aria-busy={isPending}
+      aria-label={
+        isPending
+          ? `Registrando ${habit.title}`
+          : isDone
+            ? `Desmarcar ${habit.title}`
+            : `Completar ${habit.title}`
+      }
       className={`group w-full rounded-2xl border p-5 text-left transition-all duration-200 ${
         isDone
           ? "border-brand-forest/40 bg-accent-subtle/60"
@@ -74,8 +82,20 @@ export default function ChallengeHabitCard({
       } ${isFinished ? "cursor-default" : "cursor-pointer"} ${isPending ? "opacity-60" : ""}`}
     >
       <div className="flex items-start gap-4">
-        <div className={`mt-0.5 shrink-0 transition-all duration-200 ${isDone ? "text-brand-forest" : "text-text-muted group-hover:text-brand-forest/50"}`}>
-          {isDone ? (
+        <div
+          className={`mt-0.5 shrink-0 transition-all duration-200 ${
+            isPending
+              ? "text-brand-forest"
+              : isDone
+                ? "text-brand-forest"
+                : "text-text-muted group-hover:text-brand-forest/50"
+          }`}
+        >
+          {isPending ? (
+            <span className="flex size-6 items-center justify-center" aria-hidden>
+              <span className="size-5 animate-spin rounded-full border-2 border-brand-forest/30 border-t-brand-forest" />
+            </span>
+          ) : isDone ? (
             <CheckCircle2 className="size-6" strokeWidth={2.5} />
           ) : (
             <Circle className="size-6" strokeWidth={1.75} />
@@ -83,6 +103,11 @@ export default function ChallengeHabitCard({
         </div>
 
         <div className="flex-1 min-w-0">
+          {isPending && (
+            <p className="mb-1 text-[10px] font-bold uppercase tracking-widest text-brand-forest/80">
+              Registrando…
+            </p>
+          )}
           <div className="flex flex-wrap items-center gap-2 mb-1">
             {habit.is_linked_habit ? (
               <span className="flex items-center gap-1 text-[9px] font-bold uppercase tracking-widest text-brand-forest/70">

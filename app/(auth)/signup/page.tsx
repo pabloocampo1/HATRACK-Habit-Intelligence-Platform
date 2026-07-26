@@ -1,10 +1,12 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase/config/supabaseClient";
 import { Eye, EyeOff, ArrowRight, AlertCircle, CheckCircle2 } from "lucide-react";
+import logo from "@/public/images/cima_logo.png";
 
 // ── password strength ────────────────────────────────────────
 
@@ -122,9 +124,7 @@ export default function SignupPage() {
         {/* logo */}
         <div className="relative z-10">
           <div className="inline-flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-forest">
-              <span className="text-lg font-black text-[#022c22]">C</span>
-            </div>
+            <Image src={logo} alt="Cima" width={40} height={40} className="rounded-xl" />
             <span className="text-xl font-black tracking-tight text-white">
               Cima
             </span>
@@ -135,15 +135,15 @@ export default function SignupPage() {
         <div className="relative z-10 space-y-8">
           <div>
             <p className="text-[10px] font-black uppercase tracking-[0.4em] text-brand-forest/80">
-              Empieza hoy
+              Empieza gratis hoy
             </p>
-            <h2 className="mt-3 text-5xl font-black leading-[1.1] tracking-tight text-white">
-              El primer paso es{" "}
-              <span className="text-brand-forest">registrarte.</span>
+            <h2 className="mt-3 text-5xl font-black leading-[1.05] tracking-tight text-white">
+              Todo empieza con<br />
+              <span className="text-brand-forest">un solo registro.</span>
             </h2>
             <p className="mt-4 max-w-xs text-sm leading-relaxed text-white/40">
-              Crea tu cuenta gratuita y empieza a trackear tus hábitos, retos y
-              progreso personal desde el día uno.
+              Crea tu cuenta y accede a un sistema completo: hábitos, finanzas,
+              metas y retos. Sin tarjeta. Sin complicaciones.
             </p>
           </div>
 
@@ -151,9 +151,9 @@ export default function SignupPage() {
           <div className="space-y-3">
             {[
               "Crea tu cuenta en segundos",
-              "Define tus primeros hábitos",
-              "Registra sesiones y mide tu avance",
-              "Supera retos y alcanza tus metas",
+              "Define hábitos, metas y categorías",
+              "Controla tus finanzas y gastos",
+              "Supera retos y analiza tu progreso",
             ].map((step, i) => (
               <div key={i} className="flex items-center gap-3">
                 <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-brand-forest/20 text-[10px] font-black text-brand-forest">
@@ -177,9 +177,7 @@ export default function SignupPage() {
       <div className="flex flex-1 flex-col items-center justify-center px-6 py-12">
         {/* mobile logo */}
         <div className="mb-10 flex items-center gap-2 lg:hidden">
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-brand-forest">
-            <span className="text-base font-black text-[#022c22]">C</span>
-          </div>
+          <Image src={logo} alt="Cima" width={36} height={36} className="rounded-xl" />
           <span className="text-lg font-black tracking-tight text-white">
             Cima
           </span>
