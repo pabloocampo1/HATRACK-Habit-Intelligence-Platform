@@ -12,7 +12,7 @@ export async function saveAccount(account: Account, userId: string): Promise<Acc
   return createFinanceAccount(userId, {
     account_name: account.account_name,
     type: account.type,
-    institution: account.institution,
+    institution: account.institution ?? undefined,
     balance: Number(account.balance ?? 0),
     currency: account.currency,
   });
