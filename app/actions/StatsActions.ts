@@ -33,13 +33,16 @@ export async function fetchTodayStats(userId: string): Promise<Stats> {
   // generate the commitment total for today
 
   const commitmentExpectation = totalHabits.reduce(
-    (total, habit) => total + habit.target_minutes || 0,
+    (total, habit) => total + (habit.target_minutes || 0),
     0,
   );
 
-  const commitmentTotal =
+  const dedicacion =
     commitmentExpectation > 0
-      ? (commitmentTime / commitmentExpectation) * 100
+      ? Math.min(
+          Math.round((commitmentTime / commitmentExpectation) * 100),
+          100,
+        )
       : 0;
 
   try {
@@ -47,7 +50,7 @@ export async function fetchTodayStats(userId: string): Promise<Stats> {
       disciplina: Math.min(disciplina, 100),
       consistencia: 777,
       enfoque: Math.min(todayFocus, 100),
-      dedicacion: Math.min(commitmentTotal, 100),
+      dedicacion,
       crecimiento: 777,
       total_time: commitmentTime,
     };

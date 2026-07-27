@@ -1,22 +1,21 @@
 "use client";
 
-import type { GoalDetail, Habit, Challenge, GoalMilestone, GoalStatus } from "@/lib/types";
+import type { GoalDetail, GoalMilestone, GoalMilestoneStep, GoalStatus } from "@/lib/types";
 import type { GoalPlanInfo } from "@/app/actions/goals/goalActions";
 import {
   addMilestoneAction,
   toggleMilestoneAction,
   deleteMilestoneAction,
+  addMilestoneStepAction,
+  toggleMilestoneStepAction,
+  deleteMilestoneStepAction,
   updateGoalAction,
   deleteGoalAction,
-  linkHabitAction,
-  unlinkHabitAction,
-  linkChallengeAction,
-  unlinkChallengeAction,
 } from "@/app/actions/goals/goalActions";
 import {
   ArrowLeft, CheckCircle2, Circle, Plus, Trash2, Pencil, Lock,
   CalendarDays, Target, AlertTriangle, X, Flame, PauseCircle,
-  Swords, BarChart2, Save,
+  Save, ListChecks,
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -53,45 +52,169 @@ function MilestoneItem({
   milestone,
   onToggle,
   onDelete,
+  onAddStep,
+  onToggleStep,
+  onDeleteStep,
   isPending,
 }: {
   milestone: GoalMilestone;
   onToggle: (id: string, completed: boolean) => void;
   onDelete: (id: string) => void;
+  onAddStep: (milestoneId: string, title: string) => void;
+  onToggleStep: (stepId: string, completed: boolean) => void;
+  onDeleteStep: (stepId: string) => void;
   isPending: boolean;
 }) {
+  const [stepTitle, setStepTitle] = useState("");
+  const stepCount = milestone.steps?.length ?? 0;
+  const stepDoneCount =
+    milestone.steps?.filter((step) => step.completed).length ?? 0;
+
+  function submitStep(e: React.FormEvent) {
+    e.preventDefault();
+    if (!stepTitle.trim()) return;
+    onAddStep(milestone.id!, stepTitle);
+    setStepTitle("");
+  }
+
   return (
-    <div className={`flex items-center gap-3 rounded-xl border px-4 py-3 transition ${
-      milestone.completed
-        ? "border-brand-forest/20 bg-accent-subtle/30"
-        : "border-border-subtle bg-surface-card"
-    }`}>
+    <div
+      className={`space-y-3 rounded-xl border px-4 py-3 transition ${
+        milestone.completed
+          ? "border-brand-forest/20 bg-accent-subtle/30"
+          : "border-border-subtle bg-surface-card"
+      }`}
+    >
+      <div className="flex items-center gap-3">
+        <button
+          type="button"
+          disabled={isPending}
+          onClick={() => onToggle(milestone.id!, !milestone.completed)}
+          className="shrink-0 text-text-muted transition hover:text-brand-forest disabled:opacity-50"
+          aria-label={milestone.completed ? "Desmarcar" : "Completar"}
+        >
+          {milestone.completed ? (
+            <CheckCircle2 className="size-5 text-brand-forest" strokeWidth={2.5} />
+          ) : (
+            <Circle className="size-5" strokeWidth={1.75} />
+          )}
+        </button>
+
+        <div className="min-w-0 flex-1">
+          <p
+            className={`text-sm font-medium ${
+              milestone.completed
+                ? "line-through text-text-muted"
+                : "text-text-primary"
+            }`}
+          >
+            {milestone.title}
+          </p>
+          <div className="mt-1 flex items-center gap-2 text-[10px] text-text-muted">
+            <span className="inline-flex items-center gap-1">
+              <ListChecks className="size-3" strokeWidth={2} />
+              {stepDoneCount}/{stepCount} pasos
+            </span>
+            {milestone.due_date && !milestone.completed && (
+              <span className="tabular-nums">
+                <CalendarDays className="mr-0.5 inline size-3" strokeWidth={2} />
+                {new Date(milestone.due_date).toLocaleDateString("es-ES", {
+                  day: "numeric",
+                  month: "short",
+                })}
+              </span>
+            )}
+          </div>
+        </div>
+
+        <button
+          type="button"
+          disabled={isPending}
+          onClick={() => onDelete(milestone.id!)}
+          className="shrink-0 text-text-muted transition hover:text-red-400 disabled:opacity-50"
+          aria-label="Eliminar submeta"
+        >
+          <Trash2 className="size-3.5" strokeWidth={2} />
+        </button>
+      </div>
+
+      <div className="space-y-1.5 rounded-lg border border-border-subtle bg-surface-muted/50 p-3">
+        {(milestone.steps ?? []).length === 0 ? (
+          <p className="text-xs text-text-muted">
+            Sin pasos todavía. Divide esta submeta en acciones pequeñas.
+          </p>
+        ) : (
+          <div className="space-y-1.5">
+            {milestone.steps!.map((step) => (
+              <StepRow
+                key={step.id}
+                step={step}
+                isPending={isPending}
+                onToggleStep={onToggleStep}
+                onDeleteStep={onDeleteStep}
+              />
+            ))}
+          </div>
+        )}
+
+        <form onSubmit={submitStep} className="flex gap-2">
+          <input
+            value={stepTitle}
+            onChange={(e) => setStepTitle(e.target.value)}
+            placeholder="Nuevo paso..."
+            disabled={isPending}
+            className="h-9 flex-1 rounded-lg border border-border-default bg-surface-card px-3 text-xs text-text-primary placeholder:text-text-muted outline-none focus:border-brand-forest/40"
+          />
+          <button
+            type="submit"
+            disabled={isPending || !stepTitle.trim()}
+            className="h-9 rounded-lg border border-brand-forest/30 bg-accent-subtle px-3 text-xs font-bold text-brand-forest transition hover:bg-brand-forest/15 disabled:opacity-50"
+          >
+            + Paso
+          </button>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+function StepRow({
+  step,
+  isPending,
+  onToggleStep,
+  onDeleteStep,
+}: {
+  step: GoalMilestoneStep;
+  isPending: boolean;
+  onToggleStep: (stepId: string, completed: boolean) => void;
+  onDeleteStep: (stepId: string) => void;
+}) {
+  return (
+    <div className="flex items-center gap-2 rounded-md border border-border-subtle bg-surface-card px-2.5 py-2">
       <button
         type="button"
         disabled={isPending}
-        onClick={() => onToggle(milestone.id!, !milestone.completed)}
+        onClick={() => onToggleStep(step.id!, !step.completed)}
         className="shrink-0 text-text-muted transition hover:text-brand-forest disabled:opacity-50"
-        aria-label={milestone.completed ? "Desmarcar" : "Completar"}
       >
-        {milestone.completed
-          ? <CheckCircle2 className="size-5 text-brand-forest" strokeWidth={2.5} />
-          : <Circle className="size-5" strokeWidth={1.75} />}
+        {step.completed ? (
+          <CheckCircle2 className="size-4 text-brand-forest" strokeWidth={2.5} />
+        ) : (
+          <Circle className="size-4" strokeWidth={1.75} />
+        )}
       </button>
-      <span className={`flex-1 text-sm font-medium ${milestone.completed ? "line-through text-text-muted" : "text-text-primary"}`}>
-        {milestone.title}
+      <span
+        className={`flex-1 text-xs ${
+          step.completed ? "line-through text-text-muted" : "text-text-primary"
+        }`}
+      >
+        {step.title}
       </span>
-      {milestone.due_date && !milestone.completed && (
-        <span className="text-[10px] text-text-muted tabular-nums">
-          <CalendarDays className="inline size-3 mr-0.5" strokeWidth={2} />
-          {new Date(milestone.due_date).toLocaleDateString("es-ES", { day: "numeric", month: "short" })}
-        </span>
-      )}
       <button
         type="button"
         disabled={isPending}
-        onClick={() => onDelete(milestone.id!)}
+        onClick={() => onDeleteStep(step.id!)}
         className="shrink-0 text-text-muted transition hover:text-red-400 disabled:opacity-50"
-        aria-label="Eliminar hito"
       >
         <Trash2 className="size-3.5" strokeWidth={2} />
       </button>
@@ -138,7 +261,7 @@ function AddMilestoneForm({
     return (
       <div className="rounded-xl border border-border-subtle bg-surface-muted px-4 py-3 text-xs text-text-muted">
         <Lock className="inline size-3.5 mr-1.5" strokeWidth={2} />
-        {limitMessage ?? "Límite de hitos alcanzado."}
+        {limitMessage ?? "Límite de submetas alcanzado."}
       </div>
     );
   }
@@ -149,7 +272,7 @@ function AddMilestoneForm({
         autoFocus
         value={title}
         onChange={(e) => setTitle(e.target.value)}
-        placeholder="Título del hito"
+        placeholder="Título de la submeta"
         className="w-full rounded-xl border border-border-default bg-surface-card px-3 py-2.5 text-sm text-text-primary placeholder:text-text-muted outline-none focus:border-brand-forest/40"
         disabled={isPending}
       />
@@ -177,7 +300,7 @@ function AddMilestoneForm({
       onClick={() => setOpen(true)}
       className="flex w-full items-center gap-2 rounded-xl border border-dashed border-border-default px-4 py-3 text-xs font-bold text-text-muted transition hover:border-brand-forest/30 hover:text-brand-forest"
     >
-      <Plus className="size-4" strokeWidth={2.5} /> Agregar hito
+      <Plus className="size-4" strokeWidth={2.5} /> Agregar submeta
     </button>
   );
 }
@@ -196,14 +319,10 @@ const STATUS_CONFIG: Record<GoalStatus, { label: string; cls: string }> = {
 export default function GoalDetailClient({
   goal,
   planInfo,
-  habits,
-  challenges,
   userId,
 }: {
   goal: GoalDetail;
   planInfo: GoalPlanInfo;
-  habits: Habit[];
-  challenges: Challenge[];
   userId: string;
 }) {
   const router = useRouter();
@@ -212,11 +331,10 @@ export default function GoalDetailClient({
   const [editTitle, setEditTitle] = useState(goal.title);
   const [editWhy, setEditWhy] = useState(goal.why ?? "");
   const [editDesc, setEditDesc] = useState(goal.description ?? "");
-  const [editProgress, setEditProgress] = useState(goal.progress_manual ?? 0);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
-  const { goalLinking, limits } = planInfo;
+  const { limits } = planInfo;
 
   const hasMilestones = goal.milestones.length > 0;
   const progressPct = hasMilestones
@@ -244,7 +362,6 @@ export default function GoalDetailClient({
       title: editTitle,
       description: editDesc,
       why: editWhy,
-      ...(hasMilestones ? {} : { progress_manual: editProgress }),
     }));
     setEditMode(false);
   }
@@ -335,12 +452,6 @@ export default function GoalDetailClient({
                 <input value={editTitle} onChange={(e) => setEditTitle(e.target.value)} placeholder="Título" className={inputCls} />
                 <input value={editWhy} onChange={(e) => setEditWhy(e.target.value)} placeholder="¿Por qué?" className={inputCls} />
                 <textarea rows={2} value={editDesc} onChange={(e) => setEditDesc(e.target.value)} placeholder="Descripción" className={`${inputCls} resize-none`} />
-                {!hasMilestones && (
-                  <div className="space-y-1.5">
-                    <label className="text-[10px] font-bold uppercase tracking-widest text-text-muted">Progreso manual: {editProgress}%</label>
-                    <input type="range" min={0} max={100} value={editProgress} onChange={(e) => setEditProgress(Number(e.target.value))} className="w-full accent-brand-forest" />
-                  </div>
-                )}
               </div>
             ) : (
               <>
@@ -364,19 +475,23 @@ export default function GoalDetailClient({
               {hasMilestones && (
                 <span className="flex items-center gap-1">
                   <CheckCircle2 className="size-3.5" strokeWidth={2} />
-                  {goal.milestones.filter((m) => m.completed).length}/{goal.milestones.length} hitos
+                  {goal.milestones.filter((m) => m.completed).length}/{goal.milestones.length} submetas
                 </span>
               )}
             </div>
+
+            {progressPct === 100 && goal.milestones.length > 0 && (
+              <div className="rounded-xl border border-brand-forest/25 bg-accent-subtle px-4 py-2 text-xs text-brand-forest">
+                Excelente. Completaste todas las submetas y la meta se marca como
+                finalizada automáticamente.
+              </div>
+            )}
           </div>
         </div>
 
         {/* status actions */}
         {goal.status === "active" && (
           <div className="mt-6 flex flex-wrap gap-2 border-t border-border-subtle pt-5">
-            <button type="button" onClick={() => handleStatusChange("completed")} disabled={isPending} className="flex items-center gap-1.5 rounded-xl border border-brand-forest/30 bg-brand-forest/10 px-3 py-2 text-xs font-bold text-brand-forest transition hover:bg-brand-forest/20 disabled:opacity-50">
-              <CheckCircle2 className="size-3.5" strokeWidth={2.5} /> Marcar como completada
-            </button>
             <button type="button" onClick={() => handleStatusChange("paused")} disabled={isPending} className="flex items-center gap-1.5 rounded-xl border border-yellow-500/30 bg-yellow-500/10 px-3 py-2 text-xs font-bold text-yellow-400 transition hover:bg-yellow-500/20 disabled:opacity-50">
               <PauseCircle className="size-3.5" strokeWidth={2} /> Pausar
             </button>
@@ -398,8 +513,17 @@ export default function GoalDetailClient({
       <section className="space-y-4">
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-black text-text-primary">
-            Hitos <span className="text-sm font-normal text-text-muted ml-1">({goal.milestones.length}/{limits.goalMilestones === Infinity ? "∞" : limits.goalMilestones})</span>
+            Submetas{" "}
+            <span className="ml-1 text-sm font-normal text-text-muted">
+              ({goal.milestones.length}/{limits.goalMilestones === Infinity ? "∞" : limits.goalMilestones})
+            </span>
           </h2>
+        </div>
+
+        <div className="rounded-xl border border-brand-forest/20 bg-accent-subtle/20 px-4 py-3 text-xs text-text-secondary">
+          <span className="font-bold text-brand-forest">Divide y dominarás:</span>{" "}
+          la forma más efectiva de lograr una meta grande es romperla en submetas
+          pequeñas y completarlas una por una.
         </div>
 
         {goal.milestones.length > 0 && (
@@ -411,6 +535,15 @@ export default function GoalDetailClient({
                 isPending={isPending}
                 onToggle={(id, completed) => mutate(() => toggleMilestoneAction(id, completed))}
                 onDelete={(id) => mutate(() => deleteMilestoneAction(id))}
+                onAddStep={(milestoneId, title) =>
+                  mutate(() => addMilestoneStepAction(milestoneId, title))
+                }
+                onToggleStep={(stepId, completed) =>
+                  mutate(() => toggleMilestoneStepAction(stepId, completed))
+                }
+                onDeleteStep={(stepId) =>
+                  mutate(() => deleteMilestoneStepAction(stepId))
+                }
               />
             ))}
           </div>
@@ -421,110 +554,9 @@ export default function GoalDetailClient({
             goalId={goal.id!}
             userId={userId}
             atLimit={goal.milestones.length >= (limits.goalMilestones === Infinity ? Infinity : limits.goalMilestones)}
-            limitMessage={`Máximo ${limits.goalMilestones} hitos en tu plan actual.`}
+            limitMessage={`Máximo ${limits.goalMilestones} submetas en tu plan actual.`}
             onAdded={() => router.refresh()}
           />
-        )}
-      </section>
-
-      {/* linked habits */}
-      <section className="space-y-4">
-        <div className="flex items-center gap-2">
-          <BarChart2 className="size-5 text-brand-forest" strokeWidth={2} />
-          <h2 className="text-lg font-black text-text-primary">Hábitos vinculados</h2>
-          {!goalLinking && <Lock className="size-4 text-text-muted" strokeWidth={2} />}
-        </div>
-
-        {!goalLinking ? (
-          <div className="rounded-xl border border-border-subtle bg-surface-muted px-4 py-3 text-xs text-text-muted">
-            Vincular hábitos a tus metas es una función exclusiva del plan Pro.
-          </div>
-        ) : (
-          <>
-            {goal.linkedHabits.length > 0 && (
-              <div className="space-y-2">
-                {goal.linkedHabits.map((gh) => (
-                  <div key={gh.id} className="flex items-center gap-3 rounded-xl border border-border-subtle bg-surface-card px-4 py-3">
-                    <BarChart2 className="size-4 text-brand-forest" strokeWidth={2} />
-                    <span className="flex-1 text-sm font-medium text-text-primary">{gh.habit?.title ?? "Hábito"}</span>
-                    <button type="button" disabled={isPending} onClick={() => mutate(() => unlinkHabitAction(gh.id!))} className="text-text-muted transition hover:text-red-400 disabled:opacity-50">
-                      <X className="size-4" strokeWidth={2} />
-                    </button>
-                  </div>
-                ))}
-              </div>
-            )}
-            {goal.status === "active" && habits.filter((h) => !goal.linkedHabits.some((gh) => gh.habit_id === h.id)).length > 0 && (
-              <div className="space-y-1.5">
-                <p className="text-[10px] font-bold uppercase tracking-widest text-text-muted">Agregar hábito</p>
-                <div className="flex flex-wrap gap-2">
-                  {habits.filter((h) => !goal.linkedHabits.some((gh) => gh.habit_id === h.id)).map((h) => (
-                    <button
-                      key={h.id}
-                      type="button"
-                      disabled={isPending}
-                      onClick={() => mutate(() => linkHabitAction(goal.id!, h.id!, userId))}
-                      className="flex items-center gap-1.5 rounded-xl border border-dashed border-border-default px-3 py-2 text-xs font-medium text-text-secondary transition hover:border-brand-forest/30 hover:text-brand-forest disabled:opacity-50"
-                    >
-                      <Plus className="size-3.5" strokeWidth={2.5} /> {h.title}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
-          </>
-        )}
-      </section>
-
-      {/* linked challenges */}
-      <section className="space-y-4">
-        <div className="flex items-center gap-2">
-          <Swords className="size-5 text-brand-forest" strokeWidth={2} />
-          <h2 className="text-lg font-black text-text-primary">Retos vinculados</h2>
-          {!goalLinking && <Lock className="size-4 text-text-muted" strokeWidth={2} />}
-        </div>
-
-        {!goalLinking ? (
-          <div className="rounded-xl border border-border-subtle bg-surface-muted px-4 py-3 text-xs text-text-muted">
-            Vincular retos a tus metas es una función exclusiva del plan Pro.
-          </div>
-        ) : (
-          <>
-            {goal.linkedChallenges.length > 0 && (
-              <div className="space-y-2">
-                {goal.linkedChallenges.map((gc) => {
-                  const ch = challenges.find((c) => c.id === gc.challenge_id);
-                  return (
-                    <div key={gc.id} className="flex items-center gap-3 rounded-xl border border-border-subtle bg-surface-card px-4 py-3">
-                      <Swords className="size-4 text-brand-forest" strokeWidth={2} />
-                      <span className="flex-1 text-sm font-medium text-text-primary">{ch?.title ?? "Reto"}</span>
-                      <button type="button" disabled={isPending} onClick={() => mutate(() => unlinkChallengeAction(gc.id!))} className="text-text-muted transition hover:text-red-400">
-                        <X className="size-4" strokeWidth={2} />
-                      </button>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-            {goal.status === "active" && challenges.filter((c) => !goal.linkedChallenges.some((gc) => gc.challenge_id === c.id)).length > 0 && (
-              <div className="space-y-1.5">
-                <p className="text-[10px] font-bold uppercase tracking-widest text-text-muted">Agregar reto</p>
-                <div className="flex flex-wrap gap-2">
-                  {challenges.filter((c) => !goal.linkedChallenges.some((gc) => gc.challenge_id === c.id)).map((c) => (
-                    <button
-                      key={c.id}
-                      type="button"
-                      disabled={isPending}
-                      onClick={() => mutate(() => linkChallengeAction(goal.id!, c.id!, userId))}
-                      className="flex items-center gap-1.5 rounded-xl border border-dashed border-border-default px-3 py-2 text-xs font-medium text-text-secondary transition hover:border-brand-forest/30 hover:text-brand-forest disabled:opacity-50"
-                    >
-                      <Plus className="size-3.5" strokeWidth={2.5} /> {c.title}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
-          </>
         )}
       </section>
     </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import type { Account } from "@/lib/types";
 import { btnGhost, btnPrimary, inputSurface } from "../../cuentas-ui";
 import { formatMoney, parseMoneyInput } from "../../utils/formatMoney";
@@ -9,10 +9,14 @@ import ModalShell from "./ModalShell";
 
 export default function TransferModal({
   accounts,
+  isPending,
+  serverError,
   onClose,
   onApply,
 }: {
   accounts: Account[];
+  isPending?: boolean;
+  serverError?: string | null;
   onClose: () => void;
   onApply: (p: {
     fromId: string;
@@ -29,53 +33,59 @@ export default function TransferModal({
   const [toId, setToId] = useState(defaultTo);
   const [amount, setAmount] = useState("");
   const [note, setNote] = useState("");
-  const [error, setError] = useState<string | null>(null);
+  const [validationError, setValidationError] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (fromId === toId) {
-      const other = accounts.find((a) => a.account_id !== fromId);
+  const handleFromChange = (nextFromId: string) => {
+    setFromId(nextFromId);
+    if (nextFromId === toId) {
+      const other = accounts.find((a) => a.account_id !== nextFromId);
       if (other) setToId(other.account_id);
     }
-  }, [fromId, toId, accounts]);
+  };
 
   const from = accounts.find((a) => a.account_id === fromId);
   const to = accounts.find((a) => a.account_id === toId);
   const sameCurrency = from && to && from.currency === to.currency;
 
   const submit = () => {
-    setError(null);
+    setValidationError(null);
     const cur = from?.currency ?? "COP";
     const n = parseMoneyInput(amount, cur);
     if (!from || !to || fromId === toId) {
-      setError("Elige dos cuentas distintas.");
+      setValidationError("Elige dos cuentas distintas.");
       return;
     }
     if (!sameCurrency) {
-      setError("Las cuentas deben compartir moneda para esta versión del flujo.");
+      setValidationError("Las cuentas deben compartir moneda para esta versión del flujo.");
       return;
     }
     if (n <= 0) {
-      setError("Ingresa un monto válido mayor a cero.");
+      setValidationError("Ingresa un monto válido mayor a cero.");
       return;
     }
     if (from.balance < n) {
-      setError("Saldo insuficiente en la cuenta origen.");
+      setValidationError("Saldo insuficiente en la cuenta origen.");
       return;
     }
     onApply({ fromId, toId, amount: n, note: note.trim() });
   };
 
+  const displayError = validationError ?? serverError;
+
   return (
     <ModalShell
       title="Transferir entre cuentas"
-      subtitle="Actualiza balance en ambas cuentas (misma moneda). En producción conviene hacerlo en una transacción atómica en el backend."
+      subtitle="Mueve dinero de una cuenta a otra. Ambas deben usar la misma moneda."
       onClose={onClose}
     >
       <div className="grid gap-7 sm:grid-cols-2">
-        <FormField label="Cuenta origen" hint="Debe tener saldo suficiente.">
+        <FormField
+          label="Desde (cuenta origen)"
+          hint="Se restará el monto de esta cuenta. Debe tener saldo suficiente."
+        >
           <select
             value={fromId}
-            onChange={(e) => setFromId(e.target.value)}
+            onChange={(e) => handleFromChange(e.target.value)}
             className={inputSurface}
           >
             {accounts.map((a) => (
@@ -85,7 +95,10 @@ export default function TransferModal({
             ))}
           </select>
         </FormField>
-        <FormField label="Cuenta destino" hint="Recibe el mismo monto.">
+        <FormField
+          label="Hacia (cuenta destino)"
+          hint="Recibirá el mismo monto que envías desde la cuenta origen."
+        >
           <select
             value={toId}
             onChange={(e) => setToId(e.target.value)}
@@ -98,14 +111,14 @@ export default function TransferModal({
             ))}
           </select>
         </FormField>
-        <FormField label="Monto" hint="Se resta del balance origen y suma al destino.">
+        <FormField label="Monto a transferir" hint="Solo números. Ej: 50000 o 1500000">
           <input
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
             className={`${inputSurface} tabular-nums`}
           />
         </FormField>
-        <FormField label="Nota (opcional)" hint="Referencia interna del movimiento.">
+        <FormField label="Nota (opcional)" hint='Ej: "Pago tarjeta", "Ahorro quincenal". Solo para tu referencia.'>
           <input
             value={note}
             onChange={(e) => setNote(e.target.value)}
@@ -136,18 +149,18 @@ export default function TransferModal({
         </div>
       ) : null}
 
-      {error ? (
-        <p className="mt-6 rounded-[1.25rem] border-2 border-amber-200 bg-amber-50 px-5 py-4 text-sm font-medium text-amber-950">
-          {error}
+      {displayError ? (
+        <p className="mt-6 rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">
+          {displayError}
         </p>
       ) : null}
 
       <div className="mt-10 flex flex-wrap justify-end gap-4">
-        <button type="button" onClick={onClose} className={btnGhost}>
+        <button type="button" onClick={onClose} className={btnGhost} disabled={isPending}>
           Volver
         </button>
-        <button type="button" onClick={submit} className={btnPrimary}>
-          Confirmar transferencia
+        <button type="button" onClick={submit} className={btnPrimary} disabled={isPending}>
+          {isPending ? "Transfiriendo…" : "Confirmar transferencia"}
         </button>
       </div>
     </ModalShell>

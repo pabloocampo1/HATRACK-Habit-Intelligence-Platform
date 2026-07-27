@@ -1,4 +1,4 @@
-import type { Habit } from "@/lib/types";
+import type { Habit, HabitCategory } from "@/lib/types";
 import type { PlanInfo } from "@/app/actions/plans/subscriptionActions";
 import { formatLimit } from "@/lib/plans/limits";
 import CreateHabitCta from "./CreateHabitCta";
@@ -10,10 +10,12 @@ export default function HabitsPageHeader({
   userId,
   habits,
   planInfo,
+  categories,
 }: {
   userId: string;
   habits: Habit[];
   planInfo: PlanInfo;
+  categories: HabitCategory[];
 }) {
   const { habitCapability, limits, planLabel, isFree } = planInfo;
   const atLimit = !habitCapability.allowed;
@@ -48,9 +50,9 @@ export default function HabitsPageHeader({
         </div>
 
         <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-end">
-          <HabitAdminCta habits={habits} userId={userId} />
+          <HabitAdminCta habits={habits} userId={userId} categories={categories} />
           <LogSessionCta userId={userId} habits={habits} />
-          <CreateHabitCta userId={userId} disabled={atLimit} />
+          <CreateHabitCta userId={userId} disabled={atLimit} categories={categories} />
         </div>
       </div>
 

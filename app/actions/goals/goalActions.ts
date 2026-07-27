@@ -9,17 +9,15 @@ import {
   addMilestone,
   toggleMilestone,
   deleteMilestone,
-  linkHabitToGoal,
-  unlinkHabitFromGoal,
-  linkChallengeToGoal,
-  unlinkChallengeFromGoal,
+  addMilestoneStep,
+  toggleMilestoneStep,
+  deleteMilestoneStep,
   canCreateGoal,
-  canLinkGoalItems,
 } from "@/services/goals/goalService";
 import { subscriptionRepository } from "@/lib/supabase/repository/subscriptionRepository";
-import { getLimits, formatLimit } from "@/lib/plans/limits";
+import { getLimits } from "@/lib/plans/limits";
 import { getCurrentPlanLabel, isFreeUser } from "@/services/plans/subscriptionService";
-import type { CreateGoalPayload, Goal, GoalCategory, GoalPriority, GoalStatus } from "@/lib/types";
+import type { CreateGoalPayload, Goal } from "@/lib/types";
 import type { PlanId } from "@/lib/types";
 
 // ── Read ─────────────────────────────────────────────────────
@@ -42,7 +40,6 @@ export async function fetchGoalDetail(goalId: string, userId: string) {
 
 export interface GoalPlanInfo {
   goalCapability: { allowed: boolean; reason?: string; current: number; limit: number };
-  goalLinking: boolean;
   limits: { goals: number; goalMilestones: number };
   planLabel: string;
   isFree: boolean;
@@ -59,7 +56,6 @@ export async function fetchGoalPlanInfo(userId: string): Promise<GoalPlanInfo> {
 
   return {
     goalCapability,
-    goalLinking: limits.goalLinking,
     limits: { goals: limits.goals, goalMilestones: limits.goalMilestones },
     planLabel: getCurrentPlanLabel(plan),
     isFree: isFreeUser(plan),
@@ -108,12 +104,12 @@ export async function addMilestoneAction(
   dueDate?: string,
 ) {
   if (!title?.trim()) {
-    return { success: false as const, error: "El título del hito es obligatorio." };
+    return { success: false as const, error: "El título de la submeta es obligatorio." };
   }
   try {
     return await addMilestone(goalId, userId, title, dueDate);
   } catch {
-    return { success: false as const, error: "Error al agregar el hito." };
+    return { success: false as const, error: "Error al agregar la submeta." };
   }
 }
 
@@ -121,7 +117,7 @@ export async function toggleMilestoneAction(milestoneId: string, completed: bool
   try {
     return await toggleMilestone(milestoneId, completed);
   } catch {
-    return { success: false as const, error: "Error al actualizar el hito." };
+    return { success: false as const, error: "Error al actualizar la submeta." };
   }
 }
 
@@ -129,40 +125,38 @@ export async function deleteMilestoneAction(milestoneId: string) {
   try {
     return await deleteMilestone(milestoneId);
   } catch {
-    return { success: false as const, error: "Error al eliminar el hito." };
+    return { success: false as const, error: "Error al eliminar la submeta." };
   }
 }
 
-// ── Linking ───────────────────────────────────────────────────
+// ── Milestone steps ───────────────────────────────────────────
 
-export async function linkHabitAction(goalId: string, habitId: string, userId: string) {
+export async function addMilestoneStepAction(
+  milestoneId: string,
+  title: string,
+) {
+  if (!title?.trim()) {
+    return { success: false as const, error: "El título del paso es obligatorio." };
+  }
   try {
-    return await linkHabitToGoal(goalId, habitId, userId);
+    return await addMilestoneStep(milestoneId, title);
   } catch {
-    return { success: false as const, error: "Error al vincular el hábito." };
+    return { success: false as const, error: "Error al agregar el paso." };
   }
 }
 
-export async function unlinkHabitAction(goalHabitId: string) {
+export async function toggleMilestoneStepAction(stepId: string, completed: boolean) {
   try {
-    return await unlinkHabitFromGoal(goalHabitId);
+    return await toggleMilestoneStep(stepId, completed);
   } catch {
-    return { success: false as const, error: "Error al desvincular el hábito." };
+    return { success: false as const, error: "Error al actualizar el paso." };
   }
 }
 
-export async function linkChallengeAction(goalId: string, challengeId: string, userId: string) {
+export async function deleteMilestoneStepAction(stepId: string) {
   try {
-    return await linkChallengeToGoal(goalId, challengeId, userId);
+    return await deleteMilestoneStep(stepId);
   } catch {
-    return { success: false as const, error: "Error al vincular el reto." };
-  }
-}
-
-export async function unlinkChallengeAction(goalChallengeId: string) {
-  try {
-    return await unlinkChallengeFromGoal(goalChallengeId);
-  } catch {
-    return { success: false as const, error: "Error al desvincular el reto." };
+    return { success: false as const, error: "Error al eliminar el paso." };
   }
 }

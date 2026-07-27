@@ -1,6 +1,6 @@
 "use client";
 
-import type { Goal, Habit, Challenge } from "@/lib/types";
+import type { Goal } from "@/lib/types";
 import type { GoalPlanInfo } from "@/app/actions/goals/goalActions";
 import { useState } from "react";
 import { Plus, Lock, Target, CheckCircle2, Flame, PauseCircle } from "lucide-react";
@@ -19,14 +19,10 @@ function calcProgressPct(goal: Goal): number {
 export default function GoalsList({
   goals,
   planInfo,
-  habits,
-  challenges,
   userId,
 }: {
   goals: Goal[];
   planInfo: GoalPlanInfo;
-  habits: Habit[];
-  challenges: Challenge[];
   userId: string;
 }) {
   const [filter, setFilter] = useState<FilterStatus>("all");
@@ -85,7 +81,8 @@ export default function GoalsList({
             </span>
           </div>
           <p className="mt-2 max-w-lg text-sm text-text-muted">
-            Define lo que quieres lograr, divide el camino en hitos y conecta tus hábitos y retos.
+            La mejor forma de cumplir una meta grande es dividirla en submetas claras.
+            Domina cada paso y el progreso llega solo.
           </p>
         </div>
 

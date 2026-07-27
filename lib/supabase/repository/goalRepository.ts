@@ -1,6 +1,7 @@
 import type {
   Goal,
   GoalMilestone,
+  GoalMilestoneStep,
   GoalHabit,
   GoalChallenge,
 } from "@/lib/types";
@@ -107,6 +108,77 @@ export const goalRepository = {
       .from("goal_milestones")
       .delete()
       .eq("id", milestoneId);
+
+    if (error) throw new Error(error.message);
+    return { success: true };
+  },
+
+  async findMilestoneById(milestoneId: string): Promise<GoalMilestone | null> {
+    const { data, error } = await supabase
+      .from("goal_milestones")
+      .select("*")
+      .eq("id", milestoneId)
+      .single();
+
+    if (error) return null;
+    return data as GoalMilestone;
+  },
+
+  // ── Milestone steps ─────────────────────────────────────────
+
+  async findStepsByMilestone(milestoneId: string): Promise<GoalMilestoneStep[]> {
+    const { data, error } = await supabase
+      .from("goal_milestone_steps")
+      .select("*")
+      .eq("milestone_id", milestoneId)
+      .order("created_at", { ascending: true });
+
+    if (error) throw error;
+    return (data ?? []) as GoalMilestoneStep[];
+  },
+
+  async createStep(step: Omit<GoalMilestoneStep, "id" | "created_at">) {
+    const { data, error } = await supabase
+      .from("goal_milestone_steps")
+      .insert([step])
+      .select()
+      .single();
+
+    if (error) throw new Error(error.message);
+    return { success: true, data: data as GoalMilestoneStep };
+  },
+
+  async findStepById(stepId: string): Promise<GoalMilestoneStep | null> {
+    const { data, error } = await supabase
+      .from("goal_milestone_steps")
+      .select("*")
+      .eq("id", stepId)
+      .single();
+
+    if (error) return null;
+    return data as GoalMilestoneStep;
+  },
+
+  async updateStep(
+    stepId: string,
+    fields: Partial<Pick<GoalMilestoneStep, "title" | "completed">>,
+  ) {
+    const { data, error } = await supabase
+      .from("goal_milestone_steps")
+      .update(fields)
+      .eq("id", stepId)
+      .select()
+      .single();
+
+    if (error) throw new Error(error.message);
+    return { success: true, data: data as GoalMilestoneStep };
+  },
+
+  async deleteStep(stepId: string) {
+    const { error } = await supabase
+      .from("goal_milestone_steps")
+      .delete()
+      .eq("id", stepId);
 
     if (error) throw new Error(error.message);
     return { success: true };

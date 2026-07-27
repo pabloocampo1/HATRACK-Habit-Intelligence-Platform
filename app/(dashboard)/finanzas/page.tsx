@@ -4,10 +4,12 @@ import {
   ArrowLeftRight,
   Tags,
   CalendarClock,
-  Gauge,
   Target,
   LineChart,
 } from "lucide-react";
+import { getFinanceOverviewAction } from "@/app/actions/finance/financeActions";
+import { getCurrentUser } from "@/services/authService";
+import { redirect } from "next/navigation";
 
 const modules = [
   {
@@ -39,13 +41,6 @@ const modules = [
     icon: CalendarClock,
   },
   {
-    href: "/finanzas/presupuestos",
-    title: "Presupuestos",
-    subtitle: "Budget",
-    body: "Límites de gasto por categoría o periodo.",
-    icon: Gauge,
-  },
-  {
     href: "/finanzas/metas",
     title: "Metas de ahorro",
     subtitle: "Savings / Goals",
@@ -61,7 +56,12 @@ const modules = [
   },
 ] as const;
 
-export default function FinanzasInicioPage() {
+export default async function FinanzasInicioPage() {
+  const user = await getCurrentUser();
+  if (!user?.id) redirect("/login");
+
+  const overview = await getFinanceOverviewAction(user.id);
+
   return (
     <div className="space-y-8">
       <div>
@@ -70,9 +70,16 @@ export default function FinanzasInicioPage() {
         </h1>
         <p className="mt-1 max-w-2xl text-sm text-text-secondary leading-relaxed">
           Flujo modular: cuentas → transacciones (núcleo) → categorías,
-          obligaciones, presupuestos, metas y reportes. Entra a cada bloque
+          obligaciones, metas y reportes. Entra a cada bloque
           desde aquí o desde el menú lateral.
         </p>
+      </div>
+
+      <div className="grid gap-4 md:grid-cols-4">
+        <Kpi title="Saldo total" value={overview.metrics.balance} />
+        <Kpi title="Ingresos" value={overview.metrics.income} />
+        <Kpi title="Gastos" value={overview.metrics.expense} />
+        <Kpi title="Flujo neto" value={overview.metrics.cashflow} />
       </div>
 
       <ul className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
@@ -103,6 +110,17 @@ export default function FinanzasInicioPage() {
           ),
         )}
       </ul>
+    </div>
+  );
+}
+
+function Kpi({ title, value }: { title: string; value: number }) {
+  return (
+    <div className="rounded-2xl border border-border-subtle bg-surface-card p-4">
+      <p className="text-xs text-text-muted">{title}</p>
+      <p className="mt-1 text-2xl font-semibold text-text-primary">
+        ${Number(value).toLocaleString("es-CO")}
+      </p>
     </div>
   );
 }

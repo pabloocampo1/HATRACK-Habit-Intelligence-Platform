@@ -1,8 +1,8 @@
-# HaTrack — Personal OS
+# Cima — Personal OS
 
 > *No se trata de hacer más. Se trata de entender cómo estás viviendo.*
 
-HaTrack es un sistema de gestión de vida personal diseñado para personas que quieren medir, mejorar y dominar todas las áreas importantes de su vida desde un solo lugar.
+Cima es un sistema de gestión de vida personal diseñado para personas que quieren medir, mejorar y dominar todas las áreas importantes de su vida desde un solo lugar.
 
 No es una app de hábitos. Es un sistema operativo personal.
 
@@ -10,7 +10,7 @@ No es una app de hábitos. Es un sistema operativo personal.
 
 ## Qué es y para qué sirve
 
-La mayoría de las apps de productividad se quedan en lo superficial: marcar tareas, contar rachas, mostrar gráficas bonitas. HaTrack va más profundo.
+La mayoría de las apps de productividad se quedan en lo superficial: marcar tareas, contar rachas, mostrar gráficas bonitas. Cima va más profundo.
 
 El sistema responde preguntas reales:
 
@@ -62,7 +62,6 @@ Seguimiento de ingresos, gastos y flujo de dinero con:
 - Cuentas (Nequi, efectivo, bancaria, tarjeta)
 - Transacciones categorizadas
 - Obligaciones periódicas
-- Presupuestos por categoría
 - Metas de ahorro
 - Reportes
 
@@ -207,6 +206,6 @@ npm run build
 
 Este sistema nace de una premisa simple: **la motivación es temporal, los sistemas son permanentes**.
 
-HaTrack no te motiva. Te muestra en datos quién eres realmente, para que puedas decidir conscientemente quién quieres ser.
+Cima no te motiva. Te muestra en datos quién eres realmente, para que puedas decidir conscientemente quién quieres ser.
 
 ---

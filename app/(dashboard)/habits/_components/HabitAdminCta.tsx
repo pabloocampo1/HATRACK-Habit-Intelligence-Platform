@@ -2,15 +2,17 @@
 
 import { Settings2 } from "lucide-react";
 import { useState } from "react";
-import type { Habit } from "@/lib/types";
+import type { Habit, HabitCategory } from "@/lib/types";
 import HabitAdminModal from "./HabitAdminModal";
 
 export default function HabitAdminCta({
   habits,
   userId,
+  categories,
 }: {
   habits: Habit[];
   userId: string;
+  categories: HabitCategory[];
 }) {
   const [open, setOpen] = useState(false);
 
@@ -30,6 +32,7 @@ export default function HabitAdminCta({
         onClose={() => setOpen(false)}
         habits={habits}
         userId={userId}
+        categories={categories}
       />
     </>
   );

@@ -28,24 +28,34 @@ export default function DailyStats({
               label: "Habitos Completados hoy",
               subLabel: "Hábitos activos",
               value: `${todayLogs.filter((l) => l.completed).length}/${habits.length}`,
+              progress: habits.length
+                ? Math.round(
+                    (todayLogs.filter((l) => l.completed).length /
+                      habits.length) *
+                      100,
+                  )
+                : 0,
               sub: "Cantidad de hábitos que lograste completar hoy frente al total de hábitos activos que tenías definidos.",
             },
             {
               label: "Tiempo Total dedicado hoy",
               subLabel: "Dedicación hoy",
               value: `${todayStats?.total_time || 0}m`,
+              progress: Math.round(todayStats?.dedicacion ?? 0),
               sub: "Tiempo total que invertiste hoy en tus hábitos. Refleja el esfuerzo acumulado sin importar si completaste todos o no.",
             },
             {
               label: "Dedicación de hoy",
               subLabel: "Nivel de enfoque",
-              value: `${todayStats?.dedicacion || 0}%`,
+              value: `${Math.round(todayStats?.dedicacion ?? 0)}%`,
+              progress: Math.round(todayStats?.dedicacion ?? 0),
               sub: "Qué tanto tiempo cumpliste respecto al que planeaste invertir hoy. Mide tu nivel real de compromiso con tus hábitos.",
             },
             {
               label: "Disciplina de hoy",
               subLabel: "Progreso diario",
-              value: `${todayStats?.disciplina || 0}%`,
+              value: `${Math.round(todayStats?.disciplina ?? 0)}%`,
+              progress: Math.round(todayStats?.disciplina ?? 0),
               sub: "Porcentaje de hábitos que completaste hoy. Indica qué tan bien ejecutaste lo que te propusiste.",
             },
           ].map((kpi, i) => (
@@ -60,7 +70,7 @@ export default function DailyStats({
               </p>
 
               <div className="mt-4 flex items-baseline gap-1">
-                <p className="text-4xl font-black tracking-tight text-brand-forest">
+                <p className="text-4xl font-black tracking-tight text-brand-forest tabular-nums">
                   {kpi.value}
                 </p>
               </div>
@@ -68,7 +78,7 @@ export default function DailyStats({
               <div className="absolute bottom-0 left-8 right-8 h-1 bg-emerald-900/5 rounded-full overflow-hidden">
                 <div
                   className="h-full bg-emerald-900/20 transition-all duration-1000"
-                  style={{ width: `${todayStats?.disciplina || 0}%` }}
+                  style={{ width: `${kpi.progress ?? 0}%` }}
                 />
               </div>
 

@@ -17,10 +17,8 @@ export interface PlanLimits {
   historyDays: number;
   /** Max active personal goals */
   goals: number;
-  /** Max milestones per goal */
+  /** Max sub-goals (submetas) per goal */
   goalMilestones: number;
-  /** Whether PRO-only features (habit/challenge linking) are enabled */
-  goalLinking: boolean;
   /** Human-readable plan name */
   label: string;
   /** Whether this plan has access to premium features */
@@ -35,8 +33,7 @@ export const PLAN_LIMITS: Record<PlanId, PlanLimits> = {
     logsPerHabitPerDay: 1,
     historyDays: 30,
     goals: 5,
-    goalMilestones: 3,
-    goalLinking: false,
+    goalMilestones: 6,
     label: "Gratuito",
     isPremium: false,
   },
@@ -48,7 +45,6 @@ export const PLAN_LIMITS: Record<PlanId, PlanLimits> = {
     historyDays: Infinity,
     goals: Infinity,
     goalMilestones: Infinity,
-    goalLinking: true,
     label: "Pro",
     isPremium: true,
   },
@@ -60,7 +56,6 @@ export const PLAN_LIMITS: Record<PlanId, PlanLimits> = {
     historyDays: Infinity,
     goals: Infinity,
     goalMilestones: Infinity,
-    goalLinking: true,
     label: "Pro+",
     isPremium: true,
   },
@@ -72,7 +67,6 @@ export const PLAN_LIMITS: Record<PlanId, PlanLimits> = {
     historyDays: Infinity,
     goals: Infinity,
     goalMilestones: Infinity,
-    goalLinking: true,
     label: "Lifetime",
     isPremium: true,
   },

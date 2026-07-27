@@ -1,7 +1,7 @@
 "use client";
 
 import { X } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { createPortal } from "react-dom";
 
 export default function ModalShell({
@@ -15,10 +15,7 @@ export default function ModalShell({
   children: React.ReactNode;
   onClose: () => void;
 }) {
-  const [mounted, setMounted] = useState(false);
-
   useEffect(() => {
-    setMounted(true);
     const prev = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     return () => {
@@ -26,9 +23,7 @@ export default function ModalShell({
     };
   }, []);
 
-  if (!mounted || typeof document === "undefined") {
-    return null;
-  }
+  if (typeof document === "undefined") return null;
 
   return createPortal(
     <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 sm:p-6">

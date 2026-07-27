@@ -5,6 +5,7 @@ import {
   getAllHabitsLogsByMonth,
   getLastWeekHabitsLogsByUser,
   getTodayHabitsLogsByUser,
+  removeTodayHabitLogs,
   save,
 } from "@/services/habitsLogsService";
 
@@ -53,5 +54,20 @@ export async function saveHabitLog(
     return result;
   } catch {
     return { success: false as const, error: "Error al registrar actividad" };
+  }
+}
+
+export async function deleteTodayHabitLogs(habitId: string, userId: string) {
+  try {
+    const result = await removeTodayHabitLogs(habitId, userId);
+    if (!result.success) {
+      return {
+        success: false as const,
+        error: result.error ?? "No se pudo eliminar la sesión.",
+      };
+    }
+    return result;
+  } catch {
+    return { success: false as const, error: "Error al eliminar la sesión" };
   }
 }

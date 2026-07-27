@@ -6,10 +6,8 @@ import type {
   Goal,
   GoalDetail,
   GoalMilestone,
+  GoalMilestoneStep,
   CreateGoalPayload,
-  GoalPriority,
-  GoalStatus,
-  GoalCategory,
 } from "@/lib/types";
 
 // ── Progress calculation ─────────────────────────────────────
@@ -23,6 +21,14 @@ function calcProgress(
     return Math.round((done / milestones.length) * 100);
   }
   return progressManual ?? 0;
+}
+
+function milestoneCompletedFromSteps(
+  milestone: GoalMilestone,
+  steps: GoalMilestoneStep[],
+): boolean {
+  if (steps.length === 0) return milestone.completed;
+  return steps.every((step) => step.completed);
 }
 
 function calcDaysRemaining(targetDate: string | null | undefined): number | null {
@@ -72,10 +78,10 @@ export async function canAddMilestone(userId: string, goalId: string) {
     return {
       allowed: false as const,
       reason:
-        `Has alcanzado el límite de ${formatLimit(limit)} hito${limit === 1 ? "" : "s"} por meta ` +
+        `Has alcanzado el límite de ${formatLimit(limit)} submeta${limit === 1 ? "" : "s"} por meta ` +
         `del plan ${getCurrentPlanLabel(subscription.plan)}. ` +
         (isFreeUser(subscription.plan)
-          ? "Actualiza a Pro para agregar hitos ilimitados."
+          ? "Actualiza a Pro para crear submetas ilimitadas."
           : ""),
       current: count,
       limit,
@@ -85,47 +91,70 @@ export async function canAddMilestone(userId: string, goalId: string) {
   return { allowed: true as const, current: count, limit };
 }
 
-export async function canLinkGoalItems(userId: string) {
-  const subscription = await subscriptionRepository.findByUser(userId);
-  const limits = getLimits(subscription.plan);
-
-  if (!limits.goalLinking) {
-    return {
-      allowed: false as const,
-      reason: `Vincular hábitos y retos a una meta es una función exclusiva del plan Pro. Actualiza para desbloquearla.`,
-    };
-  }
-
-  return { allowed: true as const };
-}
-
 // ── Read ─────────────────────────────────────────────────────
 
 export async function getGoalsByUser(userId: string): Promise<Goal[]> {
-  return goalRepository.findAllByUser(userId);
+  const goals = await goalRepository.findAllByUser(userId);
+
+  const progressByGoal = await Promise.all(
+    goals.map(async (goal) => {
+      const milestones = await goalRepository.findMilestonesByGoal(goal.id!);
+      const milestonesWithStatus = await Promise.all(
+        milestones.map(async (milestone) => {
+          const steps = await goalRepository.findStepsByMilestone(milestone.id!);
+          return {
+            ...milestone,
+            completed: milestoneCompletedFromSteps(milestone, steps),
+          };
+        }),
+      );
+      return {
+        goalId: goal.id!,
+        progress: calcProgress(milestonesWithStatus, goal.progress_manual),
+      };
+    }),
+  );
+
+  const progressMap = new Map(
+    progressByGoal.map((item) => [item.goalId, item.progress]),
+  );
+
+  return goals.map((goal) => ({
+    ...goal,
+    progress_manual: progressMap.get(goal.id!) ?? 0,
+  }));
 }
 
 export async function getGoalDetail(
   goalId: string,
   userId: string,
 ): Promise<GoalDetail | null> {
-  const [goal, milestones, linkedHabits, linkedChallenges] = await Promise.all([
+  const [goal, milestones] = await Promise.all([
     goalRepository.findById(goalId),
     goalRepository.findMilestonesByGoal(goalId),
-    goalRepository.findLinkedHabits(goalId),
-    goalRepository.findLinkedChallenges(goalId),
   ]);
 
   if (!goal || goal.user_id !== userId) return null;
 
-  const progressPct = calcProgress(milestones, goal.progress_manual);
+  const milestonesWithSteps = await Promise.all(
+    milestones.map(async (milestone) => {
+      const steps = await goalRepository.findStepsByMilestone(milestone.id!);
+      return {
+        ...milestone,
+        steps,
+        completed: milestoneCompletedFromSteps(milestone, steps),
+      };
+    }),
+  );
+
+  const progressPct = calcProgress(milestonesWithSteps, goal.progress_manual);
   const daysRemaining = calcDaysRemaining(goal.target_date);
 
   return {
     ...goal,
-    milestones,
-    linkedHabits,
-    linkedChallenges,
+    milestones: milestonesWithSteps,
+    linkedHabits: [],
+    linkedChallenges: [],
     progressPct,
     daysRemaining,
     isOverdue: daysRemaining !== null && daysRemaining < 0 && goal.status === "active",
@@ -197,45 +226,127 @@ export async function addMilestone(
 }
 
 export async function toggleMilestone(milestoneId: string, completed: boolean) {
-  return goalRepository.updateMilestone(milestoneId, { completed });
+  const steps = await goalRepository.findStepsByMilestone(milestoneId);
+  if (steps.length > 0) {
+    return {
+      success: false as const,
+      error:
+        "Esta submeta tiene pasos. Completa sus pasos para terminarla.",
+    };
+  }
+
+  const result = await goalRepository.updateMilestone(milestoneId, { completed });
+  await syncGoalCompletionFromMilestones(result.data.goal_id);
+
+  return result;
 }
 
 export async function deleteMilestone(milestoneId: string) {
-  return goalRepository.deleteMilestone(milestoneId);
+  const milestone = await goalRepository.findMilestoneById(milestoneId);
+  if (!milestone) {
+    return { success: false as const, error: "Submeta no encontrada." };
+  }
+  const result = await goalRepository.deleteMilestone(milestoneId);
+  await syncGoalCompletionFromMilestones(milestone.goal_id);
+  return result;
 }
 
-// ── Linking ───────────────────────────────────────────────────
+// ── Milestone steps ───────────────────────────────────────────
 
-export async function linkHabitToGoal(
-  goalId: string,
-  habitId: string,
-  userId: string,
-) {
-  const capability = await canLinkGoalItems(userId);
-  if (!capability.allowed) {
-    return { success: false as const, error: capability.reason };
+export async function addMilestoneStep(milestoneId: string, title: string) {
+  const milestone = await goalRepository.findMilestoneById(milestoneId);
+  if (!milestone) {
+    return { success: false as const, error: "Submeta no encontrada." };
   }
 
-  return goalRepository.linkHabit(goalId, habitId);
+  const result = await goalRepository.createStep({
+    milestone_id: milestoneId,
+    title: title.trim(),
+    completed: false,
+  });
+
+  await goalRepository.updateMilestone(milestoneId, { completed: false });
+  await syncGoalCompletionFromMilestones(milestone.goal_id);
+  return result;
 }
 
-export async function unlinkHabitFromGoal(goalHabitId: string) {
-  return goalRepository.unlinkHabit(goalHabitId);
-}
-
-export async function linkChallengeToGoal(
-  goalId: string,
-  challengeId: string,
-  userId: string,
-) {
-  const capability = await canLinkGoalItems(userId);
-  if (!capability.allowed) {
-    return { success: false as const, error: capability.reason };
+export async function toggleMilestoneStep(stepId: string, completed: boolean) {
+  const step = await goalRepository.findStepById(stepId);
+  if (!step) {
+    return { success: false as const, error: "Paso no encontrado." };
   }
 
-  return goalRepository.linkChallenge(goalId, challengeId);
+  const result = await goalRepository.updateStep(stepId, { completed });
+  await syncMilestoneCompletionFromSteps(step.milestone_id);
+  return result;
 }
 
-export async function unlinkChallengeFromGoal(goalChallengeId: string) {
-  return goalRepository.unlinkChallenge(goalChallengeId);
+export async function deleteMilestoneStep(stepId: string) {
+  const step = await goalRepository.findStepById(stepId);
+  if (!step) {
+    return { success: false as const, error: "Paso no encontrado." };
+  }
+
+  const result = await goalRepository.deleteStep(stepId);
+  await syncMilestoneCompletionFromSteps(step.milestone_id);
+  return result;
 }
+
+async function syncMilestoneCompletionFromSteps(milestoneId: string) {
+  const milestone = await goalRepository.findMilestoneById(milestoneId);
+  if (!milestone) return;
+
+  const steps = await goalRepository.findStepsByMilestone(milestoneId);
+  if (steps.length === 0) {
+    await syncGoalCompletionFromMilestones(milestone.goal_id);
+    return;
+  }
+
+  const shouldBeCompleted = steps.every((step) => step.completed);
+  if (milestone.completed !== shouldBeCompleted) {
+    await goalRepository.updateMilestone(milestoneId, {
+      completed: shouldBeCompleted,
+    });
+  }
+
+  await syncGoalCompletionFromMilestones(milestone.goal_id);
+}
+
+async function syncGoalCompletionFromMilestones(goalId: string) {
+  const [goal, milestones] = await Promise.all([
+    goalRepository.findById(goalId),
+    goalRepository.findMilestonesByGoal(goalId),
+  ]);
+  if (!goal) return;
+
+  const milestonesWithStatus = await Promise.all(
+    milestones.map(async (milestone) => {
+      const steps = await goalRepository.findStepsByMilestone(milestone.id!);
+      return {
+        ...milestone,
+        completed: milestoneCompletedFromSteps(milestone, steps),
+      };
+    }),
+  );
+
+  const hasSubGoals = milestonesWithStatus.length > 0;
+  const allDone =
+    hasSubGoals && milestonesWithStatus.every((milestone) => milestone.completed);
+  const progress = calcProgress(milestonesWithStatus, goal.progress_manual);
+
+  if (allDone && goal.status !== "completed") {
+    await goalRepository.update(goalId, { status: "completed", progress_manual: 100 });
+    return;
+  }
+
+  if (!allDone && goal.status === "completed") {
+    await goalRepository.update(goalId, {
+      status: "active",
+      progress_manual: progress,
+    });
+    return;
+  }
+
+  await goalRepository.update(goalId, { progress_manual: progress });
+}
+

@@ -1,7 +1,7 @@
 {
-  "name": "Hatrack — Performance Tracker",
-  "short_name": "Hatrack",
-  "description": "Transforma tus hábitos y finanzas en métricas cuantificables.",
+  "name": "Cima — Personal OS",
+  "short_name": "Cima",
+  "description": "Sistema operativo personal para hábitos, metas, retos y finanzas.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",

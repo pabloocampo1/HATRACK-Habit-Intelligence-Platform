@@ -30,11 +30,6 @@ const tabs = [
     match: (p: string) => p.startsWith("/finanzas/obligaciones"),
   },
   {
-    href: "/finanzas/presupuestos",
-    label: "Presupuestos",
-    match: (p: string) => p.startsWith("/finanzas/presupuestos"),
-  },
-  {
     href: "/finanzas/metas",
     label: "Metas",
     match: (p: string) => p.startsWith("/finanzas/metas"),
