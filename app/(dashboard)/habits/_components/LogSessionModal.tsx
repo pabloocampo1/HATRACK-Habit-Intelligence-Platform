@@ -1,14 +1,14 @@
 "use client";
 
 import { saveHabitLog } from "@/app/actions/habitLogsActions";
+import { bogotaTodayYMD } from "@/lib/dates/bogota";
 import type { Habit, HabitLog } from "@/lib/types";
 import { X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useId, useState } from "react";
 
 function todayLocalISO() {
-  const d = new Date();
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+  return bogotaTodayYMD();
 }
 
 const MENTAL_OPTIONS = [

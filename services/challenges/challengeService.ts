@@ -1,5 +1,6 @@
 import { challengeRepository } from "@/lib/supabase/repository/challengeRepository";
 import { habitLogRepository } from "@/lib/supabase/repository/habitLogRepository";
+import { bogotaTodayYMD, bogotaYMDToDate } from "@/lib/dates/bogota";
 import {
   challengeOutcomeStatus,
 } from "@/lib/challenges/challengeOutcome";
@@ -15,8 +16,7 @@ import type {
 } from "@/lib/types";
 
 function todayISO(): string {
-  const d = new Date();
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+  return bogotaTodayYMD();
 }
 
 function computeCompletionRate(
@@ -25,8 +25,8 @@ function computeCompletionRate(
   logs: ChallengeLog[],
 ): number {
   const today = todayISO();
-  const startMs = new Date(challenge.start_date + "T00:00:00").getTime();
-  const nowMs = new Date(today + "T00:00:00").getTime();
+  const startMs = bogotaYMDToDate(challenge.start_date).getTime();
+  const nowMs = bogotaYMDToDate(today).getTime();
   const daysElapsed = Math.min(
     challenge.duration_days,
     Math.max(0, Math.floor((nowMs - startMs) / 86_400_000) + 1),
@@ -130,8 +130,8 @@ export async function getChallengeDetail(
   const completionRate = computeCompletionRate(reconciledChallenge, habits, logs);
 
   // Days elapsed
-  const startMs = new Date(reconciledChallenge.start_date + "T00:00:00").getTime();
-  const nowMs = new Date(today + "T00:00:00").getTime();
+  const startMs = bogotaYMDToDate(reconciledChallenge.start_date).getTime();
+  const nowMs = bogotaYMDToDate(today).getTime();
   const daysElapsed = Math.min(
     reconciledChallenge.duration_days,
     Math.max(0, Math.floor((nowMs - startMs) / 86_400_000) + 1),

@@ -2,6 +2,7 @@
 
 import type { Goal } from "@/lib/types";
 import type { GoalPlanInfo } from "@/app/actions/goals/goalActions";
+import { bogotaTodayYMD } from "@/lib/dates/bogota";
 import { useState } from "react";
 import { Plus, Lock, Target, CheckCircle2, Flame, PauseCircle } from "lucide-react";
 import GoalCard from "./GoalCard";
@@ -27,6 +28,7 @@ export default function GoalsList({
 }) {
   const [filter, setFilter] = useState<FilterStatus>("all");
   const [createOpen, setCreateOpen] = useState(false);
+  const [todayYMD] = useState(() => bogotaTodayYMD());
 
   const { goalCapability, isFree, limits, planLabel } = planInfo;
   const atLimit = !goalCapability.allowed;
@@ -39,7 +41,7 @@ export default function GoalsList({
   const completedCount  = goals.filter((g) => g.status === "completed").length;
   const overdueCount    = goals.filter((g) => {
     if (g.status !== "active" || !g.target_date) return false;
-    return new Date(g.target_date).getTime() < Date.now();
+    return g.target_date < todayYMD;
   }).length;
 
   const kpis = [

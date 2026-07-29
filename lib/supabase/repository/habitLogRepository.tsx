@@ -1,6 +1,7 @@
 // Tu cliente de Supabase
 
 import { HabitLog } from "@/lib/types";
+import { bogotaTodayYMD } from "@/lib/dates/bogota";
 import { supabase } from "../config/supabaseClient";
 
 export const habitLogRepository = {
@@ -82,14 +83,11 @@ export const habitLogRepository = {
       return { success: false as const, error: "Debes elegir un hábito." };
     }
 
-    const now = new Date();
-    const todayLocal = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
-
     const logDate =
       typeof habitLog.log_date === "string" &&
       /^\d{4}-\d{2}-\d{2}/.test(habitLog.log_date)
         ? habitLog.log_date.slice(0, 10)
-        : todayLocal;
+        : bogotaTodayYMD();
 
     const habitLogPayload = {
       habit_id: habitId,

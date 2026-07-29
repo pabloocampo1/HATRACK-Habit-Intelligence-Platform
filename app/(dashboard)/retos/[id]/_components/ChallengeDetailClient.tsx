@@ -6,6 +6,7 @@ import { ArrowLeft, AlertTriangle } from "lucide-react";
 import Link from "next/link";
 import { abandonChallengeAction } from "@/app/actions/challenges/challengeActions";
 import { challengeStatusLabel } from "@/lib/challenges/challengeOutcome";
+import { bogotaTodayYMD } from "@/lib/dates/bogota";
 import type { ChallengeDetail } from "@/services/challenges/challengeService";
 import type { ChallengeHabit, ChallengeLog } from "@/lib/types";
 import ChallengeStats from "./ChallengeStats";
@@ -14,8 +15,7 @@ import ChallengeHabitCard from "./ChallengeHabitCard";
 import ChallengeFinishedBanner from "./ChallengeFinishedBanner";
 
 function todayISO() {
-  const d = new Date();
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+  return bogotaTodayYMD();
 }
 
 export default function ChallengeDetailClient({

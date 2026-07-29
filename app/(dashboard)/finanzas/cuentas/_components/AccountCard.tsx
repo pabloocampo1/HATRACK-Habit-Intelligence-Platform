@@ -1,4 +1,5 @@
-import { Eye, EyeOff, Pencil } from "lucide-react";
+import { ArrowLeftRight, Eye, EyeOff, Pencil } from "lucide-react";
+import Link from "next/link";
 import type { Account } from "@/lib/types";
 import { ACCOUNT_TYPE_LABELS } from "../accounts.constants";
 import { btnSecondary } from "../cuentas-ui";
@@ -69,21 +70,36 @@ export default function AccountCard({
           {new Date(a.updated_at).toLocaleString("es-CO", {
             dateStyle: "medium",
             timeStyle: "short",
+            timeZone: "America/Bogota",
           })}
         </p>
       </div>
 
       <div className="mt-6 flex flex-wrap gap-2 border-t border-brand-forest/10 pt-6">
-        <button type="button" onClick={onEdit} className={`${btnSecondary} flex-1`}>
+        <Link
+          href={`/finanzas/cuentas/${a.account_id}/transacciones`}
+          className={`${btnSecondary} flex-1`}
+        >
+          <ArrowLeftRight className="size-5" strokeWidth={2} />
+          Ver transacciones
+        </Link>
+        {/* Protege la cuenta de efectivo: no permitir renombrar ni desactivar desde la UI */ }
+        <button
+          type="button"
+          onClick={onEdit}
+          className={`${btnIcon} ${a.type === "CASH" ? "opacity-60 pointer-events-none" : ""}`}
+          title={a.type === "CASH" ? "Esta cuenta no se puede editar" : "Editar"}
+          disabled={a.type === "CASH"}
+        >
           <Pencil className="size-5" strokeWidth={2} />
-          Editar
         </button>
         {a.is_active ? (
           <button
             type="button"
             onClick={onDeactivate}
-            className={`${btnIcon} text-text-secondary hover:border-amber-200/80 hover:bg-amber-50 hover:text-amber-900`}
-            title="Desactivar"
+            className={`${btnIcon} text-text-secondary hover:border-amber-200/80 hover:bg-amber-50 hover:text-amber-900 ${a.type === "CASH" ? "opacity-60 pointer-events-none" : ""}`}
+            title={a.type === "CASH" ? "Esta cuenta no se puede desactivar" : "Desactivar"}
+            disabled={a.type === "CASH"}
           >
             <EyeOff className="size-5" strokeWidth={2} />
           </button>

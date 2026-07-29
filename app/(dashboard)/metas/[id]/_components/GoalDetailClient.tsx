@@ -2,6 +2,7 @@
 
 import type { GoalDetail, GoalMilestone, GoalMilestoneStep, GoalStatus } from "@/lib/types";
 import type { GoalPlanInfo } from "@/app/actions/goals/goalActions";
+import { bogotaTodayYMD, diffDaysBogotaYMD } from "@/lib/dates/bogota";
 import {
   addMilestoneAction,
   toggleMilestoneAction,
@@ -282,7 +283,7 @@ function AddMilestoneForm({
         onChange={(e) => setDueDate(e.target.value)}
         className="w-full rounded-xl border border-border-default bg-surface-card px-3 py-2 text-sm text-text-primary outline-none focus:border-brand-forest/40"
         disabled={isPending}
-        min={new Date().toISOString().split("T")[0]}
+        min={bogotaTodayYMD()}
       />
       {error && <p className="text-xs text-red-400">{error}</p>}
       <div className="flex gap-2">
@@ -333,6 +334,7 @@ export default function GoalDetailClient({
   const [editDesc, setEditDesc] = useState(goal.description ?? "");
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [todayYMD] = useState(() => bogotaTodayYMD());
 
   const { limits } = planInfo;
 
@@ -342,7 +344,7 @@ export default function GoalDetailClient({
     : (goal.progress_manual ?? 0);
 
   const daysRemaining = goal.target_date
-    ? Math.ceil((new Date(goal.target_date).getTime() - Date.now()) / 86_400_000)
+    ? diffDaysBogotaYMD(todayYMD, goal.target_date)
     : null;
   const isOverdue = daysRemaining !== null && daysRemaining < 0 && goal.status === "active";
   const status = STATUS_CONFIG[goal.status] ?? STATUS_CONFIG.active;

@@ -6,6 +6,7 @@ import {
   CalendarClock,
   Target,
   LineChart,
+  Zap,
 } from "lucide-react";
 import { getFinanceOverviewAction } from "@/app/actions/finance/financeActions";
 import { getCurrentUser } from "@/services/authService";
@@ -15,43 +16,50 @@ const modules = [
   {
     href: "/finanzas/cuentas",
     title: "Cuentas",
-    subtitle: "Account",
-    body: "Dónde está tu dinero: bancos, efectivo, billeteras digitales.",
+    subtitle: "Billeteras",
+    body: "Registra dónde tienes el dinero (banco, efectivo, Nequi, ahorros). Cada transacción y aporte usa estas cuentas.",
     icon: Landmark,
+  },
+  {
+    href: "/finanzas/gastos-fijos",
+    title: "Gastos fijos",
+    subtitle: "Recurrentes",
+    body: "Plantillas para pagos que se repiten: arriendo, suscripciones, servicios. Regístralos con un clic y quedan en transacciones.",
+    icon: Zap,
   },
   {
     href: "/finanzas/transacciones",
     title: "Transacciones",
-    subtitle: "Core",
-    body: "Todos los movimientos: ingresos, gastos y transferencias entre cuentas.",
+    subtitle: "Movimientos",
+    body: "Historial de ingresos, gastos y transferencias. También aparecen pagos de deudas y aportes a metas.",
     icon: ArrowLeftRight,
   },
   {
-    href: "/finanzas/categorias",
-    title: "Categorías",
-    subtitle: "Category",
-    body: "Clasifica transacciones para ver en qué ganas o gastas.",
-    icon: Tags,
-  },
-  {
-    href: "/finanzas/obligaciones",
-    title: "Obligaciones",
-    subtitle: "Obligation",
-    body: "Compromisos futuros: arriendo, suscripciones, deudas, servicios.",
+    href: "/finanzas/deudas",
+    title: "Deudas pendientes",
+    subtitle: "Compromisos",
+    body: "Deudas y pagos futuros: créditos, préstamos, cuotas. Registra cada pago y descuenta de tu cuenta automáticamente.",
     icon: CalendarClock,
   },
   {
     href: "/finanzas/metas",
     title: "Metas de ahorro",
-    subtitle: "Savings / Goals",
-    body: "Objetivos financieros y seguimiento.",
+    subtitle: "Objetivos",
+    body: "Define metas (viaje, emergencia) y aporta desde otras cuentas. Cada aporte mueve dinero y crea una transacción.",
     icon: Target,
+  },
+  {
+    href: "/finanzas/categorias",
+    title: "Categorías",
+    subtitle: "Clasificación",
+    body: "Etiquetas como comida, transporte o salario para entender en qué se va o entra tu plata.",
+    icon: Tags,
   },
   {
     href: "/finanzas/reportes",
     title: "Reportes",
-    subtitle: "Reporting",
-    body: "Métricas y análisis: respuestas clave sobre tu dinero.",
+    subtitle: "Resumen",
+    body: "Panorama de saldo, ingresos, gastos, metas activas y últimos movimientos para decidir con datos.",
     icon: LineChart,
   },
 ] as const;
@@ -69,9 +77,8 @@ export default async function FinanzasInicioPage() {
           Vida financiera
         </h1>
         <p className="mt-1 max-w-2xl text-sm text-text-secondary leading-relaxed">
-          Flujo modular: cuentas → transacciones (núcleo) → categorías,
-          obligaciones, metas y reportes. Entra a cada bloque
-          desde aquí o desde el menú lateral.
+          Administra tu dinero por módulos: crea cuentas, registra movimientos, controla deudas
+          pendientes, metas de ahorro y gastos fijos para organizar y planificar.
         </p>
       </div>
 

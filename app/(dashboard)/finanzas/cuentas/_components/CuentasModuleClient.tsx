@@ -60,6 +60,14 @@ export default function CuentasModuleClient({ userId, initialAccounts }: Props) 
 
   return (
     <div className="space-y-6">
+      <div className="rounded-2xl border border-border-subtle bg-surface-card p-5">
+        <h1 className="text-xl font-semibold text-text-primary">Cuentas</h1>
+        <p className="mt-1 max-w-xl text-sm text-text-secondary">
+          Cada cuenta representa un lugar donde guardas dinero. Los saldos se actualizan
+          automáticamente cuando registras transacciones, transferencias o aportes a metas.
+        </p>
+      </div>
+
       <div className="grid gap-4 md:grid-cols-3">
         <div className="rounded-2xl border border-border-subtle bg-surface-card p-4">
           <p className="text-xs text-text-muted">Cuentas activas</p>
