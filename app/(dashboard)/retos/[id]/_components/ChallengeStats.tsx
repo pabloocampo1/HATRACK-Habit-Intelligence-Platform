@@ -1,4 +1,9 @@
 import { CalendarDays, CheckCircle2, Flame, Target, Trophy } from "lucide-react";
+import {
+  addDaysBogotaYMD,
+  bogotaTodayYMD,
+  bogotaYMDToDate,
+} from "@/lib/dates/bogota";
 import type { ChallengeDetail } from "@/services/challenges/challengeService";
 
 function Stat({ label, value, sub, icon }: { label: string; value: string | number; sub?: string; icon: React.ReactNode }) {
@@ -48,16 +53,14 @@ export default function ChallengeStats({ detail }: { detail: ChallengeDetail }) 
 
 function computeStreak(perfectDays: Set<string>, daysElapsed: number, startDate: string): number {
   let streak = 0;
-  const start = new Date(startDate + "T00:00:00");
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
+  const start = bogotaYMDToDate(startDate);
+  const today = bogotaTodayYMD();
 
-  let cur = new Date(today);
-  while (cur >= start) {
-    const key = cur.toISOString().slice(0, 10);
-    if (perfectDays.has(key)) { streak++; }
+  let cur = today;
+  while (bogotaYMDToDate(cur) >= start) {
+    if (perfectDays.has(cur)) { streak++; }
     else if (cur < today) break;
-    cur.setDate(cur.getDate() - 1);
+    cur = addDaysBogotaYMD(cur, -1);
   }
   return streak;
 }

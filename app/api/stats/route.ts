@@ -1,4 +1,5 @@
 import { supabase } from "@/lib/supabase/config/supabaseClient";
+import { daysAgoBogotaYMD } from "@/lib/dates/bogota";
 import { NextResponse } from "next/server";
 
 
@@ -29,10 +30,8 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: "Error al obtener hábitos" }, { status: 400 });
     }
 
-    // Obtener último mes de registros
-    const thirtyDaysAgo = new Date();
-    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-    const startDate = thirtyDaysAgo.toISOString().split("T")[0];
+    // Obtener último mes de registros según día calendario en Colombia.
+    const startDate = daysAgoBogotaYMD(30);
 
     const { data: logs, error: logsError } = await supabase
       .from("habit_logs")
@@ -65,9 +64,7 @@ export async function GET(request: Request) {
     const enfoque = Math.min(avgQuality, 100);
 
     // Crecimiento: comparación vs semana pasada
-    const lastWeek = new Date();
-    lastWeek.setDate(lastWeek.getDate() - 7);
-    const lastWeekStr = lastWeek.toISOString().split("T")[0];
+    const lastWeekStr = daysAgoBogotaYMD(7);
 
     const thisWeekLogs = logs.filter((log) => log.log_date > lastWeekStr);
     const thisWeekCompleted = thisWeekLogs.filter((log) => log.completed).length;

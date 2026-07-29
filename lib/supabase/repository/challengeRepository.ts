@@ -1,4 +1,5 @@
 import { supabase } from "../config/supabaseClient";
+import { addDaysBogotaYMD } from "@/lib/dates/bogota";
 import type {
   Challenge,
   ChallengeHabit,
@@ -33,9 +34,10 @@ export const challengeRepository = {
     userId: string,
     payload: CreateChallengePayload,
   ): Promise<{ success: true; data: Challenge } | { success: false; error: string }> {
-    const startDate = new Date(payload.start_date);
-    const endDate = new Date(startDate);
-    endDate.setDate(endDate.getDate() + payload.duration_days - 1);
+    const endDate = addDaysBogotaYMD(
+      payload.start_date,
+      payload.duration_days - 1,
+    );
 
     const { data, error } = await supabase
       .from("challenges")
@@ -46,7 +48,7 @@ export const challengeRepository = {
         goal: payload.goal?.trim() || null,
         duration_days: payload.duration_days,
         start_date: payload.start_date,
-        end_date: endDate.toISOString().slice(0, 10),
+        end_date: endDate,
         status: "active",
       })
       .select()

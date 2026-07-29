@@ -229,9 +229,30 @@ export interface FinanceTransaction {
   description?: string | null;
   type: TransactionType;
   transaction_date: string;
-  status?: string | null;
+  status?: "pending" | "completed" | "cancelled" | string | null;
   transfer_group_id?: string | null;
   to_account_id?: number | null;
+  quick_expense_template_id?: string | null;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export type QuickExpenseType = "expense" | "income";
+
+export interface QuickExpenseTemplate {
+  id: string;
+  user_id: string;
+  label: string;
+  icon: string;
+  default_amount: number;
+  currency: AccountCurrency;
+  category_id?: number | null;
+  account_id: string;
+  type: QuickExpenseType;
+  sort_order: number;
+  usage_count: number;
+  last_used_at?: string | null;
+  is_active: boolean;
   created_at?: string;
   updated_at?: string;
 }
@@ -259,6 +280,7 @@ export interface SavingsGoal {
   target_amount: number;
   saved_amount: number;
   target_date?: string | null;
+  account_id: number;
   status: "active" | "completed" | "paused";
   created_at?: string;
   updated_at?: string;
@@ -269,6 +291,7 @@ export interface SavingsContribution {
   user_id: string;
   saving_goal_id: number;
   account_id?: number | null;
+  transaction_id?: number | null;
   amount: number;
   contribution_date: string;
   note?: string | null;

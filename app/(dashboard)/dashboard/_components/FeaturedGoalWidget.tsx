@@ -1,11 +1,12 @@
 import type { Goal } from "@/lib/types";
+import { bogotaTodayYMD, diffDaysBogotaYMD } from "@/lib/dates/bogota";
 import { Target, CalendarDays, AlertTriangle, ChevronRight, Flame, CheckCircle2 } from "lucide-react";
 import Link from "next/link";
 import { CATEGORY_LABELS } from "../../metas/_components/GoalCard";
 
 function daysRemaining(date: string | null | undefined): number | null {
   if (!date) return null;
-  return Math.ceil((new Date(date).getTime() - Date.now()) / 86_400_000);
+  return diffDaysBogotaYMD(bogotaTodayYMD(), date);
 }
 
 function ProgressBar({ pct, isOverdue }: { pct: number; isOverdue: boolean }) {

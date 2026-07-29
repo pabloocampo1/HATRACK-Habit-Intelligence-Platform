@@ -63,8 +63,8 @@ export default function CategoriasModuleClient({ userId, categories }: Props) {
         <div>
           <h1 className="text-xl font-semibold text-text-primary">Categorías</h1>
           <p className="mt-1 max-w-xl text-sm text-text-secondary">
-            Etiquetas para clasificar cada movimiento: comida, transporte, salario, etc.
-            Así sabrás en qué se va tu dinero.
+            Crea etiquetas para clasificar movimientos (comida, transporte, salario).
+            Te ayudan a filtrar y entender en qué gastas o de dónde ingresa tu dinero.
           </p>
         </div>
         <button
