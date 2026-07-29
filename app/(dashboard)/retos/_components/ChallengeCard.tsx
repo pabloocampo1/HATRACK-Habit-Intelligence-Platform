@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { CalendarDays, CheckCircle2, Clock, Flame, Trophy, XCircle } from "lucide-react";
 import { challengeStatusLabel } from "@/lib/challenges/challengeOutcome";
+import { bogotaTodayYMD, diffDaysBogotaYMD } from "@/lib/dates/bogota";
 import type { Challenge } from "@/lib/types";
 
 function statusBadge(status: Challenge["status"]) {
@@ -34,18 +35,15 @@ function statusBadge(status: Challenge["status"]) {
 
 function progressBar(start: string, end: string, durationDays: number, status: Challenge["status"]) {
   if (status !== "active") return status === "completed" ? 100 : null;
-  const startMs = new Date(start + "T00:00:00").getTime();
-  const endMs = new Date(end + "T00:00:00").getTime();
-  const nowMs = Date.now();
-  const pct = Math.min(100, Math.max(0, Math.round(((nowMs - startMs) / (endMs - startMs + 86_400_000)) * 100)));
+  const today = bogotaTodayYMD();
+  const elapsedDays = Math.max(0, diffDaysBogotaYMD(start, today) + 1);
+  const pct = Math.min(100, Math.max(0, Math.round((elapsedDays / durationDays) * 100)));
   return pct;
 }
 
 function daysRemaining(end: string, status: Challenge["status"]) {
   if (status !== "active") return null;
-  const endMs = new Date(end + "T00:00:00").getTime();
-  const diff = Math.ceil((endMs - Date.now()) / 86_400_000) + 1;
-  return Math.max(0, diff);
+  return Math.max(0, diffDaysBogotaYMD(bogotaTodayYMD(), end) + 1);
 }
 
 export default function ChallengeCard({ challenge }: { challenge: Challenge }) {

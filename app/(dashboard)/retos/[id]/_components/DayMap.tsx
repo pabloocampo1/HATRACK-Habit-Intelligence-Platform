@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
+import { addDaysBogotaYMD, bogotaYMDToDate } from "@/lib/dates/bogota";
 
 interface Props {
   startDate: string;
@@ -11,11 +12,10 @@ interface Props {
 
 function isoDatesBetween(start: string, end: string): string[] {
   const dates: string[] = [];
-  const cur = new Date(start + "T00:00:00");
-  const fin = new Date(end + "T00:00:00");
-  while (cur <= fin) {
-    dates.push(cur.toISOString().slice(0, 10));
-    cur.setDate(cur.getDate() + 1);
+  let cur = start;
+  while (cur <= end) {
+    dates.push(cur);
+    cur = addDaysBogotaYMD(cur, 1);
   }
   return dates;
 }
@@ -31,7 +31,7 @@ export default function DayMap({ startDate, endDate, perfectDays, today }: Props
   );
 
   // Start on Monday (pad start)
-  const firstDay = new Date(startDate + "T00:00:00").getDay(); // 0=Sun
+  const firstDay = bogotaYMDToDate(startDate).getUTCDay(); // 0=Sun
   const paddingBefore = firstDay === 0 ? 6 : firstDay - 1;
   const paddedDays: (string | null)[] = [
     ...Array(paddingBefore).fill(null),

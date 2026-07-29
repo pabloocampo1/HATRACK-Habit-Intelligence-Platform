@@ -1,6 +1,7 @@
 "use client";
 
 import { createGoalAction } from "@/app/actions/goals/goalActions";
+import { bogotaTodayYMD } from "@/lib/dates/bogota";
 import type { GoalCategory, GoalPriority } from "@/lib/types";
 import { X, AlertCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -222,7 +223,7 @@ export default function CreateGoalModal({
                 onChange={(e) => setDate(e.target.value)}
                 className={inputCls}
                 disabled={isPending}
-                min={new Date().toISOString().split("T")[0]}
+                min={bogotaTodayYMD()}
               />
             </div>
 

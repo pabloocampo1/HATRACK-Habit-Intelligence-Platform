@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { bogotaTodayYMD } from "@/lib/dates/bogota";
 import { supabase } from "../../../../../lib/supabase/config/supabaseClient";
 import { log } from "node:console";
 
@@ -38,7 +39,7 @@ export async function POST(
       mental_state,
     } = await request.json();
 
-    const today = new Date().toISOString().split("T")[0]; 
+    const today = bogotaTodayYMD();
 
     if (minutes_completed === undefined || quality_score === undefined) {
       return NextResponse.json({ error: "Faltan datos requeridos: minutes_completed, quality_score" }, { status: 400 });

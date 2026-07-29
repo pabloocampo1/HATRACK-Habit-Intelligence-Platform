@@ -1,5 +1,6 @@
 import { goalRepository } from "@/lib/supabase/repository/goalRepository";
 import { subscriptionRepository } from "@/lib/supabase/repository/subscriptionRepository";
+import { bogotaTodayYMD, diffDaysBogotaYMD } from "@/lib/dates/bogota";
 import { getLimits, formatLimit } from "@/lib/plans/limits";
 import { getCurrentPlanLabel, isFreeUser } from "@/services/plans/subscriptionService";
 import type {
@@ -33,8 +34,7 @@ function milestoneCompletedFromSteps(
 
 function calcDaysRemaining(targetDate: string | null | undefined): number | null {
   if (!targetDate) return null;
-  const diff = new Date(targetDate).getTime() - Date.now();
-  return Math.ceil(diff / (1000 * 60 * 60 * 24));
+  return diffDaysBogotaYMD(bogotaTodayYMD(), targetDate);
 }
 
 // ── Capability guard ─────────────────────────────────────────

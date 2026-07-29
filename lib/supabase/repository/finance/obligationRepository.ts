@@ -23,6 +23,18 @@ export const obligationRepository = {
     return (data ?? []) as Obligation[];
   },
 
+  async getOne(userId: string, obligationId: number): Promise<Obligation> {
+    const supabase = await createClient();
+    const { data, error } = await supabase
+      .from("obligations")
+      .select("*")
+      .eq("id_obligation", obligationId)
+      .eq("user_id", userId)
+      .single();
+    if (error) throw error;
+    return data as Obligation;
+  },
+
   async create(userId: string, payload: SaveObligationPayload): Promise<Obligation> {
     const supabase = await createClient();
     const { data, error } = await supabase
@@ -38,6 +50,26 @@ export const obligationRepository = {
         account_id: payload.account_id ?? null,
         status: "active",
       })
+      .select("*")
+      .single();
+    if (error) throw error;
+    return data as Obligation;
+  },
+
+  async update(
+    userId: string,
+    obligationId: number,
+    payload: Partial<SaveObligationPayload> & { status?: Obligation["status"] },
+  ): Promise<Obligation> {
+    const supabase = await createClient();
+    const { data, error } = await supabase
+      .from("obligations")
+      .update({
+        ...payload,
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id_obligation", obligationId)
+      .eq("user_id", userId)
       .select("*")
       .single();
     if (error) throw error;
@@ -62,5 +94,15 @@ export const obligationRepository = {
       .single();
     if (error) throw error;
     return data as Obligation;
+  },
+
+  async remove(userId: string, obligationId: number) {
+    const supabase = await createClient();
+    const { error } = await supabase
+      .from("obligations")
+      .delete()
+      .eq("id_obligation", obligationId)
+      .eq("user_id", userId);
+    if (error) throw error;
   },
 };

@@ -17,6 +17,7 @@ import {
   ChevronDown,
   Sparkles,
   Trophy,
+  Zap,
 } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import Image from "next/image";
@@ -32,15 +33,22 @@ const personalNav = [
 
 const financeNav = [
   { href: "/finanzas", label: "Inicio finanzas", icon: Home },
-  { href: "/finanzas/cuentas", label: "Cuentas", icon: Landmark },
-  { href: "/finanzas/transacciones", label: "Transacciones", icon: ArrowLeftRight },
-  { href: "/finanzas/categorias", label: "Categorías", icon: Tags },
-  { href: "/finanzas/obligaciones", label: "Obligaciones de pago", icon: CalendarClock },
-  { href: "/finanzas/metas", label: "Metas de ahorro", icon: Target },
   { href: "/finanzas/reportes", label: "Reportes", icon: LineChart },
+  { href: "/finanzas/transacciones", label: "Transacciones", icon: ArrowLeftRight },
+  { href: "/finanzas/deudas", label: "Deudas pendientes", icon: CalendarClock },
+  { href: "/finanzas/metas", label: "Metas de ahorro", icon: Target },
+  { href: "/finanzas/cuentas", label: "Cuentas", icon: Landmark },
+  { href: "/finanzas/gastos-fijos", label: "Gastos fijos", icon: Zap },
+  { href: "/finanzas/categorias", label: "Categorías", icon: Tags },
 ] as const;
 
 function isNavActive(pathname: string, href: string) {
+  if (href === "/finanzas/transacciones") {
+    return (
+      pathname === href ||
+      (pathname.startsWith(`${href}/`) && !pathname.startsWith("/finanzas/transacciones/fijos"))
+    );
+  }
   if (href === "/finanzas") {
     return pathname === "/finanzas" || pathname === "/finanzas/";
   }

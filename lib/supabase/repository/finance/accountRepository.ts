@@ -29,6 +29,18 @@ export const accountRepository = {
     return (data ?? []) as Account[];
   },
 
+  async getOne(userId: string, accountId: string): Promise<Account> {
+    const supabase = await createClient();
+    const { data, error } = await supabase
+      .from("accounts")
+      .select("*")
+      .eq("account_id", accountId)
+      .eq("user_id", userId)
+      .single();
+    if (error) throw error;
+    return data as Account;
+  },
+
   async saveAccount(userId: string, payload: SaveAccountPayload): Promise<Account> {
     const supabase = await createClient();
     const { data, error } = await supabase

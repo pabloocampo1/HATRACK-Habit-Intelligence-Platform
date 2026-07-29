@@ -1,5 +1,7 @@
 "use client";
 
+import { useState } from "react";
+import { bogotaTodayYMD, diffDaysBogotaYMD } from "@/lib/dates/bogota";
 import type { Goal } from "@/lib/types";
 import {
   Target,
@@ -41,9 +43,9 @@ const STATUS_CONFIG = {
 
 // ── helpers ──────────────────────────────────────────────────
 
-function daysRemaining(targetDate: string | null | undefined): number | null {
+function daysRemaining(targetDate: string | null | undefined, todayYMD: string): number | null {
   if (!targetDate) return null;
-  return Math.ceil((new Date(targetDate).getTime() - Date.now()) / 86_400_000);
+  return diffDaysBogotaYMD(todayYMD, targetDate);
 }
 
 function formatDate(date: string) {
@@ -67,7 +69,8 @@ export default function GoalCard({
   milestonesTotal: number;
   milestonesCompleted: number;
 }) {
-  const days = daysRemaining(goal.target_date);
+  const [todayYMD] = useState(() => bogotaTodayYMD());
+  const days = daysRemaining(goal.target_date, todayYMD);
   const isOverdue = days !== null && days < 0 && goal.status === "active";
   const priority = PRIORITY_CONFIG[goal.priority] ?? PRIORITY_CONFIG.medium;
   const status   = STATUS_CONFIG[goal.status]   ?? STATUS_CONFIG.active;
